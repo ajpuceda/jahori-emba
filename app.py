@@ -9,8 +9,10 @@ from google import genai
 #    [STREAMLIT PRODUCTION VERSION - PERFECT GRID & ALIGNMENT] - JAHORI WINDOW EMBA SAAS (PART 1)
 # ===================================================================================================
 
+# 1. Configuración de la pestaña del navegador
 st.set_page_config(page_title="JAHORI - Discover Your Blind Spots", page_icon="🔮", layout="centered")
 
+# 2. Inyección de Estilo CSS Corporativo (Garantiza la simetría milimétrica en la Home y en el Panel)
 st.markdown("""
     <style>
     /* Fondo blanco limpio estilo Google */
@@ -20,7 +22,7 @@ st.markdown("""
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
     .compliance-box { background-color: #F1F3F9; border-left: 4px solid #3E63DD; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
     
-    /* CSS ISOLADO PARA LA HOME (Solo actúa si NO hay barra lateral) */
+    /* 💡 CSS ISOLADO PARA LA HOME (Solo actúa si NO hay barra lateral) */
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] {
         display: flex !important;
         flex-direction: row !important;
@@ -69,31 +71,50 @@ st.markdown("""
         gap: 12px !important;
     }
     .stApp:has(div[data-testid="stSidebar"]) div[data-testid="column"] {
-        min-width: 165px !important; /* Ensancha cada columna para que quepan palabras largas */
+        min-width: 165px !important; /* Ensancha cada columna para evitar cortes */
     }
     
-    /* Estilizado de casillas premium con alineación vertical estricta y sin dobles líneas */
+    /* 💡 REGLA DE ALINEACIÓN HORIZONTAL: Fuerza una altura idéntica en todas las tarjetas para eliminar el efecto escalera */
     div[data-testid="stCheckbox"] {
         background-color: #F8F9FA !important;
-        padding: 8px 12px !important;
+        padding: 6px 12px !important;
         border-radius: 8px !important;
         border: 1px solid #E4E7EB !important;
-        margin-bottom: 6px !important;
+        margin-bottom: 0px !important;
         width: 100% !important;
+        height: 42px !important; /* 🔥 ALTURA FIJA: Alinea todas las filas horizontalmente de forma matemática */
         display: flex !important;
-        align-items: center !important; /* Alinea el cuadrado rojo con el texto perfectamente en vertical */
+        align-items: center !important; 
         transition: all 0.2s ease-in-out !important;
+        box-sizing: border-box !important;
     }
     div[data-testid="stCheckbox"]:hover {
         background-color: #F1F3F9 !important;
         border-color: #3E63DD !important;
     }
+    
+    /* Estilo del contenedor de texto interno del checkbox */
+    div[data-testid="stCheckbox"] label {
+        display: flex !important;
+        align-items: center !important;
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
     div[data-testid="stCheckbox"] label p {
         color: #333333 !important;
         font-weight: 500 !important;
         font-size: 14px !important;
-        white-space: nowrap !important; /* 🔥 PROHÍBE LA DOBLE LÍNEA: Todo el adjetivo entra recto */
+        white-space: nowrap !important;
         word-break: keep-all !important;
+        margin: 0 !important;
+        line-height: 1 !important; /* Centra el texto verticalmente dentro de la tarjeta */
+    }
+    
+    /* Forzar al bloque horizontal interno de Streamlit a respetar el espaciado vertical regular */
+    .stApp:has(div[data-testid="stSidebar"]) [data-testid="stVerticalBlock"] > div {
+        margin-bottom: 4px !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -114,11 +135,13 @@ def init_db():
 
 conn = init_db()
 
+# Los 30 adjetivos oficiales de la Ventana de Johari
 JOHARI_ADJECTIVES = [
     "Able", "Accepting", "Adaptable", "Bold", "Brave", "Calm", "Caring", "Cheerful", "Clever", "Complex", 
     "Confident", "Dependable", "Dignified", "Empathetic", "Energetic", "Friendly", "Giving", "Happy", "Helpful", "Idealistic", 
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
+
 # ===================================================================================================
 #    [STREAMLIT PRODUCTION VERSION - FINAL FIX] - PEER PANEL & AUTHENTICATION NATIVE (PART 2)
 # ===================================================================================================
