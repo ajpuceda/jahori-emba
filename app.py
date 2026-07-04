@@ -2,8 +2,8 @@ import streamlit as st
 import sqlite3
 import hashlib
 import uuid
-from google import genai
 import os
+from google import genai
 
 # ===================================================================================================
 #    [STREAMLIT PRODUCTION VERSION] - JAHORI WINDOW EMBA SAAS (PART 1)
@@ -12,99 +12,11 @@ import os
 # 1. Configuración de la pestaña del navegador
 st.set_page_config(page_title="JAHORI - Discover Your Blind Spots", page_icon="🔮", layout="centered")
 
-# 2. Inyección de Estilo CSS Corporativo (Garantiza el diseño Minimalista Estilo Google en Móviles y PC)
+# 2. Inyección de Estilo CSS Corporativo General
 st.markdown("""
     <style>
     /* Resetear fondos y forzar limpieza visual */
     .stApp { background-color: #FFFFFF; }
-    
-    /* Contenedor central estilo Google */
-    .google-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding-top: 80px;
-        padding-bottom: 20px;
-        width: 100%;
-    }
-    
-    /* 💡 FIX DE SIMETRÍA: Fuerza a las columnas de los botones a unirse en el centro exacto sin márgenes fantasma */
-    .google-buttons {
-        display: flex;
-        flex-direction: row !important;
-        justify-content: center !important;
-        align-items: center !important;
-        gap: 15px !important;
-        width: 100% !important;
-        margin-top: 10px !important;
-        margin-bottom: 20px !important;
-    }
-    
-    /* Elimina el espacio vacío que Streamlit mete a la izquierda de la columna 1 */
-    div.google-buttons [data-testid="column"] {
-        width: auto !important;
-        flex: none !important;
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-    
-    /* Tipografía ejecutiva limpia */
-    .johari-title { font-weight: 700; color: #111111; font-size: 48px; margin-bottom: 12px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    .johari-blue { color: #3E63DD; }
-    .johari-subtitle { color: #555555; font-size: 18px; margin-bottom: 40px; max-width: 580px; line-height: 1.6; margin-left: auto; margin-right: auto; }
-    
-    /* Ajuste de botones premium redondeados idénticos */
-    .stButton>button { 
-        width: 140px !important; 
-        background-color: #3E63DD !important; 
-        color: white !important; 
-        border-radius: 20px !important; 
-        border: 1px solid #3E63DD !important; 
-        padding: 8px 16px !important; 
-        font-weight: 500 !important;
-        font-size: 14px !important;
-        cursor: pointer !important;
-        transition: all 0.2s ease !important;
-        margin: 0 !important;
-        display: block !important;
-    }
-
-    
-    /* Tipografía ejecutiva limpia */
-    .johari-title { font-weight: 700; color: #111111; font-size: 48px; margin-bottom: 12px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    .johari-blue { color: #3E63DD; }
-    .johari-subtitle { color: #555555; font-size: 18px; margin-bottom: 40px; max-width: 580px; line-height: 1.6; margin-left: auto; margin-right: auto; }
-    
-    /* Ajuste de botones premium redondeados */
-    .stButton>button { 
-        width: 140px !important; 
-        background-color: #3E63DD !important; 
-        color: white !important; 
-        border-radius: 20px !important; /* Bordes redondeados estilo Google */
-        border: 1px solid #3E63DD !important; 
-        padding: 8px 16px !important; 
-        font-weight: 500 !important;
-        font-size: 14px !important;
-        cursor: pointer !important;
-        transition: all 0.2s ease !important;
-        margin: 0 !important;
-        display: inline-block !important;
-    }
-    .stButton>button:hover { background-color: #2E4cbd !important; color: white !important; border-color: #2E4cbd !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important; }
-    
-    /* Variación estética para el segundo botón (Login estilo gris claro de Google) */
-    div.google-buttons > div:nth-child(2) .stButton>button {
-        background-color: #F8F9FA !important;
-        color: #3C4043 !important;
-        border: 1px solid #F8F9FA !important;
-    }
-    div.google-buttons > div:nth-child(2) .stButton>button:hover {
-        background-color: #F1F3F4 !important;
-        border-color: #DADCE0 !important;
-        color: #202124 !important;
-    }
     
     /* Ocultar elementos nativos de Streamlit */
     #MainMenu {visibility: hidden;}
@@ -138,13 +50,13 @@ JOHARI_ADJECTIVES = [
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
 # ===================================================================================================
-#    [STREAMLIT PRODUCTION BLINDADO V3 - REAL RENDER] - PEER PUBLIC PANEL & AUTHENTICATION (PART 2)
+#    [STREAMLIT PRODUCTION VERSION] - PEER PUBLIC EVALUATION PANEL (PART 2)
 # ===================================================================================================
 
 query_params = st.query_params
 
-# 💡 VALIDADOR DE ENLACES: Busca el token criptográfico UUID en la URL para evitar hackeos
 if "token" in query_params:
+    # 👥 PANTALLA PÚBLICA DE EVALUACIÓN PARA TUS COMPAÑEROS DEL EMBA
     target_token = str(query_params["token"])
     cursor = conn.cursor()
     cursor.execute("SELECT id FROM user WHERE share_token = ?", (target_token,))
@@ -153,16 +65,20 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        target_user_id = int(user_data[0])
-        st.markdown("<h1 class='johari-title'>Evaluate Your <span class='johari-blue'>Friend</span></h1>", unsafe_allow_html=True)
-        st.markdown("<p class='johari-subtitle'>Your anonymous feedback is 100% confidential and RODO compliant.</p>", unsafe_allow_html=True)
-        st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No names tracked.</div>", unsafe_allow_html=True)
+        # Extraemos el número entero limpio de la tupla
+        target_user_id = int(user_data[0]) if isinstance(user_data, tuple) else int(user_data)
+        st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Friend</h1>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO compliant.</p>", unsafe_allow_html=True)
+        st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No names or IPs tracked.</div>", unsafe_allow_html=True)
+        
+        st.write("Select 3 to 10 adjectives that best describe your colleague:")
         
         selected_friend_words = []
         cols = st.columns(4)
         for i, adj in enumerate(JOHARI_ADJECTIVES):
             with cols[i % 4]:
-                if st.checkbox(adj, key=f"friend_{adj}"): selected_friend_words.append(adj)
+                if st.checkbox(adj, key=f"friend_{adj}"): 
+                    selected_friend_words.append(adj)
                     
         if st.button("Submit Anonymous Feedback"):
             if len(selected_friend_words) < 3 or len(selected_friend_words) > 10:
@@ -173,6 +89,9 @@ if "token" in query_params:
                 conn.commit()
                 st.success("Thank you! Your feedback has been securely submitted.")
                 st.balloons()
+# ===================================================================================================
+#    [STREAMLIT PRODUCTION VERSION] - NATIVE ROUTING & GOOGLE HOME RENDERING (PART 3)
+# ===================================================================================================
 else:
     # 🔐 SISTEMA DE SESIONES Y NAVEGACIÓN PRIVADA DEL USUARIO
     if "user" not in st.session_state:
@@ -181,28 +100,27 @@ else:
 
     if st.session_state.user is None:
         if st.session_state.page == "Home":
-            # 💡 SOLUCCIÓN MAESTRA: Se encapsula TODO el HTML con su debida instrucción unsafe_allow_html=True
-            st.markdown("""
-                <div class='google-container'>
-                    <h1 class='johari-title'><span class='johari-blue'>Discover Your</span> Blind Spots</h1>
-                    <p class='johari-subtitle'>Analyze your personality with the Johari Window powered by Artificial Intelligence. 100% private. No software installations required.</p>
-                    
-                    <div class='google-buttons'>
-                        <a href='?action=register' target='_self' style='text-decoration: none;'>
-                            <button style='width: 140px; background-color: #3E63DD; color: white; border-radius: 20px; border: 1px solid #3E63DD; padding: 10px 16px; font-weight: 500; font-size: 14px; cursor: pointer;'>
-                                Get Started
-                            </button>
-                        </a>
-                        <a href='?action=login' target='_self' style='text-decoration: none;'>
-                            <button style='width: 140px; background-color: #F8F9FA; color: #3C4043; border-radius: 20px; border: 1px solid #DADCE0; padding: 10px 16px; font-weight: 500; font-size: 14px; cursor: pointer;'>
-                                Log In
-                            </button>
-                        </a>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
+            # Título y Subtítulo limpios de Streamlit
+            st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 48px; margin-top: 50px;'><span style='color: #3E63DD;'>Discover Your</span> Blind Spots</h1>", unsafe_allow_html=True)
+            st.markdown("<p style='text-align: center; color: #555555; font-size: 18px; max-width: 580px; margin: 0 auto 30px auto; line-height: 1.6;'>Analyze your personality with the Johari Window powered by Artificial Intelligence. 100% private. No software installations required.</p>", unsafe_allow_html=True)
             
-            # Captura interactiva de clics desde los botones HTML
+            # RENDERIZADO AISLADO: Dibuja los dos botones perfectamente juntos en horizontal y centrados
+            st.components.v1.html("""
+                <div style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 15px; width: 100%; font-family: -apple-system, sans-serif;">
+                    <a href="?action=register" target="_self" style="text-decoration: none;">
+                        <button style="width: 140px; background-color: #3E63DD; color: white; border-radius: 20px; border: 1px solid #3E63DD; padding: 10px 16px; font-weight: 500; font-size: 14px; cursor: pointer;">
+                            Get Started
+                        </button>
+                    </a>
+                    <a href="?action=login" target="_self" style="text-decoration: none;">
+                        <button style="width: 140px; background-color: #F8F9FA; color: #3C4043; border-radius: 20px; border: 1px solid #DADCE0; padding: 10px 16px; font-weight: 500; font-size: 14px; cursor: pointer;">
+                            Log In
+                        </button>
+                    </a>
+                </div>
+            """, height=60)
+            
+            # Captura de clics desde el iframe de HTML
             if "action" in query_params:
                 selected_action = query_params["action"]
                 st.query_params.clear()
@@ -212,9 +130,11 @@ else:
                 elif selected_action == "login":
                     st.session_state.page = "Login"
                     st.rerun()
-                    
+# ===================================================================================================
+#    [STREAMLIT PRODUCTION VERSION] - USER AUTHENTICATION & REGISTRATION FORMS (PART 4)
+# ===================================================================================================
         elif st.session_state.page == "Register":
-            st.markdown("<h1 class='johari-title'><span class='johari-blue'>Create Your</span> Account</h1>", unsafe_allow_html=True)
+            st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 36px;'><span style='color: #3E63DD;'>Create Your</span> Account</h1>", unsafe_allow_html=True)
             st.write("Choose a unique nickname. No email or personal data required.")
             
             new_user = st.text_input("Choose a Username")
@@ -239,7 +159,7 @@ else:
                     except sqlite3.IntegrityError: st.error("This username is already taken.")
                         
         elif st.session_state.page == "Login":
-            st.markdown("<h1 class='johari-title'>Log <span class='johari-blue'>In</span></h1>", unsafe_allow_html=True)
+            st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 36px;'>Log <span style='color: #3E63DD;'>In</span></h1>", unsafe_allow_html=True)
             log_user = st.text_input("Username")
             log_pass = st.text_input("Password", type="password")
             
@@ -255,21 +175,25 @@ else:
                 else: st.error("Incorrect username or password.")
                     
         if st.session_state.page != "Home":
-            if st.button("⬅️ Back to Home"): 
+            if st.button("⬅️ Back to Home"):
                 st.session_state.page = "Home"
                 st.rerun()
 # ===================================================================================================
-#    [STREAMLIT PRODUCTION VERSION] - USER DASHBOARD, JOHARI MATRIX & GEMINI AI REPORT (PART 3)
+#    [STREAMLIT PRODUCTION VERSION] - PRIV PANEL, MATRIX GRID & GEMINI ENGINE (PART 5)
 # ===================================================================================================
     else:
+        # Panel privado del usuario logueado
         st.sidebar.markdown(f"### 🔒 Session Secure")
         if st.sidebar.button("🚪 Log Out"):
             st.session_state.user = None
             st.session_state.page = "Home"
             st.rerun()
             
+        # Forzar extracción numérica limpia del ID
+        current_user_id = int(st.session_state.user[0]) if isinstance(st.session_state.user, tuple) else int(st.session_state.user)
+            
         cursor = conn.cursor()
-        cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = ?", (st.session_state.user,))
+        cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = ?", (current_user_id,))
         f_count_data = cursor.fetchone()
         f_count = int(f_count_data[0]) if f_count_data else 0
         
@@ -278,7 +202,7 @@ else:
         
         with tab1:
             st.write("Select 3 to 10 adjectives that best describe you today:")
-            cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (st.session_state.user,))
+            cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
             existing_assessment = cursor.fetchone()
             saved_words = existing_assessment[0].split(",") if existing_assessment else []
             
@@ -286,20 +210,22 @@ else:
             cols = st.columns(4)
             for i, adj in enumerate(JOHARI_ADJECTIVES):
                 with cols[i % 4]:
-                    if st.checkbox(adj, key=f"my_{adj}", value=(adj in saved_words)): selected_my_words.append(adj)
+                    if st.checkbox(adj, key=f"my_{adj}", value=(adj in saved_words)): 
+                        selected_my_words.append(adj)
                         
             if st.button("Save Assessment"):
-                if len(selected_my_words) < 3 or len(selected_my_words) > 10: st.error("Please select between 3 and 10 adjectives.")
+                if len(selected_my_words) < 3 or len(selected_my_words) > 10: 
+                    st.error("Please select between 3 and 10 adjectives.")
                 else:
                     my_str = ",".join(selected_my_words)
-                    cursor.execute("INSERT OR REPLACE INTO self_assessment (user_id, adjectives) VALUES (?, ?)", (st.session_state.user, my_str))
+                    cursor.execute("INSERT OR REPLACE INTO self_assessment (user_id, adjectives) VALUES (?, ?)", (current_user_id, my_str))
                     conn.commit()
                     st.success("Saved successfully!")
             
             st.markdown("### 🔗 Distribute Your Anonymous Link")
             st.write("Copy this link and send it via WhatsApp or Slack to your colleagues:")
             
-            cursor.execute("SELECT share_token FROM user WHERE id = ?", (st.session_state.user,))
+            cursor.execute("SELECT share_token FROM user WHERE id = ?", (current_user_id,))
             token_res = cursor.fetchone()
             user_token = token_res[0] if token_res else "error"
             
@@ -318,11 +244,11 @@ else:
             if f_count < 3:
                 st.warning(f"Threshold not met. You need at least 3 evaluations. (Current: {f_count}/3)")
             else:
-                cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (st.session_state.user,))
+                cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
                 user_res = cursor.fetchone()
                 user_set = set(user_res[0].split(",")) if user_res else set()
                 
-                cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (st.session_state.user,))
+                cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (current_user_id,))
                 feedbacks = cursor.fetchall()
                 friends_set = set()
                 all_friends_list = []
@@ -336,7 +262,6 @@ else:
                 blind_area = friends_set.difference(user_set)
                 hidden_area = user_set.difference(friends_set)
                 
-                # Pintar la cuadrícula limpia sin saltos de línea conflictivos
                 c1, c2 = st.columns(2)
                 with c1:
                     st.info(f"👐 **1. Open Area:** \n\n {', '.join(open_area) if open_area else 'None'}")
@@ -349,7 +274,8 @@ else:
                 
                 st.markdown("<br>### 🧠 Executive Coaching Report", unsafe_allow_html=True)
                 api_key = os.environ.get("GEMINI_API_KEY")
-                if not api_key: st.error("API Secret Key missing.")
+                if not api_key: 
+                    st.error("API Secret Key missing.")
                 else:
                     with st.spinner("Gemini is analyzing your psychological vectors..."):
                         try:
@@ -357,4 +283,5 @@ else:
                             prompt_payload = f"Act as an expert leadership coach. My assessment: {', '.join(user_set)}. Peer feedback: {', '.join(all_friends_list)}. Analyze blind spots and give a personal plan in exactly two short paragraphs."
                             response = client.models.generate_content(model='gemini-2.5-flash', contents=prompt_payload)
                             st.write(response.text)
-                        except Exception as e: st.error(f"AI Interrupted: {e}")
+                        except Exception as e: 
+                            st.error(f"AI Interrupted: {e}")
