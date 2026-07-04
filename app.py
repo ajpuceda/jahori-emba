@@ -12,30 +12,31 @@ from google import genai
 # 1. Configuración de la pestaña del navegador
 st.set_page_config(page_title="JAHORI - Discover Your Blind Spots", page_icon="🔮", layout="centered")
 
-# 2. Inyección de Estilo CSS Corporativo (Garantiza el diseño Azul Centrado Premium en Móviles y PC)
+# 2. Inyección de Estilo CSS Corporativo (Garantiza el diseño Azul Centrado Premium en Cualquier Pantalla)
 st.markdown("""
     <style>
     /* Fondo blanco limpio estilo Google */
     .stApp { background-color: #FFFFFF; }
     
-    /* Forzar centrado absoluto del contenedor raíz */
-    [data-testid="stVerticalBlockRoot"] {
-        align-items: center !important;
-        justify-content: center !important;
-        text-align: center !important;
-    }
-    
-    /* 💡 SOLUCIÓN MAESTRA: Centra los botones nativos y les aplica el azul cobalto premium */
-    .stButton {
-        display: flex !important;
+    /* 💡 SOLUCCIÓN MAESTRA DE DISEÑO: Centra las columnas nativas de Streamlit eliminando márgenes asimétricos */
+    div[data-testid="stHorizontalBlock"] {
         justify-content: center !important;
         align-items: center !important;
+        gap: 15px !important;
         width: 100% !important;
-        margin: 5px auto !important;
+        margin-top: 20px !important;
     }
     
+    div[data-testid="column"] {
+        width: auto !important;
+        flex: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    /* Diseño premium unificado para todos los botones de la aplicación */
     .stButton>button { 
-        width: 200px !important; /* Ancho ejecutivo idéntico para simetría */
+        width: 160px !important; /* Ancho perfecto idéntico para simetría ejecutiva */
         background-color: #3E63DD !important; 
         color: white !important; 
         border-radius: 20px !important; /* Bordes redondeados estilo Google */
@@ -126,16 +127,16 @@ else:
 
     if st.session_state.user is None:
         if st.session_state.page == "Home":
-            # Título y Subtítulo limpios estilo Google con colores invertidos
+            # Título y Subtítulo corporativos limpios con los colores invertidos estilo Google
             st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 48px; margin-top: 50px;'><span style='color: #3E63DD;'>Discover Your</span> Blind Spots</h1>", unsafe_allow_html=True)
-            st.markdown("<p style='text-align: center; color: #555555; font-size: 18px; max-width: 580px; margin: 0 auto 40px auto; line-height: 1.6;'>Analyze your personality with the Johari Window powered by Artificial Intelligence. 100% private. No software installations required.</p>", unsafe_allow_html=True)
+            st.markdown("<p style='text-align: center; color: #555555; font-size: 18px; max-width: 580px; margin: 0 auto 10px auto; line-height: 1.6;'>Analyze your personality with the Johari Window powered by Artificial Intelligence. 100% private. No software installations required.</p>", unsafe_allow_html=True)
             
-            # Espaciador sutil para equilibrar visualmente la pantalla
-            st.write("")
-            
-            # 💡 AMBOS BOTONES EN AZUL Y CENTRADOS: El CSS superior fuerza la simetría compacta sin columnas
-            btn_get = st.button("Get Started ➡️", key="home_azul_get")
-            btn_log = st.button("Log In", key="home_azul_log")
+            # 💡 ALINEACIÓN HORIZONTAL COMPACTA: El CSS de la Parte 1 forzará a estas dos celdas a pegarse juntas en el medio exacto
+            col1, col2 = st.columns(2)
+            with col1:
+                btn_get = st.button("Get Started ➡️", key="home_azul_get")
+            with col2:
+                btn_log = st.button("Log In", key="home_azul_log")
                 
             if btn_get:
                 st.session_state.page = "Register"
