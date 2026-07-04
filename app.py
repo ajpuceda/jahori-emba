@@ -33,21 +33,21 @@ st.markdown("""
         margin-top: 25px !important;
     }
     
-    /* Diseño premium unificado para todos los botones de la aplicación sin dobles líneas */
+        /* Diseño premium unificado para todos los botones de la aplicación: más compactos para móviles */
     .stButton>button { 
-        width: 220px !important; /* Ancho ejecutivo ampliado para que quepan textos y flechas en una sola línea */
+        width: 160px !important; /* Achicado de 220px a 160px para encajar perfectamente en horizontal */
         background-color: #3E63DD !important; 
         color: white !important; 
-        border-radius: 20px !important; /* Bordes redondeados estilo Google */
+        border-radius: 20px !important; 
         border: 1px solid #3E63DD !important; 
-        padding: 10px 20px !important; 
+        padding: 8px 14px !important; /* Un poco menos de relleno interno */
         font-weight: 500 !important;
-        font-size: 15px !important;
+        font-size: 13.5px !important; /* Fuente un pelín más pequeña estilo Google */
         cursor: pointer !important;
         transition: background-color 0.2s ease !important;
         box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
-        margin: 0 auto !important; /* Clava el botón en el centro horizontal exacto */
-        white-space: nowrap !important; /* Prohíbe terminantemente la doble línea al texto */
+        margin: 0 auto !important; 
+        white-space: nowrap !important; /* Evita por completo la doble línea */
     }
     .stButton>button:hover { 
         background-color: #2E4cbd !important; 
@@ -275,16 +275,16 @@ else:
                 blind_area = friends_set.difference(user_set)
                 hidden_area = user_set.difference(friends_set)
                 
-                # Cuadrícula nativa limpia sin saltos de línea manuales
+                                # 💡 SOLUCCIÓN MAESTRA: Pintar la cuadrícula con contenedores nativos de color para una simetría perfecta
                 c1, c2 = st.columns(2)
                 with c1:
                     st.info(f"👐 **1. Open Area:** \n\n {', '.join(open_area) if open_area else 'None'}")
-                    st.markdown("### 🔒 3. Hidden Area")
-                    st.write(f"{', '.join(hidden_area) if hidden_area else 'None'}")
+                    # Usamos st.error para simular un fondo grisáceo/rojo corporativo para el Área Oculta
+                    st.error(f"🔒 **3. Hidden Area:** \n\n {', '.join(hidden_area) if hidden_area else 'None'}")
                 with c2:
                     st.warning(f"👁️ **2. Blind Area:** \n\n {', '.join(blind_area) if blind_area else 'None'}")
-                    st.markdown("### 🔮 4. Unknown Area")
-                    st.write("Undiscovered qualities left to explore.")
+                    # Usamos st.success para darle un fondo verde premium al Área Desconocida
+                    st.success("🔮 **4. Unknown Area:** \n\n Undiscovered qualities left to explore.")
                 
                 st.markdown("<br>### 🧠 Executive Coaching Report", unsafe_allow_html=True)
                 api_key = os.environ.get("GEMINI_API_KEY")
