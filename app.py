@@ -6,13 +6,13 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [STREAMLIT PRODUCTION VERSION - TOTAL PROTECTION] - JAHORI WINDOW EMBA SAAS (PART 1)
+#    [STREAMLIT PRODUCTION VERSION - FINAL RIGID DESING] - JAHORI WINDOW EMBA SAAS (PART 1)
 # ===================================================================================================
 
 # 1. Configuración de la pestaña del navegador
 st.set_page_config(page_title="JAHORI - Discover Your Blind Spots", page_icon="🔮", layout="centered")
 
-# 2. Inyección de Estilo CSS Corporativo (Fija de forma estricta el inicio azul y la rejilla interna)
+# 2. Inyección de Estilo CSS Corporativo (Centra la Home y tiñe los botones en azul sin romper las listas internas)
 st.markdown("""
     <style>
     /* Fondo blanco limpio estilo Google */
@@ -22,10 +22,10 @@ st.markdown("""
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
     .compliance-box { background-color: #F1F3F9; border-left: 4px solid #3E63DD; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
     
-    /* 💡 REGLA DE ALINEACIÓN DE LA HOME (Solo actúa si NO hay barra lateral) */
+    /* 💡 CSS ISOLADO PARA LA HOME (Solo actúa si NO hay barra lateral) */
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] {
         display: flex !important;
-        flex-direction: row !important; /* Fuerza a mantener la fila horizontal en móviles */
+        flex-direction: row !important;
         justify-content: center !important;
         align-items: center !important;
         gap: 20px !important;
@@ -50,7 +50,7 @@ st.markdown("""
         width: 100% !important;
     }
     
-    /* 💡 REGLA DE COLOR DE LA HOME: Obliga a los botones de inicio a ser azules y redondeados */
+    /* Aplica el azul cobalto premium con esquinas redondeadas estilo Google */
     .stApp:not(:has(div[data-testid="stSidebar"])) .stButton>button { 
         width: 160px !important; 
         background-color: #3E63DD !important; 
@@ -94,7 +94,7 @@ st.markdown("""
         border: 1px solid #E4E7EB !important;
         margin-bottom: 10px !important;
         width: 100% !important;
-        height: 50px !important; /* Altura fija que clava la simetría horizontal */
+        height: 50px !important;
         display: flex !important;
         align-items: center !important; 
         transition: all 0.2s ease-in-out !important;
@@ -138,7 +138,7 @@ JOHARI_ADJECTIVES = [
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
 # ===================================================================================================
-#    [STREAMLIT PRODUCTION VERSION] - PEER PANEL & AUTHENTICATION NATIVE WITH ABOUT (PART 2)
+#    [STREAMLIT PRODUCTION VERSION] - PEER PANEL & AUTHENTICATION NATIVE WITH ABOUT (PART 2 - FIX)
 # ===================================================================================================
 
 query_params = st.query_params
@@ -152,7 +152,7 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        target_user_id = int(user_data) if isinstance(user_data, tuple) else int(user_data)
+        target_user_id = int(user_data[0]) if isinstance(user_data, tuple) else int(user_data)
         st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Friend</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO compliant.</p>", unsafe_allow_html=True)
         st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No tracking.</div>", unsafe_allow_html=True)
@@ -192,7 +192,6 @@ else:
             if btn_get: st.session_state.page = "Register"; st.rerun()
             if btn_log: st.session_state.page = "Login"; st.rerun()
             
-            # 💡 SECCIÓN ABOUT: Desplegable ejecutivo elegante al fondo de la Landing Page
             st.markdown("<br><br>", unsafe_allow_html=True)
             with st.expander("ℹ️ Learn more about the Johari Window framework"):
                 st.markdown("""
@@ -225,7 +224,8 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        st.session_state.user = int(user_data) if user_data else None
+                        # 💡 FIX REGISTRO: Extrae el entero usando la posición de la tupla [0]
+                        st.session_state.user = int(user_data[0]) if user_data else None
                         st.session_state.page = "Dashboard"; st.rerun()
                     except sqlite3.IntegrityError: st.error("This username is already taken.")
                         
@@ -239,13 +239,13 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    st.session_state.user = int(result)
+                    # 💡 FIX LOGIN: Extrae el entero usando la posición de la tupla [0]
+                    st.session_state.user = int(result[0])
                     st.session_state.page = "Dashboard"; st.rerun()
                 else: st.error("Incorrect username or password.")
                     
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
-
 # ===================================================================================================
 #    [STREAMLIT PRODUCTION VERSION] - USER DASHBOARD & AI REPORT (PART 3)
 # ===================================================================================================
@@ -269,7 +269,6 @@ else:
             saved_words = existing_assessment[0].split(",") if existing_assessment else []
             
             selected_my_words = []
-            # Rejilla fija de 2 columnas para tu autoevaluación privada
             cols = st.columns(2)
             for i, adj in enumerate(JOHARI_ADJECTIVES):
                 with cols[i % 2]:
