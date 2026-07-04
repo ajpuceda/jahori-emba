@@ -12,7 +12,7 @@ from google import genai
 # 1. Configuración de la pestaña del navegador
 st.set_page_config(page_title="JAHORI - Discover Your Blind Spots", page_icon="🔮", layout="centered")
 
-# 2. Inyección de Estilo CSS Corporativo (Garantiza el diseño Azul Centrado Premium en Móviles y PC)
+# 2. Inyección de Estilo CSS Corporativo (Garantiza el diseño Azul Centrado Premium Mobile-First)
 st.markdown("""
     <style>
     /* Fondo blanco limpio estilo Google */
@@ -22,49 +22,32 @@ st.markdown("""
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
     .compliance-box { background-color: #F1F3F9; border-left: 4px solid #3E63DD; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
     
-    /* 💡 SOLUCIÓN DEFINTIVA: Fuerza la alineación central en móviles verticales rompiendo el contenedor de celdas */
-    div[data-testid="stHorizontalBlock"] {
+    /* 💡 SOLUCCIÓN MASTER MÓVIL: Fuerza el diseño vertical ordenado en móviles y centrado absoluto */
+    .button-center-zone {
         display: flex !important;
-        flex-direction: row !important; /* Mantiene la fila horizontal en cualquier posición */
+        flex-direction: column !important; /* Apila los botones de forma elegante en vertical */
         justify-content: center !important;
         align-items: center !important;
-        gap: 15px !important;
+        gap: 12px !important; /* Espacio simétrico entre ambos botones */
         width: 100% !important;
-        max-width: 340px !important;
-        margin: 25px auto 0 auto !important;
+        margin-top: 25px !important;
     }
     
-    div[data-testid="column"] {
-        width: 50% !important;
-        flex: 1 !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-
-    /* Forzar a las mini-capas internas de Streamlit a alinearse al centro en smartphones */
-    div[data-testid="column"] * {
-        text-align: center !important;
-        justify-content: center !important;
-        margin: 0 auto !important;
-    }
-    
-    /* Diseño premium unificado para todos los botones de la aplicación */
+    /* Diseño premium unificado para todos los botones de la aplicación sin dobles líneas */
     .stButton>button { 
-        width: 140px !important; /* Tamaño exacto para pantallas móviles verticales */
+        width: 220px !important; /* Ancho ejecutivo ampliado para que quepan textos y flechas en una sola línea */
         background-color: #3E63DD !important; 
         color: white !important; 
-        border-radius: 20px !important; 
+        border-radius: 20px !important; /* Bordes redondeados estilo Google */
         border: 1px solid #3E63DD !important; 
-        padding: 10px 16px !important; 
+        padding: 10px 20px !important; 
         font-weight: 500 !important;
-        font-size: 14px !important;
+        font-size: 15px !important;
         cursor: pointer !important;
         transition: background-color 0.2s ease !important;
         box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
-        display: block !important;
+        margin: 0 auto !important; /* Clava el botón en el centro horizontal exacto */
+        white-space: nowrap !important; /* Prohíbe terminantemente la doble línea al texto */
     }
     .stButton>button:hover { 
         background-color: #2E4cbd !important; 
@@ -111,7 +94,7 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        target_user_id = int(user_data[0]) if isinstance(user_data, tuple) else int(user_data)
+        target_user_id = int(user_data) if isinstance(user_data, tuple) else int(user_data)
         st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Friend</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO compliant.</p>", unsafe_allow_html=True)
         st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No names or IPs tracked.</div>", unsafe_allow_html=True)
@@ -145,12 +128,15 @@ else:
             st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 48px; margin-top: 50px;'><span style='color: #3E63DD;'>Discover Your</span> Blind Spots</h1>", unsafe_allow_html=True)
             st.markdown("<p style='text-align: center; color: #555555; font-size: 18px; max-width: 580px; margin: 0 auto 10px auto; line-height: 1.6;'>Analyze your personality with the Johari Window powered by Artificial Intelligence. 100% private. No software installations required.</p>", unsafe_allow_html=True)
             
-            # Los dos botones se declaran en columnas normales. El CSS superior forzará el centrado en fila horizontal
-            col1, col2 = st.columns(2)
-            with col1:
+            # Espaciador sutil
+            st.write("")
+            
+            # 💡 CONTENEDOR FLEXBOX VERTICAL: Apila los botones eliminando las celdas estrechas que causaban la doble línea
+            with st.container():
+                st.markdown("<div class='button-center-zone'>", unsafe_allow_html=True)
                 btn_get = st.button("Get Started ➡️", key="home_azul_get")
-            with col2:
                 btn_log = st.button("Log In", key="home_azul_log")
+                st.markdown("</div>", unsafe_allow_html=True)
                 
             if btn_get:
                 st.session_state.page = "Register"
@@ -179,7 +165,7 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        # 💡 EXTRAE EL ID DE LA TUPLA EN LA POSICIÓN [0]
+                        # Extrae el ID entero plano (id limpio)
                         st.session_state.user = int(user_data[0]) if user_data else None
                         st.session_state.page = "Dashboard"
                         st.rerun()
@@ -196,7 +182,7 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    # 💡 EXTRAE EL ID DE LA TUPLA EN LA POSICIÓN [0] PARA ARREGLAR EL TYPEERROR
+                    # Extrae el ID entero plano (id limpio para destruir el TypeError de tuplas)
                     st.session_state.user = int(result[0])
                     st.session_state.page = "Dashboard"
                     st.rerun()
@@ -210,6 +196,7 @@ else:
 #    [STREAMLIT PRODUCTION VERSION] - USER DASHBOARD, JOHARI MATRIX & GEMINI AI REPORT (PART 3)
 # ===================================================================================================
     else:
+        # Panel de control privado tras el inicio de sesión
         st.sidebar.markdown(f"### 🔒 Session Secure")
         if st.sidebar.button("🚪 Log Out"):
             st.session_state.user = None
@@ -269,6 +256,7 @@ else:
             if f_count < 3:
                 st.warning(f"Threshold not met. You need at least 3 evaluations to unlock your AI matrix. (Current progress: {f_count}/3)")
             else:
+                # 🧮 LÓGICA DE CRUCE MATRICIAL GEOMÉTRICO
                 cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
                 user_res = cursor.fetchone()
                 user_set = set(user_res[0].split(",")) if user_res else set()
@@ -287,6 +275,7 @@ else:
                 blind_area = friends_set.difference(user_set)
                 hidden_area = user_set.difference(friends_set)
                 
+                # Cuadrícula nativa limpia sin saltos de línea manuales
                 c1, c2 = st.columns(2)
                 with c1:
                     st.info(f"👐 **1. Open Area:** \n\n {', '.join(open_area) if open_area else 'None'}")
