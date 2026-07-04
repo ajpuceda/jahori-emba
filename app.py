@@ -18,31 +18,38 @@ st.markdown("""
     /* Fondo blanco limpio estilo Google */
     .stApp { background-color: #FFFFFF; }
     
-    /* 💡 SOLUCCIÓN MAESTRA MULTI-PANTALLA: Fuerza la fila horizontal y el centrado incluso en móviles verticales */
+        /* 💡 SOLUCIÓN DEFINTIVA: Fuerza la alineación central en móviles verticales rompiendo el contenedor de celdas */
     div[data-testid="stHorizontalBlock"] {
         display: flex !important;
-        flex-direction: row !important; /* Fuerza a mantener una sola fila en móviles verticales */
+        flex-direction: row !important; /* Mantiene la fila horizontal en cualquier posición */
         justify-content: center !important;
         align-items: center !important;
-        gap: 15px !important; /* Espaciado compacto y elegante en smartphones */
+        gap: 15px !important;
         width: 100% !important;
-        max-width: 360px !important; /* Estrecha el contenedor para que no se disperse */
-        margin: 25px auto 0 auto !important; /* Clava el bloque entero en el medio de la pantalla */
+        max-width: 340px !important;
+        margin: 25px auto 0 auto !important;
     }
     
     div[data-testid="column"] {
-        width: 50% !important; /* Mitades matemáticas exactas en cualquier posición */
+        width: 50% !important;
         flex: 1 !important;
         display: flex !important;
-        justify-content: center !important; /* Mueve el botón al medio de su mitad */
+        justify-content: center !important;
         align-items: center !important;
         padding: 0 !important;
         margin: 0 !important;
     }
+
+    /* Forzar a las mini-capas internas de Streamlit a alinearse al centro en smartphones */
+    div[data-testid="column"] * {
+        text-align: center !important;
+        justify-content: center !important;
+        margin: 0 auto !important;
+    }
     
     /* Diseño premium unificado para todos los botones de la aplicación */
     .stButton>button { 
-        width: 145px !important; /* Ajustado para que quepa perfectamente en pantallas de móviles estrechos */
+        width: 140px !important; /* Tamaño exacto para pantallas móviles verticales */
         background-color: #3E63DD !important; 
         color: white !important; 
         border-radius: 20px !important; 
@@ -52,9 +59,11 @@ st.markdown("""
         font-size: 14px !important;
         cursor: pointer !important;
         transition: background-color 0.2s ease !important;
+        box-scheme: none !important;
         box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
-        margin: 0 auto !important;
+        display: block !important;
     }
+
 
 
     .stButton>button:hover { 
