@@ -6,13 +6,13 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [STREAMLIT PRODUCTION VERSION] - JAHORI WINDOW EMBA SAAS (PART 1)
+#    [STREAMLIT PRODUCTION VERSION - REVERTED LISTS & ISOLATED HOME] - JAHORI WINDOW EMBA SAAS
 # ===================================================================================================
 
 # 1. Configuración de la pestaña del navegador
 st.set_page_config(page_title="JAHORI - Discover Your Blind Spots", page_icon="🔮", layout="centered")
 
-# 2. Inyección de Estilo CSS Corporativo (Fuerza magnéticamente a los botones a moverse al centro)
+# 2. Inyección de Estilo CSS Corporativo (Aísla el centrado de la Home sin romper las listas de adjetivos)
 st.markdown("""
     <style>
     /* Fondo blanco limpio estilo Google */
@@ -22,48 +22,38 @@ st.markdown("""
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
     .compliance-box { background-color: #F1F3F9; border-left: 4px solid #3E63DD; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
     
-    /* 💡 SOLUCIÓN MAESTRA DE DESPLAZAMIENTO: Desactiva la rejilla fija y centra la capa raíz */
-    [data-testid="stHorizontalBlock"] {
-        width: 100% !important;
-        display: block !important; 
-        text-align: center !important;
-    }
-    
-    [data-testid="column"] {
-        width: 100% !important;
-        display: block !important;
-        text-align: center !important;
-        margin: 0 auto !important;
-    }
-    
-    div[data-testid="stElementContainer"] {
-        display: flex !important;
-        justify-content: center !important; /* Fuerza el centrado horizontal en smartphones */
+    /* 💡 CSS ISOLADO PARA LA HOME: Centra los botones de inicio usando columnas sin heredar a los adjetivos */
+    .home-buttons-layout div[data-testid="stHorizontalBlock"] {
+        justify-content: center !important;
         align-items: center !important;
+        gap: 15px !important;
         width: 100% !important;
+        margin: 25px auto 0 auto !important;
     }
     
-    /* Diseño premium unificado para todos los botones de la aplicación: centrados y sin dobles líneas */
-    .stButton>button { 
-        width: 160px !important; /* Ancho compacto y elegante estilo Google */
+    .home-buttons-layout div[data-testid="column"] {
+        width: auto !important;
+        flex: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    /* Diseño premium unificado para los dos botones de la Home */
+    .home-buttons-layout .stButton>button { 
+        width: 150px !important; 
         background-color: #3E63DD !important; 
         color: white !important; 
-        border-radius: 20px !important; /* Bordes redondeados */
+        border-radius: 20px !important; 
         border: 1px solid #3E63DD !important; 
-        padding: 8px 14px !important; 
+        padding: 8px 16px !important; 
         font-weight: 500 !important;
-        font-size: 13.5px !important; 
+        font-size: 14px !important; 
         cursor: pointer !important;
         transition: background-color 0.2s ease !important;
         box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
-        
-        /* 💡 EL SECRETO DEL CENTRADO MÓVIL: Centra de forma matemática el botón dentro de su contenedor */
-        margin-left: auto !important;
-        margin-right: auto !important;
-        display: block !important;
-        white-space: nowrap !important; /* Evita terminantemente la doble línea */
+        white-space: nowrap !important;
     }
-    .stButton>button:hover { 
+    .home-buttons-layout .stButton>button:hover { 
         background-color: #2E4cbd !important; 
         border-color: #2E4cbd !important; 
     }
@@ -99,7 +89,7 @@ JOHARI_ADJECTIVES = [
 query_params = st.query_params
 
 if "token" in query_params:
-    # 👥 PANTALLA PÚBLICA DE EVALUACIÓN PARA TUS COMPAÑEROS DEL EMBA
+    # 👥 PANTALLA PÚBLICA DE EVALUACIÓN PARA TUS COMPAÑEROS DEL EMBA (Recupera las 4 columnas intactas)
     target_token = str(query_params["token"])
     cursor = conn.cursor()
     cursor.execute("SELECT id FROM user WHERE share_token = ?", (target_token,))
@@ -111,12 +101,12 @@ if "token" in query_params:
         target_user_id = int(user_data) if isinstance(user_data, tuple) else int(user_data)
         st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Friend</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO compliant.</p>", unsafe_allow_html=True)
-        st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No names or IPs tracked.</div>", unsafe_allow_html=True)
+        st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No names tracked.</div>", unsafe_allow_html=True)
         
         st.write("Select 3 to 10 adjectives that best describe your colleague:")
         
         selected_friend_words = []
-        cols = st.columns(4)
+        cols = st.columns(4) # 💡 RESTAURADO: Rejilla nativa de 4 columnas limpia
         for i, adj in enumerate(JOHARI_ADJECTIVES):
             with cols[i % 4]:
                 if st.checkbox(adj, key=f"friend_{adj}"): selected_friend_words.append(adj)
@@ -138,14 +128,18 @@ else:
 
     if st.session_state.user is None:
         if st.session_state.page == "Home":
+            # Título y Subtítulo corporativos limpios estilo Google
             st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 48px; margin-top: 50px;'><span style='color: #3E63DD;'>Discover Your</span> Blind Spots</h1>", unsafe_allow_html=True)
-            st.markdown("<p style='text-align: center; color: #555555; font-size: 18px; max-width: 580px; margin: 0 auto 30px auto; line-height: 1.6;'>Analyze your personality with the Johari Window powered by Artificial Intelligence. 100% private. No software installations required.</p>", unsafe_allow_html=True)
+            st.markdown("<p style='text-align: center; color: #555555; font-size: 18px; max-width: 580px; margin: 0 auto 20px auto; line-height: 1.6;'>Analyze your personality with the Johari Window powered by Artificial Intelligence. 100% private. No software installations required.</p>", unsafe_allow_html=True)
             
-            st.write("")
-            
-            # Los botones se despliegan lineales. El CSS se encargará de centrarlos de manera compacta en cualquier móvil
-            btn_get = st.button("Get Started ➡️", key="home_azul_get")
-            btn_log = st.button("Log In", key="home_azul_log")
+            # 💡 CONTENEDOR AISLADO: El CSS solo afecta a lo que esté dentro de este bloque, centrando los botones sin romper el resto
+            st.markdown("<div class='home-buttons-layout'>", unsafe_allow_html=True)
+            col1, col2 = st.columns(2)
+            with col1:
+                btn_get = st.button("Get Started ➡️", key="home_azul_get")
+            with col2:
+                btn_log = st.button("Log In", key="home_azul_log")
+            st.markdown("</div>", unsafe_allow_html=True)
                 
             if btn_get:
                 st.session_state.page = "Register"
@@ -174,7 +168,7 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        st.session_state.user = int(user_data[0]) if user_data else None
+                        st.session_state.user = int(user_data) if user_data else None
                         st.session_state.page = "Dashboard"
                         st.rerun()
                     except sqlite3.IntegrityError: st.error("This username is already taken.")
@@ -190,8 +184,7 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    # 💡 SOLUCIÓN AL TYPEEROR: Extrae la posición cero para guardar el entero puro
-                    st.session_state.user = int(result[0])
+                    st.session_state.user = int(result)
                     st.session_state.page = "Dashboard"
                     st.rerun()
                 else: st.error("Incorrect username or password.")
@@ -215,7 +208,7 @@ else:
         cursor = conn.cursor()
         cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = ?", (current_user_id,))
         f_count_data = cursor.fetchone()
-        f_count = int(f_count_data[0]) if f_count_data else 0
+        f_count = int(f_count_data) if f_count_data else 0
         
         st.markdown("<h1 style='font-size:28px; font-weight:700;'>Your Johari Control Panel</h1>", unsafe_allow_html=True)
         tab1, tab2 = st.tabs(["🎯 Step 1: Self Assessment & Link", "📊 Step 2: Results & AI Report"])
@@ -225,10 +218,10 @@ else:
             
             cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
             existing_assessment = cursor.fetchone()
-            saved_words = existing_assessment[0].split(",") if existing_assessment and existing_assessment[0] else []
+            saved_words = existing_assessment.split(",") if existing_assessment else []
             
             selected_my_words = []
-            cols = st.columns(4)
+            cols = st.columns(4) # 💡 RESTAURADO: Rejilla de autoevaluación de 4 columnas limpia
             for i, adj in enumerate(JOHARI_ADJECTIVES):
                 with cols[i % 4]:
                     if st.checkbox(adj, key=f"my_{adj}", value=(adj in saved_words)): selected_my_words.append(adj)
@@ -246,7 +239,7 @@ else:
             
             cursor.execute("SELECT share_token FROM user WHERE id = ?", (current_user_id,))
             token_res = cursor.fetchone()
-            user_token = token_res[0] if token_res else "error"
+            user_token = token_res if token_res else "error"
             
             try:
                 ctx = st.context
@@ -265,15 +258,15 @@ else:
             else:
                 cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
                 user_res = cursor.fetchone()
-                user_set = set(user_res[0].split(",")) if user_res and user_res[0] else set()
+                user_set = set(user_res.split(",")) if user_res else set()
                 
                 cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (current_user_id,))
                 feedbacks = cursor.fetchall()
                 friends_set = set()
                 all_friends_list = []
                 for f in feedbacks:
-                    if f and f[0]:
-                        words = f[0].split(",")
+                    if f and f:
+                        words = f.split(",")
                         friends_set.update(words)
                         all_friends_list.extend(words)
                 
@@ -281,7 +274,7 @@ else:
                 blind_area = friends_set.difference(user_set)
                 hidden_area = user_set.difference(friends_set)
                 
-                # 💡 FIX ABSOLUTO DE CUADRANTES: Los 4 bloques usan contenedores de color oficiales para simetría milimétrica
+                # 💡 RESTAURADO: Los 4 bloques usan cajas estables e independientes
                 c1, c2 = st.columns(2)
                 with c1:
                     st.info(f"👐 **1. Open Area:** \n\n {', '.join(open_area) if open_area else 'None'}")
@@ -290,7 +283,8 @@ else:
                     st.warning(f"👁️ **2. Blind Area:** \n\n {', '.join(blind_area) if blind_area else 'None'}")
                     st.success(f"🔮 **4. Unknown Area:** \n\n Undiscovered qualities left to explore.")
                 
-                st.markdown("<br>### 🧠 Executive Coaching Report", unsafe_allow_html=True)
+                # 💡 RESTAURADO: El resumen de la IA sin los caracteres "###" que bloqueaban el diseño del texto
+                st.markdown("<br><h3 style='color: #3E63DD; font-weight: 700;'>🧠 Executive Coaching Report</h3>", unsafe_allow_html=True)
                 api_key = os.environ.get("GEMINI_API_KEY")
                 
                 if not api_key: st.error("API Secret Key missing.")
