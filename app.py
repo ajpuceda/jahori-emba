@@ -138,7 +138,7 @@ JOHARI_ADJECTIVES = [
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
 # ===================================================================================================
-#    [STREAMLIT PRODUCTION BLINDADO V2] - PEER PUBLIC PANEL & AUTHENTICATION (PART 2)
+#    [STREAMLIT PRODUCTION BLINDADO V3 - REAL RENDER] - PEER PUBLIC PANEL & AUTHENTICATION (PART 2)
 # ===================================================================================================
 
 query_params = st.query_params
@@ -153,7 +153,6 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        # Extraemos el entero de la tupla devuelta por la base de datos
         target_user_id = int(user_data[0])
         st.markdown("<h1 class='johari-title'>Evaluate Your <span class='johari-blue'>Friend</span></h1>", unsafe_allow_html=True)
         st.markdown("<p class='johari-subtitle'>Your anonymous feedback is 100% confidential and RODO compliant.</p>", unsafe_allow_html=True)
@@ -182,21 +181,20 @@ else:
 
     if st.session_state.user is None:
         if st.session_state.page == "Home":
-            # 💡 SOLUCIÓN DEFINITIVA ESTILO GOOGLE: Unifica textos y botones en un solo bloque Flexbox HTML limpio
+            # 💡 SOLUCCIÓN MAESTRA: Se encapsula TODO el HTML con su debida instrucción unsafe_allow_html=True
             st.markdown("""
                 <div class='google-container'>
                     <h1 class='johari-title'><span class='johari-blue'>Discover Your</span> Blind Spots</h1>
                     <p class='johari-subtitle'>Analyze your personality with the Johari Window powered by Artificial Intelligence. 100% private. No software installations required.</p>
                     
-                    <!-- Botones flotantes compactos alineados en horizontal en el medio exacto -->
                     <div class='google-buttons'>
                         <a href='?action=register' target='_self' style='text-decoration: none;'>
-                            <button style='width: 140px; background-color: #3E63DD; color: white; border-radius: 20px; border: 1px solid #3E63DD; padding: 10px 16px; font-weight: 500; font-size: 14px; cursor: pointer; transition: background 0.2s;'>
+                            <button style='width: 140px; background-color: #3E63DD; color: white; border-radius: 20px; border: 1px solid #3E63DD; padding: 10px 16px; font-weight: 500; font-size: 14px; cursor: pointer;'>
                                 Get Started
                             </button>
                         </a>
                         <a href='?action=login' target='_self' style='text-decoration: none;'>
-                            <button style='width: 140px; background-color: #F8F9FA; color: #3C4043; border-radius: 20px; border: 1px solid #DADCE0; padding: 10px 16px; font-weight: 500; font-size: 14px; cursor: pointer; transition: background 0.2s;'>
+                            <button style='width: 140px; background-color: #F8F9FA; color: #3C4043; border-radius: 20px; border: 1px solid #DADCE0; padding: 10px 16px; font-weight: 500; font-size: 14px; cursor: pointer;'>
                                 Log In
                             </button>
                         </a>
@@ -204,10 +202,10 @@ else:
                 </div>
             """, unsafe_allow_html=True)
             
-            # Captura de clics de los botones HTML para cambiar de pantalla de forma interactiva
+            # Captura interactiva de clics desde los botones HTML
             if "action" in query_params:
                 selected_action = query_params["action"]
-                st.query_params.clear() # Limpia la URL para mantener el enrutamiento sano
+                st.query_params.clear()
                 if selected_action == "register":
                     st.session_state.page = "Register"
                     st.rerun()
@@ -235,7 +233,6 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        # Extraemos el entero limpio de la tupla para evitar fallos lógicos
                         st.session_state.user = int(user_data[0]) if user_data else None
                         st.session_state.page = "Dashboard"
                         st.rerun()
@@ -252,7 +249,6 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    # Extraemos el entero limpio de la tupla para evitar fallos lógicos
                     st.session_state.user = int(result[0])
                     st.session_state.page = "Dashboard"
                     st.rerun()
@@ -262,7 +258,6 @@ else:
             if st.button("⬅️ Back to Home"): 
                 st.session_state.page = "Home"
                 st.rerun()
-
 # ===================================================================================================
 #    [STREAMLIT PRODUCTION VERSION] - USER DASHBOARD, JOHARI MATRIX & GEMINI AI REPORT (PART 3)
 # ===================================================================================================
