@@ -6,13 +6,13 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [STREAMLIT PRODUCTION VERSION - PERFECT CENTERING & NATIVE LISTS] - JAHORI WINDOW EMBA SAAS
+#    [STREAMLIT PRODUCTION VERSION - FINAL FIX] - JAHORI WINDOW EMBA SAAS (PART 1)
 # ===================================================================================================
 
 # 1. Configuración de la pestaña del navegador
 st.set_page_config(page_title="JAHORI - Discover Your Blind Spots", page_icon="🔮", layout="centered")
 
-# 2. Inyección de Estilo CSS Corporativo (Centra la Home y tiñe los botones en azul sin romper las listas internas)
+# 2. Inyección de Estilo CSS Corporativo (Centra la Home y tiñe los botones en azul sin romper la matriz interna)
 st.markdown("""
     <style>
     /* Fondo blanco limpio estilo Google */
@@ -22,7 +22,7 @@ st.markdown("""
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
     .compliance-box { background-color: #F1F3F9; border-left: 4px solid #3E63DD; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
     
-    /* 💡 REGLA MAESTRA DE ALINEACIÓN: Centra los botones de la Home uniendo las columnas en horizontal */
+    /* 💡 BLINDAJE TOTAL DE LA HOME: Estas reglas SOLO se ejecutan si NO existe la barra lateral (Pantalla Home) */
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] {
         display: flex !important;
         flex-direction: row !important;
@@ -44,7 +44,13 @@ st.markdown("""
         margin: 0 !important;
     }
     
-    /* 💡 REGLA MAESTRA DE COLOR: Aplica el azul cobalto premium con esquinas redondeadas estilo Google */
+    .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stElementContainer"] {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        width: 100% !important;
+    }
+    
     .stApp:not(:has(div[data-testid="stSidebar"])) .stButton>button { 
         width: 160px !important; 
         background-color: #3E63DD !important; 
@@ -57,7 +63,9 @@ st.markdown("""
         cursor: pointer !important;
         transition: background-color 0.2s ease !important;
         box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
-        margin: 0 auto !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        display: block !important;
         white-space: nowrap !important;
     }
     .stApp:not(:has(div[data-testid="stSidebar"])) .stButton>button:hover { 
@@ -90,12 +98,13 @@ JOHARI_ADJECTIVES = [
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
 # ===================================================================================================
-#    [STREAMLIT PRODUCTION VERSION] - PEER PANEL & AUTHENTICATION NATIVE (PART 2 FIXED)
+#    [STREAMLIT PRODUCTION VERSION - FINAL FIX] - PEER PANEL & AUTHENTICATION NATIVE (PART 2)
 # ===================================================================================================
 
 query_params = st.query_params
 
 if "token" in query_params:
+    # 👥 PANTALLA PÚBLICA DE EVALUACIÓN PARA TUS COMPAÑEROS DEL EMBA
     target_token = str(query_params["token"])
     cursor = conn.cursor()
     cursor.execute("SELECT id FROM user WHERE share_token = ?", (target_token,))
@@ -127,6 +136,7 @@ if "token" in query_params:
                 st.success("Thank you! Your feedback has been securely submitted.")
                 st.balloons()
 else:
+    # 🔐 SISTEMA DE SESIONES Y NAVEGACIÓN PRIVADA DEL USUARIO
     if "user" not in st.session_state:
         st.session_state.user = None
         st.session_state.page = "Home"
@@ -171,7 +181,6 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        # 💡 FIX REGISTRO: Extrae el ID entero usando la posición [0] de la tupla
                         st.session_state.user = int(user_data[0]) if user_data else None
                         st.session_state.page = "Dashboard"
                         st.rerun()
@@ -188,7 +197,6 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    # 💡 FIX LOGIN: Extrae el ID entero usando la posición [0] de la tupla para fulminar el TypeError
                     st.session_state.user = int(result[0])
                     st.session_state.page = "Dashboard"
                     st.rerun()
@@ -199,7 +207,7 @@ else:
                 st.session_state.page = "Home"
                 st.rerun()
 # ===================================================================================================
-#    [STREAMLIT PRODUCTION VERSION] - USER DASHBOARD, JOHARI MATRIX & GEMINI AI REPORT (PART 3)
+#    [STREAMLIT PRODUCTION VERSION - FINAL FIX] - USER DASHBOARD & AI REPORT (PART 3)
 # ===================================================================================================
     else:
         st.sidebar.markdown(f"### 🔒 Session Secure")
@@ -223,7 +231,7 @@ else:
             
             cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
             existing_assessment = cursor.fetchone()
-            saved_words = existing_assessment[0].split(",") if existing_assessment and existing_assessment[0] else []
+            saved_words = existing_assessment[0].split(",") if existing_assessment else []
             
             selected_my_words = []
             cols = st.columns(4)
@@ -263,7 +271,7 @@ else:
             else:
                 cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
                 user_res = cursor.fetchone()
-                user_set = set(user_res[0].split(",")) if user_res and user_res[0] else set()
+                user_set = set(user_res[0].split(",")) if user_res else set()
                 
                 cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (current_user_id,))
                 feedbacks = cursor.fetchall()
@@ -279,6 +287,7 @@ else:
                 blind_area = friends_set.difference(user_set)
                 hidden_area = user_set.difference(friends_set)
                 
+                # Cuadrícula nativa limpia de 4 colores simétricos (Protegida contra el CSS exterior)
                 c1, c2 = st.columns(2)
                 with c1:
                     st.info(f"👐 **1. Open Area:** \n\n {', '.join(open_area) if open_area else 'None'}")
