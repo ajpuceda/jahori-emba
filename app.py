@@ -1,36 +1,94 @@
 import streamlit as st
 import sqlite3
 import hashlib
-import uuid # 💡 SOLUCIÓN MAESTRA: Librería nativa para generar tokens criptográficos imposibles de adivinar
+import uuid
 from google import genai
 import os
 
 # ===================================================================================================
-#    [STREAMLIT BLINDADO ANTI-IDOR] - JAHORI WINDOW EMBA SAAS (PART 1)
+#    [STREAMLIT PRODUCTION VERSION] - JAHORI WINDOW EMBA SAAS (PART 1)
 # ===================================================================================================
 
+# 1. Configuración de la pestaña del navegador
 st.set_page_config(page_title="JAHORI - Discover Your Blind Spots", page_icon="🔮", layout="centered")
 
+# 2. Inyección de Estilo CSS Corporativo (Garantiza el diseño Minimalista Estilo Google en Móviles y PC)
 st.markdown("""
     <style>
+    /* Resetear fondos y forzar limpieza visual */
     .stApp { background-color: #FFFFFF; }
-    .google-container { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding-top: 80px; padding-bottom: 20px; width: 100%; }
-    .johari-title { font-weight: 700; color: #111111; font-size: 48px; margin-bottom: 12px; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+    
+    /* Contenedor central estilo Google */
+    .google-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding-top: 80px;
+        padding-bottom: 20px;
+        width: 100%;
+    }
+    
+    /* 💡 SOLUCIÓN MAESTRA PARA MÓVILES: Fuerza a los botones a flotar juntos y centrados en horizontal en cualquier pantalla */
+    .google-buttons {
+        display: flex;
+        flex-direction: row !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 15px !important;
+        width: 100% !important;
+        margin-top: 10px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    /* Tipografía ejecutiva limpia */
+    .johari-title { font-weight: 700; color: #111111; font-size: 48px; margin-bottom: 12px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
     .johari-blue { color: #3E63DD; }
     .johari-subtitle { color: #555555; font-size: 18px; margin-bottom: 40px; max-width: 580px; line-height: 1.6; margin-left: auto; margin-right: auto; }
-    .stButton>button { width: 140px !important; background-color: #3E63DD; color: white; border-radius: 20px; border: 1px solid #3E63DD; padding: 8px 16px; font-weight: 500; font-size: 14px; cursor: pointer; transition: all 0.2s ease; margin: 0 auto; display: block; }
-    .stButton>button:hover { background-color: #2E4cbd; color: white; border-color: #2E4cbd; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    div[data-testid="stHorizontalBlock"] > div:nth-child(2) .stButton>button { background-color: #F8F9FA !important; color: #3C4043 !important; border: 1px solid #F8F9FA !important; }
-    div[data-testid="stHorizontalBlock"] > div:nth-child(2) .stButton>button:hover { background-color: #F1F3F4 !important; border-color: #DADCE0 !important; color: #202124 !important; }
-    #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
+    
+    /* Ajuste de botones premium redondeados */
+    .stButton>button { 
+        width: 140px !important; 
+        background-color: #3E63DD !important; 
+        color: white !important; 
+        border-radius: 20px !important; /* Bordes redondeados estilo Google */
+        border: 1px solid #3E63DD !important; 
+        padding: 8px 16px !important; 
+        font-weight: 500 !important;
+        font-size: 14px !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        margin: 0 !important;
+        display: inline-block !important;
+    }
+    .stButton>button:hover { background-color: #2E4cbd !important; color: white !important; border-color: #2E4cbd !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important; }
+    
+    /* Variación estética para el segundo botón (Login estilo gris claro de Google) */
+    div.google-buttons > div:nth-child(2) .stButton>button {
+        background-color: #F8F9FA !important;
+        color: #3C4043 !important;
+        border: 1px solid #F8F9FA !important;
+    }
+    div.google-buttons > div:nth-child(2) .stButton>button:hover {
+        background-color: #F1F3F4 !important;
+        border-color: #DADCE0 !important;
+        color: #202124 !important;
+    }
+    
+    /* Ocultar elementos nativos de Streamlit */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
     .compliance-box { background-color: #F1F3F9; border-left: 4px solid #3E63DD; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
     </style>
 """, unsafe_allow_html=True)
 
+# 3. Inicialización síncrona de la Base de Datos SQLite en el disco duro
 def init_db():
     conn = sqlite3.connect("reflex.db", check_same_thread=False)
     cursor = conn.cursor()
-    # 💡 RE-ESTRUCTURACIÓN: Añadimos la columna 'share_token' única para mapear los accesos de forma secreta
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS user (
             id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password_hash TEXT, share_token TEXT UNIQUE
@@ -43,23 +101,22 @@ def init_db():
 
 conn = init_db()
 
+# Los 30 adjetivos oficiales de la Ventana de Johari
 JOHARI_ADJECTIVES = [
     "Able", "Accepting", "Adaptable", "Bold", "Brave", "Calm", "Caring", "Cheerful", "Clever", "Complex", 
     "Confident", "Dependable", "Dignified", "Empathetic", "Energetic", "Friendly", "Giving", "Happy", "Helpful", "Idealistic", 
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
 # ===================================================================================================
-#    [STREAMLIT PRODUCTION BLINDADO] - PEER PUBLIC PANEL & AUTHENTICATION (PART 2)
+#    [STREAMLIT PRODUCTION VERSION] - PEER PUBLIC PANEL & AUTHENTICATION (PART 2)
 # ===================================================================================================
 
 query_params = st.query_params
 
-# 💡 VALIDADOR ANTI-HACKEOS: Ahora el sistema no busca un ID, busca el token alfanumérico seguro
 if "token" in query_params:
+    # 👥 PANTALLA PÚBLICA DE EVALUACIÓN PARA TUS COMPAÑEROS
     target_token = str(query_params["token"])
-    
     cursor = conn.cursor()
-    # Buscamos de forma interna a qué ID pertenece ese token aleatorio
     cursor.execute("SELECT id FROM user WHERE share_token = ?", (target_token,))
     user_data = cursor.fetchone()
     
@@ -87,30 +144,50 @@ if "token" in query_params:
                 st.success("Thank you! Your feedback has been securely submitted.")
                 st.balloons()
 else:
+    # 🔐 SISTEMA DE SESIONES Y REGISTRO PRIVADO DEL USUARIO
     if "user" not in st.session_state:
         st.session_state.user = None
         st.session_state.page = "Home"
 
     if st.session_state.user is None:
         if st.session_state.page == "Home":
-            st.markdown("<div class='google-container'><h1 class='johari-title'><span class='johari-blue'>Discover Your</span> Blind Spots</h1><p class='johari-subtitle'>Analyze your personality with the Johari Window powered by AI. 100% private.</p></div>", unsafe_allow_html=True)
-            c_left, col_btn1, c_spacer, col_btn2, c_right = st.columns([1.5, 1.2, 0.2, 1.2, 1.5])
-            with col_btn1:
-                if st.button("Get Started"): st.session_state.page = "Register"; st.rerun()
-            with col_btn2:
-                if st.button("Log In"): st.session_state.page = "Login"; st.rerun()
+            # Título minimalista con colores invertidos estilo Google
+            st.markdown("""
+                <div class='google-container'>
+                    <h1 class='johari-title'><span class='johari-blue'>Discover Your</span> Blind Spots</h1>
+                    <p class='johari-subtitle'>Analyze your personality with the Johari Window powered by Artificial Intelligence. 100% private. No software installations required.</p>
+                </div>
+            """, unsafe_allow_html=True)
+            
+            # 💡 CONTENEDOR MULTI-DISPOSITIVO: Encapsula los botones en una sola fila Flexbox
+            st.markdown("<div class='google-buttons'>", unsafe_allow_html=True)
+            col_container1, col_container2 = st.columns(2)
+            with col_container1:
+                btn_get = st.button("Get Started", key="home_get_started")
+            with col_container2:
+                btn_log = st.button("Log In", key="home_login")
+            st.markdown("</div>", unsafe_allow_html=True)
+            
+            if btn_get:
+                st.session_state.page = "Register"
+                st.rerun()
+            if btn_log:
+                st.session_state.page = "Login"
+                st.rerun()
                     
         elif st.session_state.page == "Register":
             st.markdown("<h1 class='johari-title'><span class='johari-blue'>Create Your</span> Account</h1>", unsafe_allow_html=True)
+            st.write("Choose a unique nickname. No email or personal data required.")
+            
             new_user = st.text_input("Choose a Username")
             new_pass = st.text_input("Password", type="password")
             rodo = st.checkbox("I accept the anonymous data handling under RODO/RGPD guidelines.")
+            
             if st.button("Sign Up"):
                 if not rodo: st.error("You must accept the RODO terms to register.")
                 elif not new_user or not new_pass: st.error("Please fill in all fields.")
                 else:
                     hashed = hashlib.sha256(new_pass.encode()).hexdigest()
-                    # 💡 INYECCIÓN SEGURA: Generamos el token único de Internet al crear la cuenta
                     generated_token = str(uuid.uuid4())
                     cursor = conn.cursor()
                     try:
@@ -127,6 +204,7 @@ else:
             st.markdown("<h1 class='johari-title'>Log <span class='johari-blue'>In</span></h1>", unsafe_allow_html=True)
             log_user = st.text_input("Username")
             log_pass = st.text_input("Password", type="password")
+            
             if st.button("Sign In"):
                 hashed = hashlib.sha256(log_pass.encode()).hexdigest()
                 cursor = conn.cursor()
@@ -139,9 +217,11 @@ else:
                 else: st.error("Incorrect username or password.")
                     
         if st.session_state.page != "Home":
-            if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
+            if st.button("⬅️ Back to Home"):
+                st.session_state.page = "Home"
+                st.rerun()
 # ===================================================================================================
-#    [STREAMLIT PRODUCTION BLINDADO] - USER DASHBOARD, JOHARI MATRIX & GEMINI AI REPORT (PART 3)
+#    [STREAMLIT PRODUCTION VERSION] - USER DASHBOARD, JOHARI MATRIX & GEMINI AI REPORT (PART 3)
 # ===================================================================================================
     else:
         st.sidebar.markdown(f"### 🔒 Session Secure")
@@ -162,7 +242,7 @@ else:
             st.write("Select 3 to 10 adjectives that best describe you today:")
             cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (st.session_state.user,))
             existing_assessment = cursor.fetchone()
-            saved_words = existing_assessment[0].split(",") if existing_assessment and existing_assessment[0] else []
+            saved_words = existing_assessment[0].split(",") if existing_assessment else []
             
             selected_my_words = []
             cols = st.columns(4)
@@ -181,7 +261,6 @@ else:
             st.markdown("### 🔗 Distribute Your Anonymous Link")
             st.write("Copy this link and send it via WhatsApp or Slack to your colleagues:")
             
-            # Extraemos el token secreto del usuario de la base de datos para armar la URL enmascarada
             cursor.execute("SELECT share_token FROM user WHERE id = ?", (st.session_state.user,))
             token_res = cursor.fetchone()
             user_token = token_res[0] if token_res else "error"
@@ -190,7 +269,6 @@ else:
                 ctx = st.context
                 current_host = ctx.headers.get("Host", "localhost:8501")
                 protocol = "https" if "streamlit.app" in current_host else "http"
-                # 💡 ENLACE BLINDADO: El link expone el token UUID en lugar del ID secuencial del alumno
                 generated_url = f"{protocol}://{current_host}/?token={user_token}"
             except Exception:
                 generated_url = f"http://localhost:8501/?token={user_token}"
@@ -204,7 +282,7 @@ else:
             else:
                 cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (st.session_state.user,))
                 user_res = cursor.fetchone()
-                user_set = set(user_res[0].split(",")) if user_res and user_res[0] else set()
+                user_set = set(user_res[0].split(",")) if user_res else set()
                 
                 cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (st.session_state.user,))
                 feedbacks = cursor.fetchall()
@@ -220,6 +298,7 @@ else:
                 blind_area = friends_set.difference(user_set)
                 hidden_area = user_set.difference(friends_set)
                 
+                # Pintar la cuadrícula limpia sin saltos de línea conflictivos
                 c1, c2 = st.columns(2)
                 with c1:
                     st.info(f"👐 **1. Open Area:** \n\n {', '.join(open_area) if open_area else 'None'}")
