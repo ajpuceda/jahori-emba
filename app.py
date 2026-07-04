@@ -12,7 +12,7 @@ from google import genai
 # 1. Configuración de la pestaña del navegador
 st.set_page_config(page_title="JAHORI - Discover Your Blind Spots", page_icon="🔮", layout="centered")
 
-# 2. Inyección de Estilo CSS Corporativo (Garantiza la simetría milimétrica en la Home y en el Panel)
+# 2. Inyección de Estilo CSS Corporativo (Calibración MILIMÉTRICA Horizontal y Vertical)
 st.markdown("""
     <style>
     /* Fondo blanco limpio estilo Google */
@@ -64,25 +64,32 @@ st.markdown("""
         white-space: nowrap !important;
     }
     
-    /* 💡 SOLUCCIÓN MAESTRA INTERNA: Fuerza a expandir el ancho de la cuadrícula de adjetivos */
+    /* 💡 CORRECCIÓN QUIRÚRGICA INTERNA: Fuerza a la rejilla de adjetivos a alinearse de forma matemática */
     .stApp:has(div[data-testid="stSidebar"]) div[data-testid="stHorizontalBlock"] {
         max-width: 100% !important;
         width: 100% !important;
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
         gap: 12px !important;
     }
+    
+    /* Fuerza a las 4 columnas internas a medir EXACTAMENTE el 25% sin desvíos */
     .stApp:has(div[data-testid="stSidebar"]) div[data-testid="column"] {
-        min-width: 165px !important; /* Ensancha cada columna para evitar cortes */
+        width: 25% !important;
+        max-width: 25% !important;
+        flex: 1 1 25% !important;
     }
     
-    /* 💡 REGLA DE ALINEACIÓN HORIZONTAL: Fuerza una altura idéntica en todas las tarjetas para eliminar el efecto escalera */
+    /* Fuerza una altura idéntica en todas las tarjetas para eliminar el efecto escalera */
     div[data-testid="stCheckbox"] {
         background-color: #F8F9FA !important;
         padding: 6px 12px !important;
         border-radius: 8px !important;
         border: 1px solid #E4E7EB !important;
-        margin-bottom: 0px !important;
+        margin-bottom: 8px !important;
         width: 100% !important;
-        height: 42px !important; /* 🔥 ALTURA FIJA: Alinea todas las filas horizontalmente de forma matemática */
+        height: 44px !important; /* 🔥 ALTURA FORZADA: Clava la alineación horizontal de todas las filas */
         display: flex !important;
         align-items: center !important; 
         transition: all 0.2s ease-in-out !important;
@@ -93,7 +100,6 @@ st.markdown("""
         border-color: #3E63DD !important;
     }
     
-    /* Estilo del contenedor de texto interno del checkbox */
     div[data-testid="stCheckbox"] label {
         display: flex !important;
         align-items: center !important;
@@ -109,12 +115,13 @@ st.markdown("""
         white-space: nowrap !important;
         word-break: keep-all !important;
         margin: 0 !important;
-        line-height: 1 !important; /* Centra el texto verticalmente dentro de la tarjeta */
+        line-height: 1 !important;
     }
     
-    /* Forzar al bloque horizontal interno de Streamlit a respetar el espaciado vertical regular */
+    /* Mantiene los bloques de Streamlit compactos */
     .stApp:has(div[data-testid="stSidebar"]) [data-testid="stVerticalBlock"] > div {
-        margin-bottom: 4px !important;
+        margin-bottom: 0px !important;
+        padding-bottom: 0px !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -141,6 +148,7 @@ JOHARI_ADJECTIVES = [
     "Confident", "Dependable", "Dignified", "Empathetic", "Energetic", "Friendly", "Giving", "Happy", "Helpful", "Idealistic", 
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
+
 
 # ===================================================================================================
 #    [STREAMLIT PRODUCTION VERSION - FINAL FIX] - PEER PANEL & AUTHENTICATION NATIVE (PART 2)
