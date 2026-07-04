@@ -18,21 +18,23 @@ st.markdown("""
     /* Fondo blanco limpio estilo Google */
     .stApp { background-color: #FFFFFF; }
     
-        /* 💡 REPARACIÓN MICRO-MÉTRICA: Equilibra las dos columnas al 50% y centra su contenido exacto */
+    /* 💡 SOLUCCIÓN MAESTRA MULTI-PANTALLA: Fuerza la fila horizontal y el centrado incluso en móviles verticales */
     div[data-testid="stHorizontalBlock"] {
+        display: flex !important;
+        flex-direction: row !important; /* Fuerza a mantener una sola fila en móviles verticales */
         justify-content: center !important;
         align-items: center !important;
-        gap: 20px !important; /* Espacio idéntico y controlado entre ambos botones */
+        gap: 15px !important; /* Espaciado compacto y elegante en smartphones */
         width: 100% !important;
-        max-width: 400px !important; /* Limita el ancho del bloque para que no se disperse en portátiles */
-        margin: 20px auto 0 auto !important; /* Centra el bloque entero respecto a la pantalla */
+        max-width: 360px !important; /* Estrecha el contenedor para que no se disperse */
+        margin: 25px auto 0 auto !important; /* Clava el bloque entero en el medio de la pantalla */
     }
     
     div[data-testid="column"] {
-        width: 50% !important; /* Divide el espacio en dos mitades matemáticas exactas */
+        width: 50% !important; /* Mitades matemáticas exactas en cualquier posición */
         flex: 1 !important;
         display: flex !important;
-        justify-content: center !important; /* Centra el botón dentro de su propia mitad */
+        justify-content: center !important; /* Mueve el botón al medio de su mitad */
         align-items: center !important;
         padding: 0 !important;
         margin: 0 !important;
@@ -40,19 +42,20 @@ st.markdown("""
     
     /* Diseño premium unificado para todos los botones de la aplicación */
     .stButton>button { 
-        width: 160px !important; 
+        width: 145px !important; /* Ajustado para que quepa perfectamente en pantallas de móviles estrechos */
         background-color: #3E63DD !important; 
         color: white !important; 
         border-radius: 20px !important; 
         border: 1px solid #3E63DD !important; 
-        padding: 10px 20px !important; 
+        padding: 10px 16px !important; 
         font-weight: 500 !important;
-        font-size: 15px !important;
+        font-size: 14px !important;
         cursor: pointer !important;
         transition: background-color 0.2s ease !important;
         box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
-        margin: 0 auto !important; /* Fuerza al botón a no desviarse a los lados */
+        margin: 0 auto !important;
     }
+
 
     .stButton>button:hover { 
         background-color: #2E4cbd !important; 
