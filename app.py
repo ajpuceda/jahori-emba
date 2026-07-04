@@ -12,59 +12,49 @@ from google import genai
 # 1. Configuración de la pestaña del navegador
 st.set_page_config(page_title="JAHORI - Discover Your Blind Spots", page_icon="🔮", layout="centered")
 
-# 2. Inyección de Estilo CSS Corporativo (Garantiza el diseño Minimalista Estilo Google en Móviles y PC)
+# 2. Inyección de Estilo CSS Corporativo (Garantiza el diseño Azul Centrado Premium en Móviles y PC)
 st.markdown("""
     <style>
-    /* Resetear fondos y forzar limpieza visual */
+    /* Fondo blanco limpio estilo Google */
     .stApp { background-color: #FFFFFF; }
     
-    /* Ocultar elementos nativos de Streamlit */
-    #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
-    .compliance-box { background-color: #F1F3F9; border-left: 4px solid #3E63DD; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
-    
-    /* 💡 SOLUCCIÓN MAESTRA DEFINITIVA: Fuerza al contenedor a alinear los botones nativos en horizontal y centrados */
-    [data-testid="stVerticalBlock"] > div:has(div.google-buttons) {
-        width: 100% !important;
+    /* Forzar centrado absoluto del contenedor raíz */
+    [data-testid="stVerticalBlockRoot"] {
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
     }
     
-    .google-buttons {
+    /* 💡 SOLUCIÓN MAESTRA: Centra los botones nativos y les aplica el azul cobalto premium */
+    .stButton {
         display: flex !important;
-        flex-direction: row !important;
         justify-content: center !important;
         align-items: center !important;
-        gap: 15px !important;
         width: 100% !important;
-        margin-top: 15px !important;
-        margin-bottom: 25px !important;
+        margin: 5px auto !important;
     }
     
-    /* Diseño premium idéntico para ambos botones redondeados */
-    .google-buttons .stButton>button { 
-        width: 140px !important; 
+    .stButton>button { 
+        width: 200px !important; /* Ancho ejecutivo idéntico para simetría */
         background-color: #3E63DD !important; 
         color: white !important; 
         border-radius: 20px !important; /* Bordes redondeados estilo Google */
         border: 1px solid #3E63DD !important; 
-        padding: 8px 16px !important; 
+        padding: 10px 20px !important; 
         font-weight: 500 !important;
-        font-size: 14px !important;
+        font-size: 15px !important;
         cursor: pointer !important;
-        transition: all 0.2s ease !important;
-        display: inline-block !important;
+        transition: background-color 0.2s ease !important;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
     }
-    .google-buttons .stButton>button:hover { background-color: #2E4cbd !important; border-color: #2E4cbd !important; }
+    .stButton>button:hover { 
+        background-color: #2E4cbd !important; 
+        border-color: #2E4cbd !important; 
+    }
     
-    /* Variación estética para el segundo botón (Login estilo gris claro de Google) */
-    .google-buttons div:nth-child(2) .stButton>button {
-        background-color: #F8F9FA !important;
-        color: #3C4043 !important;
-        border: 1px solid #DADCE0 !important;
-    }
-    .google-buttons div:nth-child(2) .stButton>button:hover {
-        background-color: #F1F3F4 !important;
-        border-color: #DADCE0 !important;
-        color: #202124 !important;
-    }
+    /* Ocultar elementos nativos de Streamlit */
+    #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
+    .compliance-box { background-color: #F1F3F9; border-left: 4px solid #3E63DD; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -136,16 +126,16 @@ else:
 
     if st.session_state.user is None:
         if st.session_state.page == "Home":
-            # Título y Subtítulo limpios estilo Google
+            # Título y Subtítulo limpios estilo Google con colores invertidos
             st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 48px; margin-top: 50px;'><span style='color: #3E63DD;'>Discover Your</span> Blind Spots</h1>", unsafe_allow_html=True)
-            st.markdown("<p style='text-align: center; color: #555555; font-size: 18px; max-width: 580px; margin: 0 auto 30px auto; line-height: 1.6;'>Analyze your personality with the Johari Window powered by Artificial Intelligence. 100% private. No software installations required.</p>", unsafe_allow_html=True)
+            st.markdown("<p style='text-align: center; color: #555555; font-size: 18px; max-width: 580px; margin: 0 auto 40px auto; line-height: 1.6;'>Analyze your personality with the Johari Window powered by Artificial Intelligence. 100% private. No software installations required.</p>", unsafe_allow_html=True)
             
-            # 💡 CONTENEDOR DE CENTRADO ABSOLUTO: Agrupa los botones nativos forzando simetría compacta
-            with st.container():
-                st.markdown("<div class='google-buttons'>", unsafe_allow_html=True)
-                btn_get = st.button("Get Started", key="home_get_started")
-                btn_log = st.button("Log In", key="home_login")
-                st.markdown("</div>", unsafe_allow_html=True)
+            # Espaciador sutil para equilibrar visualmente la pantalla
+            st.write("")
+            
+            # 💡 AMBOS BOTONES EN AZUL Y CENTRADOS: El CSS superior fuerza la simetría compacta sin columnas
+            btn_get = st.button("Get Started ➡️", key="home_azul_get")
+            btn_log = st.button("Log In", key="home_azul_log")
                 
             if btn_get:
                 st.session_state.page = "Register"
@@ -203,6 +193,7 @@ else:
 #    [STREAMLIT PRODUCTION VERSION] - USER DASHBOARD, JOHARI MATRIX & GEMINI AI REPORT (PART 3)
 # ===================================================================================================
     else:
+        # Panel de control privado tras el inicio de sesión
         st.sidebar.markdown(f"### 🔒 Session Secure")
         if st.sidebar.button("🚪 Log Out"):
             st.session_state.user = None
@@ -262,6 +253,7 @@ else:
             if f_count < 3:
                 st.warning(f"Threshold not met. You need at least 3 evaluations to unlock your AI matrix. (Current progress: {f_count}/3)")
             else:
+                # 🧮 LÓGICA DE CRUCE MATRICIAL GEOMÉTRICO
                 cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
                 user_res = cursor.fetchone()
                 user_set = set(user_res.split(",")) if user_res else set()
