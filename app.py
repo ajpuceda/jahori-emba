@@ -119,8 +119,6 @@ JOHARI_ADJECTIVES = [
     "Confident", "Dependable", "Dignified", "Empathetic", "Energetic", "Friendly", "Giving", "Happy", "Helpful", "Idealistic", 
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
-
-]
 # ===================================================================================================
 #    [STREAMLIT PRODUCTION VERSION - FINAL FIX] - PEER PANEL & AUTHENTICATION NATIVE (PART 2)
 # ===================================================================================================
