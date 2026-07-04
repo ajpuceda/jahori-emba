@@ -138,13 +138,13 @@ JOHARI_ADJECTIVES = [
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
 # ===================================================================================================
-#    [STREAMLIT PRODUCTION VERSION] - PEER PUBLIC PANEL & AUTHENTICATION (PART 2)
+#    [STREAMLIT PRODUCTION BLINDADO V2] - PEER PUBLIC PANEL & AUTHENTICATION (PART 2)
 # ===================================================================================================
 
 query_params = st.query_params
 
+# 💡 VALIDADOR DE ENLACES: Busca el token criptográfico UUID en la URL para evitar hackeos
 if "token" in query_params:
-    # 👥 PANTALLA PÚBLICA DE EVALUACIÓN PARA TUS COMPAÑEROS
     target_token = str(query_params["token"])
     cursor = conn.cursor()
     cursor.execute("SELECT id FROM user WHERE share_token = ?", (target_token,))
@@ -153,6 +153,7 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
+        # Extraemos el entero de la tupla devuelta por la base de datos
         target_user_id = int(user_data[0])
         st.markdown("<h1 class='johari-title'>Evaluate Your <span class='johari-blue'>Friend</span></h1>", unsafe_allow_html=True)
         st.markdown("<p class='johari-subtitle'>Your anonymous feedback is 100% confidential and RODO compliant.</p>", unsafe_allow_html=True)
@@ -174,36 +175,45 @@ if "token" in query_params:
                 st.success("Thank you! Your feedback has been securely submitted.")
                 st.balloons()
 else:
-    # 🔐 SISTEMA DE SESIONES Y REGISTRO PRIVADO DEL USUARIO
+    # 🔐 SISTEMA DE SESIONES Y NAVEGACIÓN PRIVADA DEL USUARIO
     if "user" not in st.session_state:
         st.session_state.user = None
         st.session_state.page = "Home"
 
     if st.session_state.user is None:
         if st.session_state.page == "Home":
-            # Título minimalista con colores invertidos estilo Google
+            # 💡 SOLUCIÓN DEFINITIVA ESTILO GOOGLE: Unifica textos y botones en un solo bloque Flexbox HTML limpio
             st.markdown("""
                 <div class='google-container'>
                     <h1 class='johari-title'><span class='johari-blue'>Discover Your</span> Blind Spots</h1>
                     <p class='johari-subtitle'>Analyze your personality with the Johari Window powered by Artificial Intelligence. 100% private. No software installations required.</p>
+                    
+                    <!-- Botones flotantes compactos alineados en horizontal en el medio exacto -->
+                    <div class='google-buttons'>
+                        <a href='?action=register' target='_self' style='text-decoration: none;'>
+                            <button style='width: 140px; background-color: #3E63DD; color: white; border-radius: 20px; border: 1px solid #3E63DD; padding: 10px 16px; font-weight: 500; font-size: 14px; cursor: pointer; transition: background 0.2s;'>
+                                Get Started
+                            </button>
+                        </a>
+                        <a href='?action=login' target='_self' style='text-decoration: none;'>
+                            <button style='width: 140px; background-color: #F8F9FA; color: #3C4043; border-radius: 20px; border: 1px solid #DADCE0; padding: 10px 16px; font-weight: 500; font-size: 14px; cursor: pointer; transition: background 0.2s;'>
+                                Log In
+                            </button>
+                        </a>
+                    </div>
                 </div>
             """, unsafe_allow_html=True)
             
-            # 💡 CONTENEDOR MULTI-DISPOSITIVO: Encapsula los botones en una sola fila Flexbox
-            st.markdown("<div class='google-buttons'>", unsafe_allow_html=True)
-            col_container1, col_container2 = st.columns(2)
-            with col_container1:
-                btn_get = st.button("Get Started", key="home_get_started")
-            with col_container2:
-                btn_log = st.button("Log In", key="home_login")
-            st.markdown("</div>", unsafe_allow_html=True)
-            
-            if btn_get:
-                st.session_state.page = "Register"
-                st.rerun()
-            if btn_log:
-                st.session_state.page = "Login"
-                st.rerun()
+            # Captura de clics de los botones HTML para cambiar de pantalla de forma interactiva
+            if "action" in query_params:
+                selected_action = query_params["action"]
+                st.query_params.clear() # Limpia la URL para mantener el enrutamiento sano
+                if selected_action == "register":
+                    st.session_state.page = "Register"
+                    st.rerun()
+                elif selected_action == "login":
+                    st.session_state.page = "Login"
+                    st.rerun()
                     
         elif st.session_state.page == "Register":
             st.markdown("<h1 class='johari-title'><span class='johari-blue'>Create Your</span> Account</h1>", unsafe_allow_html=True)
@@ -225,6 +235,7 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
+                        # Extraemos el entero limpio de la tupla para evitar fallos lógicos
                         st.session_state.user = int(user_data[0]) if user_data else None
                         st.session_state.page = "Dashboard"
                         st.rerun()
@@ -241,15 +252,17 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
+                    # Extraemos el entero limpio de la tupla para evitar fallos lógicos
                     st.session_state.user = int(result[0])
                     st.session_state.page = "Dashboard"
                     st.rerun()
                 else: st.error("Incorrect username or password.")
                     
         if st.session_state.page != "Home":
-            if st.button("⬅️ Back to Home"):
+            if st.button("⬅️ Back to Home"): 
                 st.session_state.page = "Home"
                 st.rerun()
+
 # ===================================================================================================
 #    [STREAMLIT PRODUCTION VERSION] - USER DASHBOARD, JOHARI MATRIX & GEMINI AI REPORT (PART 3)
 # ===================================================================================================
