@@ -6,7 +6,7 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [STREAMLIT PRODUCTION BLINDADO] - JAHORI WINDOW EMBA SAAS (PART 1)
+#    [STREAMLIT PRODUCTION VERSION] - JAHORI WINDOW EMBA SAAS (PART 1)
 # ===================================================================================================
 
 # 1. Configuración de la pestaña del navegador
@@ -18,30 +18,28 @@ st.markdown("""
     /* Resetear fondos y forzar limpieza visual */
     .stApp { background-color: #FFFFFF; }
     
-    /* Ocultar elementos nativos de Streamlit que ensucian la pantalla */
+    /* Ocultar elementos nativos de Streamlit */
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
     .compliance-box { background-color: #F1F3F9; border-left: 4px solid #3E63DD; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
     
-    /* 💡 FIX ABSOLUTO MÓVIL Y PC: Une las columnas de st.button en una sola fila Flexbox centrada */
-    div[data-testid="stHorizontalBlock"] {
+    /* 💡 SOLUCCIÓN MAESTRA DEFINITIVA: Fuerza al contenedor a alinear los botones nativos en horizontal y centrados */
+    [data-testid="stVerticalBlock"] > div:has(div.google-buttons) {
+        width: 100% !important;
+    }
+    
+    .google-buttons {
         display: flex !important;
         flex-direction: row !important;
         justify-content: center !important;
         align-items: center !important;
         gap: 15px !important;
         width: 100% !important;
-        margin-top: 10px !important;
-        margin-bottom: 20px !important;
-    }
-    div[data-testid="column"] {
-        width: auto !important;
-        flex: none !important;
-        padding: 0 !important;
-        margin: 0 !important;
+        margin-top: 15px !important;
+        margin-bottom: 25px !important;
     }
     
-    /* Ajuste de botones premium redondeados idénticos */
-    .stButton>button { 
+    /* Diseño premium idéntico para ambos botones redondeados */
+    .google-buttons .stButton>button { 
         width: 140px !important; 
         background-color: #3E63DD !important; 
         color: white !important; 
@@ -52,17 +50,17 @@ st.markdown("""
         font-size: 14px !important;
         cursor: pointer !important;
         transition: all 0.2s ease !important;
-        display: block !important;
+        display: inline-block !important;
     }
-    .stButton>button:hover { background-color: #2E4cbd !important; border-color: #2E4cbd !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important; }
+    .google-buttons .stButton>button:hover { background-color: #2E4cbd !important; border-color: #2E4cbd !important; }
     
     /* Variación estética para el segundo botón (Login estilo gris claro de Google) */
-    div[data-testid="stHorizontalBlock"] > div:nth-child(2) .stButton>button {
+    .google-buttons div:nth-child(2) .stButton>button {
         background-color: #F8F9FA !important;
         color: #3C4043 !important;
         border: 1px solid #DADCE0 !important;
     }
-    div[data-testid="stHorizontalBlock"] > div:nth-child(2) .stButton>button:hover {
+    .google-buttons div:nth-child(2) .stButton>button:hover {
         background-color: #F1F3F4 !important;
         border-color: #DADCE0 !important;
         color: #202124 !important;
@@ -108,7 +106,7 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        target_user_id = int(user_data[0]) if isinstance(user_data, tuple) else int(user_data)
+        target_user_id = int(user_data) if isinstance(user_data, tuple) else int(user_data)
         st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Friend</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO compliant.</p>", unsafe_allow_html=True)
         st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No names or IPs tracked.</div>", unsafe_allow_html=True)
@@ -142,12 +140,12 @@ else:
             st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 48px; margin-top: 50px;'><span style='color: #3E63DD;'>Discover Your</span> Blind Spots</h1>", unsafe_allow_html=True)
             st.markdown("<p style='text-align: center; color: #555555; font-size: 18px; max-width: 580px; margin: 0 auto 30px auto; line-height: 1.6;'>Analyze your personality with the Johari Window powered by Artificial Intelligence. 100% private. No software installations required.</p>", unsafe_allow_html=True)
             
-            # 💡 BOTONES NATIVOS UNIDOS: El CSS de la Parte 1 los unirá de forma compacta y simétrica
-            col1, col2 = st.columns(2)
-            with col1:
+            # 💡 CONTENEDOR DE CENTRADO ABSOLUTO: Agrupa los botones nativos forzando simetría compacta
+            with st.container():
+                st.markdown("<div class='google-buttons'>", unsafe_allow_html=True)
                 btn_get = st.button("Get Started", key="home_get_started")
-            with col2:
                 btn_log = st.button("Log In", key="home_login")
+                st.markdown("</div>", unsafe_allow_html=True)
                 
             if btn_get:
                 st.session_state.page = "Register"
@@ -176,7 +174,7 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        st.session_state.user = int(user_data[0]) if user_data else None
+                        st.session_state.user = int(user_data) if user_data else None
                         st.session_state.page = "Dashboard"
                         st.rerun()
                     except sqlite3.IntegrityError: st.error("This username is already taken.")
@@ -192,7 +190,7 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    st.session_state.user = int(result[0]) if isinstance(result, tuple) else int(result)
+                    st.session_state.user = int(result) if isinstance(result, tuple) else int(result)
                     st.session_state.page = "Dashboard"
                     st.rerun()
                 else: st.error("Incorrect username or password.")
@@ -211,12 +209,12 @@ else:
             st.session_state.page = "Home"
             st.rerun()
             
-        current_user_id = int(st.session_state.user[0]) if isinstance(st.session_state.user, tuple) else int(st.session_state.user)
+        current_user_id = int(st.session_state.user) if isinstance(st.session_state.user, tuple) else int(st.session_state.user)
             
         cursor = conn.cursor()
         cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = ?", (current_user_id,))
         f_count_data = cursor.fetchone()
-        f_count = int(f_count_data[0]) if f_count_data else 0
+        f_count = int(f_count_data) if f_count_data else 0
         
         st.markdown("<h1 style='font-size:28px; font-weight:700;'>Your Johari Control Panel</h1>", unsafe_allow_html=True)
         tab1, tab2 = st.tabs(["🎯 Step 1: Self Assessment & Link", "📊 Step 2: Results & AI Report"])
@@ -226,7 +224,7 @@ else:
             
             cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
             existing_assessment = cursor.fetchone()
-            saved_words = existing_assessment[0].split(",") if existing_assessment else []
+            saved_words = existing_assessment.split(",") if existing_assessment else []
             
             selected_my_words = []
             cols = st.columns(4)
@@ -247,7 +245,7 @@ else:
             
             cursor.execute("SELECT share_token FROM user WHERE id = ?", (current_user_id,))
             token_res = cursor.fetchone()
-            user_token = token_res[0] if token_res else "error"
+            user_token = token_res if token_res else "error"
             
             try:
                 ctx = st.context
@@ -266,15 +264,15 @@ else:
             else:
                 cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
                 user_res = cursor.fetchone()
-                user_set = set(user_res[0].split(",")) if user_res else set()
+                user_set = set(user_res.split(",")) if user_res else set()
                 
                 cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (current_user_id,))
                 feedbacks = cursor.fetchall()
                 friends_set = set()
                 all_friends_list = []
                 for f in feedbacks:
-                    if f and f[0]:
-                        words = f[0].split(",")
+                    if f and f:
+                        words = f.split(",")
                         friends_set.update(words)
                         all_friends_list.extend(words)
                 
@@ -282,7 +280,7 @@ else:
                 blind_area = friends_set.difference(user_set)
                 hidden_area = user_set.difference(friends_set)
                 
-                # Cuadrícula nativa limpia sin saltos de línea conflictivos
+                # Cuadrícula nativa limpia sin saltos de línea manuales
                 c1, c2 = st.columns(2)
                 with c1:
                     st.info(f"👐 **1. Open Area:** \n\n {', '.join(open_area) if open_area else 'None'}")
