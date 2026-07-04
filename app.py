@@ -6,11 +6,13 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [STREAMLIT PRODUCTION VERSION - FINAL FIX V4] - JAHORI WINDOW EMBA SAAS (PART 1)
+#    [STREAMLIT PRODUCTION VERSION - TOTAL PROTECTION] - JAHORI WINDOW EMBA SAAS (PART 1)
 # ===================================================================================================
 
+# 1. Configuración de la pestaña del navegador
 st.set_page_config(page_title="JAHORI - Discover Your Blind Spots", page_icon="🔮", layout="centered")
 
+# 2. Inyección de Estilo CSS Corporativo (Fija de forma estricta el inicio azul y la rejilla interna)
 st.markdown("""
     <style>
     /* Fondo blanco limpio estilo Google */
@@ -20,10 +22,10 @@ st.markdown("""
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
     .compliance-box { background-color: #F1F3F9; border-left: 4px solid #3E63DD; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
     
-    /* 💡 CSS ISOLADO PARA LA HOME (Solo actúa si NO hay barra lateral) */
+    /* 💡 REGLA DE ALINEACIÓN DE LA HOME (Solo actúa si NO hay barra lateral) */
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] {
         display: flex !important;
-        flex-direction: row !important;
+        flex-direction: row !important; /* Fuerza a mantener la fila horizontal en móviles */
         justify-content: center !important;
         align-items: center !important;
         gap: 20px !important;
@@ -31,6 +33,7 @@ st.markdown("""
         max-width: 400px !important;
         margin: 25px auto 0 auto !important;
     }
+    
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="column"] {
         width: 50% !important;
         flex: 1 !important;
@@ -40,7 +43,15 @@ st.markdown("""
         padding: 0 !important;
         margin: 0 !important;
     }
-    .stApp:not(:has(div[data-testid="stElementContainer"]) ) .stButton>button { 
+    
+    .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stElementContainer"] {
+        display: flex !important;
+        justify-content: center !important;
+        width: 100% !important;
+    }
+    
+    /* 💡 REGLA DE COLOR DE LA HOME: Obliga a los botones de inicio a ser azules y redondeados */
+    .stApp:not(:has(div[data-testid="stSidebar"])) .stButton>button { 
         width: 160px !important; 
         background-color: #3E63DD !important; 
         color: white !important; 
@@ -51,10 +62,17 @@ st.markdown("""
         font-size: 14.5px !important; 
         cursor: pointer !important;
         box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        display: block !important;
         white-space: nowrap !important;
     }
+    .stApp:not(:has(div[data-testid="stSidebar"])) .stButton>button:hover { 
+        background-color: #2E4cbd !important; 
+        border-color: #2E4cbd !important; 
+    }
     
-    /* 💡 MATRIZ DE ADJETIVOS (2 COLUMNAS): Fuerza a expandir las celdas de forma simétrica */
+    /* 💡 MATRIZ INTERNA DE ADJETIVOS (2 COLUMNAS): Configuración fija e independiente */
     .stApp:has(div[data-testid="stSidebar"]) div[data-testid="stHorizontalBlock"] {
         max-width: 100% !important;
         width: 100% !important;
@@ -62,15 +80,13 @@ st.markdown("""
         flex-direction: row !important;
         gap: 15px !important;
     }
-    
-    /* Fuerza a las 2 columnas internas a medir EXACTAMENTE el 50% del lienzo */
     .stApp:has(div[data-testid="stSidebar"]) div[data-testid="column"] {
         width: 50% !important;
         max-width: 50% !important;
         flex: 1 1 50% !important;
     }
     
-    /* Estilizado de las tarjetas de adjetivos: más grandes, amplias y alineadas horizontalmente */
+    /* Estilizado de las tarjetas de adjetivos: amplias y alineadas horizontalmente */
     div[data-testid="stCheckbox"] {
         background-color: #F8F9FA !important;
         padding: 10px 16px !important;
@@ -78,7 +94,7 @@ st.markdown("""
         border: 1px solid #E4E7EB !important;
         margin-bottom: 10px !important;
         width: 100% !important;
-        height: 50px !important; /* 🔥 ALTURA FORZADA: Clava la simetría horizontal milimétrica */
+        height: 50px !important; /* Altura fija que clava la simetría horizontal */
         display: flex !important;
         align-items: center !important; 
         transition: all 0.2s ease-in-out !important;
@@ -88,14 +104,12 @@ st.markdown("""
         background-color: #F1F3F9 !important;
         border-color: #3E63DD !important;
     }
-    
     div[data-testid="stCheckbox"] label {
         display: flex !important;
         align-items: center !important;
         height: 100% !important;
         width: 100% !important;
     }
-    
     div[data-testid="stCheckbox"] label p {
         color: #333333 !important;
         font-weight: 500 !important;
@@ -106,6 +120,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# 3. Inicialización síncrona de la Base de Datos SQLite
 def init_db():
     conn = sqlite3.connect("reflex.db", check_same_thread=False)
     cursor = conn.cursor()
@@ -137,7 +152,6 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        # 💡 EXTRAE EL ID DE LA TUPLA EN LA POSICIÓN 0
         target_user_id = int(user_data[0]) if isinstance(user_data, tuple) else int(user_data)
         st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Friend</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO compliant.</p>", unsafe_allow_html=True)
@@ -146,6 +160,7 @@ if "token" in query_params:
         st.write("Select 3 to 10 adjectives that best describe your colleague:")
         
         selected_friend_words = []
+        # Rejilla fija de 2 columnas para el panel público de amigos
         cols = st.columns(2)
         for i, adj in enumerate(JOHARI_ADJECTIVES):
             with cols[i % 2]:
@@ -195,7 +210,7 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        # 💡 EXTRAE EL ID DE LA TUPLA EN LA POSICIÓN 0 AL REGISTRARSE
+                        # Extracción segura de la posición 0 al registrarse
                         st.session_state.user = int(user_data[0]) if user_data else None
                         st.session_state.page = "Dashboard"; st.rerun()
                     except sqlite3.IntegrityError: st.error("This username is already taken.")
@@ -210,7 +225,7 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    # 💡 SOLUCCIÓN MAESTRA DEFINITIVA: Extrae la posición cero result[0] para romper el TypeError
+                    # 💡 SOLUCCIÓN DEFINITIVA: Extrae la posición cero result[0] para fulminar el TypeError al loguearse
                     st.session_state.user = int(result[0])
                     st.session_state.page = "Dashboard"; st.rerun()
                 else: st.error("Incorrect username or password.")
@@ -240,6 +255,7 @@ else:
             saved_words = existing_assessment[0].split(",") if existing_assessment else []
             
             selected_my_words = []
+            # Rejilla fija de 2 columnas para tu autoevaluación privada
             cols = st.columns(2)
             for i, adj in enumerate(JOHARI_ADJECTIVES):
                 with cols[i % 2]:
