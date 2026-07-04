@@ -18,28 +18,32 @@ st.markdown("""
     /* Fondo blanco limpio estilo Google */
     .stApp { background-color: #FFFFFF; }
     
-    /* 💡 SOLUCCIÓN MAESTRA DE DISEÑO: Centra las columnas nativas de Streamlit eliminando márgenes asimétricos */
+        /* 💡 REPARACIÓN MICRO-MÉTRICA: Equilibra las dos columnas al 50% y centra su contenido exacto */
     div[data-testid="stHorizontalBlock"] {
         justify-content: center !important;
         align-items: center !important;
-        gap: 15px !important;
+        gap: 20px !important; /* Espacio idéntico y controlado entre ambos botones */
         width: 100% !important;
-        margin-top: 20px !important;
+        max-width: 400px !important; /* Limita el ancho del bloque para que no se disperse en portátiles */
+        margin: 20px auto 0 auto !important; /* Centra el bloque entero respecto a la pantalla */
     }
     
     div[data-testid="column"] {
-        width: auto !important;
-        flex: none !important;
+        width: 50% !important; /* Divide el espacio en dos mitades matemáticas exactas */
+        flex: 1 !important;
+        display: flex !important;
+        justify-content: center !important; /* Centra el botón dentro de su propia mitad */
+        align-items: center !important;
         padding: 0 !important;
         margin: 0 !important;
     }
     
     /* Diseño premium unificado para todos los botones de la aplicación */
     .stButton>button { 
-        width: 160px !important; /* Ancho perfecto idéntico para simetría ejecutiva */
+        width: 160px !important; 
         background-color: #3E63DD !important; 
         color: white !important; 
-        border-radius: 20px !important; /* Bordes redondeados estilo Google */
+        border-radius: 20px !important; 
         border: 1px solid #3E63DD !important; 
         padding: 10px 20px !important; 
         font-weight: 500 !important;
@@ -47,7 +51,9 @@ st.markdown("""
         cursor: pointer !important;
         transition: background-color 0.2s ease !important;
         box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+        margin: 0 auto !important; /* Fuerza al botón a no desviarse a los lados */
     }
+
     .stButton>button:hover { 
         background-color: #2E4cbd !important; 
         border-color: #2E4cbd !important; 
