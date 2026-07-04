@@ -6,13 +6,11 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [STREAMLIT PRODUCTION VERSION - PERFECT GRID & ALIGNMENT] - JAHORI WINDOW EMBA SAAS (PART 1)
+#    [STREAMLIT PRODUCTION VERSION - 2 COLUMNS MATRIX] - JAHORI WINDOW EMBA SAAS (PART 1)
 # ===================================================================================================
 
-# 1. Configuración de la pestaña del navegador
 st.set_page_config(page_title="JAHORI - Discover Your Blind Spots", page_icon="🔮", layout="centered")
 
-# 2. Inyección de Estilo CSS Corporativo (Calibración MILIMÉTRICA Horizontal y Vertical)
 st.markdown("""
     <style>
     /* Fondo blanco limpio estilo Google */
@@ -42,11 +40,6 @@ st.markdown("""
         padding: 0 !important;
         margin: 0 !important;
     }
-    .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stElementContainer"] {
-        display: flex !important;
-        justify-content: center !important;
-        width: 100% !important;
-    }
     .stApp:not(:has(div[data-testid="stSidebar"])) .stButton>button { 
         width: 160px !important; 
         background-color: #3E63DD !important; 
@@ -58,38 +51,34 @@ st.markdown("""
         font-size: 14.5px !important; 
         cursor: pointer !important;
         box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        display: block !important;
         white-space: nowrap !important;
     }
     
-    /* 💡 CORRECCIÓN QUIRÚRGICA INTERNA: Fuerza a la rejilla de adjetivos a alinearse de forma matemática */
+    /* 💡 MATRIZ DE ADJETIVOS (2 COLUMNAS): Fuerza a expandir las celdas de forma simétrica */
     .stApp:has(div[data-testid="stSidebar"]) div[data-testid="stHorizontalBlock"] {
         max-width: 100% !important;
         width: 100% !important;
         display: flex !important;
         flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        gap: 12px !important;
+        gap: 15px !important;
     }
     
-    /* Fuerza a las 4 columnas internas a medir EXACTAMENTE el 25% sin desvíos */
+    /* Fuerza a las 2 columnas internas a medir EXACTAMENTE el 50% del lienzo */
     .stApp:has(div[data-testid="stSidebar"]) div[data-testid="column"] {
-        width: 25% !important;
-        max-width: 25% !important;
-        flex: 1 1 25% !important;
+        width: 50% !important;
+        max-width: 50% !important;
+        flex: 1 1 50% !important;
     }
     
-    /* Fuerza una altura idéntica en todas las tarjetas para eliminar el efecto escalera */
+    /* Estilizado de las tarjetas de adjetivos: más grandes, amplias y alineadas horizontalmente */
     div[data-testid="stCheckbox"] {
         background-color: #F8F9FA !important;
-        padding: 6px 12px !important;
-        border-radius: 8px !important;
+        padding: 10px 16px !important; /* Relleno ampliado para botones más grandes */
+        border-radius: 10px !important;
         border: 1px solid #E4E7EB !important;
-        margin-bottom: 8px !important;
+        margin-bottom: 10px !important;
         width: 100% !important;
-        height: 44px !important; /* 🔥 ALTURA FORZADA: Clava la alineación horizontal de todas las filas */
+        height: 50px !important; /* 🔥 ALTURA FORZADA: Clava la simetría horizontal milimétrica */
         display: flex !important;
         align-items: center !important; 
         transition: all 0.2s ease-in-out !important;
@@ -104,37 +93,23 @@ st.markdown("""
         display: flex !important;
         align-items: center !important;
         height: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
+        width: 100% !important;
     }
     
     div[data-testid="stCheckbox"] label p {
         color: #333333 !important;
         font-weight: 500 !important;
-        font-size: 14px !important;
+        font-size: 15px !important; /* Letra un pelín más grande y legible */
         white-space: nowrap !important;
-        word-break: keep-all !important;
         margin: 0 !important;
-        line-height: 1 !important;
-    }
-    
-    /* Mantiene los bloques de Streamlit compactos */
-    .stApp:has(div[data-testid="stSidebar"]) [data-testid="stVerticalBlock"] > div {
-        margin-bottom: 0px !important;
-        padding-bottom: 0px !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. Inicialización síncrona de la Base de Datos SQLite
 def init_db():
     conn = sqlite3.connect("reflex.db", check_same_thread=False)
     cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS user (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password_hash TEXT, share_token TEXT UNIQUE
-        )
-    """)
+    cursor.execute("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password_hash TEXT, share_token TEXT UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS self_assessment (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, adjectives TEXT)")
     cursor.execute("CREATE TABLE IF NOT EXISTS feedback (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, anonymous_adjectives TEXT)")
     conn.commit()
@@ -142,22 +117,18 @@ def init_db():
 
 conn = init_db()
 
-# Los 30 adjetivos oficiales de la Ventana de Johari
 JOHARI_ADJECTIVES = [
     "Able", "Accepting", "Adaptable", "Bold", "Brave", "Calm", "Caring", "Cheerful", "Clever", "Complex", 
     "Confident", "Dependable", "Dignified", "Empathetic", "Energetic", "Friendly", "Giving", "Happy", "Helpful", "Idealistic", 
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
-
-
 # ===================================================================================================
-#    [STREAMLIT PRODUCTION VERSION - FINAL FIX] - PEER PANEL & AUTHENTICATION NATIVE (PART 2)
+#    [STREAMLIT PRODUCTION VERSION] - PEER PANEL & AUTHENTICATION NATIVE (PART 2)
 # ===================================================================================================
 
 query_params = st.query_params
 
 if "token" in query_params:
-    # 👥 PANTALLA PÚBLICA DE EVALUACIÓN PARA TUS COMPAÑEROS DEL EMBA
     target_token = str(query_params["token"])
     cursor = conn.cursor()
     cursor.execute("SELECT id FROM user WHERE share_token = ?", (target_token,))
@@ -166,7 +137,7 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        target_user_id = int(user_data[0]) if isinstance(user_data, tuple) else int(user_data)
+        target_user_id = int(user_data) if isinstance(user_data, tuple) else int(user_data)
         st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Friend</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO compliant.</p>", unsafe_allow_html=True)
         st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No tracking.</div>", unsafe_allow_html=True)
@@ -174,9 +145,10 @@ if "token" in query_params:
         st.write("Select 3 to 10 adjectives that best describe your colleague:")
         
         selected_friend_words = []
-        cols = st.columns(4)
+        # 💡 REESTRUCTURACIÓN: Cambiado de 4 a 2 columnas para una alineación horizontal robusta
+        cols = st.columns(2)
         for i, adj in enumerate(JOHARI_ADJECTIVES):
-            with cols[i % 4]:
+            with cols[i % 2]:
                 if st.checkbox(adj, key=f"friend_{adj}"): selected_friend_words.append(adj)
                     
         if st.button("Submit Anonymous Feedback"):
@@ -189,7 +161,6 @@ if "token" in query_params:
                 st.success("Thank you! Your feedback has been securely submitted.")
                 st.balloons()
 else:
-    # 🔐 SISTEMA DE SESIONES Y NAVEGACIÓN PRIVADA DEL USUARIO
     if "user" not in st.session_state:
         st.session_state.user = None
         st.session_state.page = "Home"
@@ -200,28 +171,18 @@ else:
             st.markdown("<p style='text-align: center; color: #555555; font-size: 18px; max-width: 580px; margin: 0 auto 10px auto; line-height: 1.6;'>Analyze your personality with the Johari Window powered by Artificial Intelligence. 100% private. No software installations required.</p>", unsafe_allow_html=True)
             
             st.write("")
-            
             col1, col2 = st.columns(2)
-            with col1:
-                btn_get = st.button("Get Started ➡️", key="home_azul_get")
-            with col2:
-                btn_log = st.button("Log In", key="home_azul_log")
+            with col1: btn_get = st.button("Get Started ➡️", key="home_azul_get")
+            with col2: btn_log = st.button("Log In", key="home_azul_log")
                 
-            if btn_get:
-                st.session_state.page = "Register"
-                st.rerun()
-            if btn_log:
-                st.session_state.page = "Login"
-                st.rerun()
+            if btn_get: st.session_state.page = "Register"; st.rerun()
+            if btn_log: st.session_state.page = "Login"; st.rerun()
                     
         elif st.session_state.page == "Register":
             st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 36px;'><span style='color: #3E63DD;'>Create Your</span> Account</h1>", unsafe_allow_html=True)
-            st.write("Choose a unique nickname. No email or personal data required.")
-            
             new_user = st.text_input("Choose a Username")
             new_pass = st.text_input("Password", type="password")
             rodo = st.checkbox("I accept the anonymous data handling under RODO/RGPD guidelines.")
-            
             if st.button("Sign Up"):
                 if not rodo: st.error("You must accept the RODO terms to register.")
                 elif not new_user or not new_pass: st.error("Please fill in all fields.")
@@ -234,62 +195,52 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        st.session_state.user = int(user_data[0]) if user_data else None
-                        st.session_state.page = "Dashboard"
-                        st.rerun()
+                        st.session_state.user = int(user_data) if user_data else None
+                        st.session_state.page = "Dashboard"; st.rerun()
                     except sqlite3.IntegrityError: st.error("This username is already taken.")
                         
         elif st.session_state.page == "Login":
             st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 36px;'>Log <span style='color: #3E63DD;'>In</span></h1>", unsafe_allow_html=True)
             log_user = st.text_input("Username")
             log_pass = st.text_input("Password", type="password")
-            
             if st.button("Sign In"):
                 hashed = hashlib.sha256(log_pass.encode()).hexdigest()
                 cursor = conn.cursor()
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    st.session_state.user = int(result[0])
-                    st.session_state.page = "Dashboard"
-                    st.rerun()
+                    st.session_state.user = int(result); st.session_state.page = "Dashboard"; st.rerun()
                 else: st.error("Incorrect username or password.")
                     
         if st.session_state.page != "Home":
-            if st.button("⬅️ Back to Home"):
-                st.session_state.page = "Home"
-                st.rerun()
+            if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
 # ===================================================================================================
-#    [STREAMLIT PRODUCTION VERSION - FINAL FIX] - USER DASHBOARD & AI REPORT (PART 3)
+#    [STREAMLIT PRODUCTION VERSION] - USER DASHBOARD & AI REPORT (PART 3)
 # ===================================================================================================
     else:
         st.sidebar.markdown(f"### 🔒 Session Secure")
-        if st.sidebar.button("🚪 Log Out"):
-            st.session_state.user = None
-            st.session_state.page = "Home"
-            st.rerun()
+        if st.sidebar.button("🚪 Log Out"): st.session_state.user = None; st.session_state.page = "Home"; st.rerun()
             
         current_user_id = int(st.session_state.user)
-            
         cursor = conn.cursor()
         cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = ?", (current_user_id,))
         f_count_data = cursor.fetchone()
-        f_count = int(f_count_data[0]) if f_count_data else 0
+        f_count = int(f_count_data) if f_count_data else 0
         
         st.markdown("<h1 style='font-size:28px; font-weight:700;'>Your Johari Control Panel</h1>", unsafe_allow_html=True)
         tab1, tab2 = st.tabs(["🎯 Step 1: Self Assessment & Link", "📊 Step 2: Results & AI Report"])
         
         with tab1:
             st.write("Select 3 to 10 adjectives that best describe you today:")
-            
             cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
             existing_assessment = cursor.fetchone()
-            saved_words = existing_assessment[0].split(",") if existing_assessment else []
+            saved_words = existing_assessment.split(",") if existing_assessment else []
             
             selected_my_words = []
-            cols = st.columns(4)
+            # 💡 REESTRUCTURACIÓN: Cambiado de 4 a 2 columnas para una alineación horizontal robusta
+            cols = st.columns(2)
             for i, adj in enumerate(JOHARI_ADJECTIVES):
-                with cols[i % 4]:
+                with cols[i % 2]:
                     if st.checkbox(adj, key=f"my_{adj}", value=(adj in saved_words)): selected_my_words.append(adj)
                         
             if st.button("Save Assessment"):
@@ -301,38 +252,31 @@ else:
                     st.success("Your self-assessment has been securely recorded!")
             
             st.markdown("### 🔗 Distribute Your Anonymous Link")
-            st.write("Copy this link and send it via WhatsApp or Slack to your colleagues:")
-            
             cursor.execute("SELECT share_token FROM user WHERE id = ?", (current_user_id,))
             token_res = cursor.fetchone()
-            user_token = token_res[0] if token_res else "error"
-            
+            user_token = token_res if token_res else "error"
             try:
                 ctx = st.context
                 current_host = ctx.headers.get("Host", "localhost:8501")
                 protocol = "https" if "streamlit.app" in current_host else "http"
                 generated_url = f"{protocol}://{current_host}/?token={user_token}"
-            except Exception:
-                generated_url = f"http://localhost:8501/?token={user_token}"
-            
+            except Exception: generated_url = f"http://localhost:8501/?token={user_token}"
             st.code(generated_url)
             st.markdown(f"Current progress: **{f_count}/3 evaluations received**.")
             
         with tab2:
-            if f_count < 3:
-                st.warning(f"Threshold not met. You need at least 3 evaluations to unlock your AI matrix. (Current progress: {f_count}/3)")
+            if f_count < 3: st.warning(f"Threshold not met. You need at least 3 evaluations. (Current: {f_count}/3)")
             else:
                 cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
                 user_res = cursor.fetchone()
-                user_set = set(user_res[0].split(",")) if user_res else set()
-                
+                user_set = set(user_res.split(",")) if user_res else set()
                 cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (current_user_id,))
                 feedbacks = cursor.fetchall()
                 friends_set = set()
                 all_friends_list = []
                 for f in feedbacks:
-                    if f and f[0]:
-                        words = f[0].split(",")
+                    if f and f:
+                        words = f.split(",")
                         friends_set.update(words)
                         all_friends_list.extend(words)
                 
@@ -340,7 +284,6 @@ else:
                 blind_area = friends_set.difference(user_set)
                 hidden_area = user_set.difference(friends_set)
                 
-                # Cuadrícula nativa limpia de 4 colores simétricos (Protegida contra el CSS exterior)
                 c1, c2 = st.columns(2)
                 with c1:
                     st.info(f"👐 **1. Open Area:** \n\n {', '.join(open_area) if open_area else 'None'}")
@@ -351,7 +294,6 @@ else:
                 
                 st.markdown("<br><h3 style='color: #3E63DD; font-weight: 700;'>🧠 Executive Coaching Report</h3>", unsafe_allow_html=True)
                 api_key = os.environ.get("GEMINI_API_KEY")
-                
                 if not api_key: st.error("API Secret Key missing.")
                 else:
                     with st.spinner("Gemini is analyzing your psychological vectors..."):
