@@ -6,7 +6,7 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [STREAMLIT PRODUCTION VERSION - 2 COLUMNS MATRIX] - JAHORI WINDOW EMBA SAAS (PART 1)
+#    [STREAMLIT PRODUCTION VERSION - FINAL FIX V4] - JAHORI WINDOW EMBA SAAS (PART 1)
 # ===================================================================================================
 
 st.set_page_config(page_title="JAHORI - Discover Your Blind Spots", page_icon="🔮", layout="centered")
@@ -40,7 +40,7 @@ st.markdown("""
         padding: 0 !important;
         margin: 0 !important;
     }
-    .stApp:not(:has(div[data-testid="stSidebar"])) .stButton>button { 
+    .stApp:not(:has(div[data-testid="stElementContainer"]) ) .stButton>button { 
         width: 160px !important; 
         background-color: #3E63DD !important; 
         color: white !important; 
@@ -73,7 +73,7 @@ st.markdown("""
     /* Estilizado de las tarjetas de adjetivos: más grandes, amplias y alineadas horizontalmente */
     div[data-testid="stCheckbox"] {
         background-color: #F8F9FA !important;
-        padding: 10px 16px !important; /* Relleno ampliado para botones más grandes */
+        padding: 10px 16px !important;
         border-radius: 10px !important;
         border: 1px solid #E4E7EB !important;
         margin-bottom: 10px !important;
@@ -99,7 +99,7 @@ st.markdown("""
     div[data-testid="stCheckbox"] label p {
         color: #333333 !important;
         font-weight: 500 !important;
-        font-size: 15px !important; /* Letra un pelín más grande y legible */
+        font-size: 15px !important;
         white-space: nowrap !important;
         margin: 0 !important;
     }
@@ -137,7 +137,8 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        target_user_id = int(user_data) if isinstance(user_data, tuple) else int(user_data)
+        # 💡 EXTRAE EL ID DE LA TUPLA EN LA POSICIÓN 0
+        target_user_id = int(user_data[0]) if isinstance(user_data, tuple) else int(user_data)
         st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Friend</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO compliant.</p>", unsafe_allow_html=True)
         st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No tracking.</div>", unsafe_allow_html=True)
@@ -145,7 +146,6 @@ if "token" in query_params:
         st.write("Select 3 to 10 adjectives that best describe your colleague:")
         
         selected_friend_words = []
-        # 💡 REESTRUCTURACIÓN: Cambiado de 4 a 2 columnas para una alineación horizontal robusta
         cols = st.columns(2)
         for i, adj in enumerate(JOHARI_ADJECTIVES):
             with cols[i % 2]:
@@ -195,7 +195,8 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        st.session_state.user = int(user_data) if user_data else None
+                        # 💡 EXTRAE EL ID DE LA TUPLA EN LA POSICIÓN 0 AL REGISTRARSE
+                        st.session_state.user = int(user_data[0]) if user_data else None
                         st.session_state.page = "Dashboard"; st.rerun()
                     except sqlite3.IntegrityError: st.error("This username is already taken.")
                         
@@ -209,7 +210,9 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    st.session_state.user = int(result); st.session_state.page = "Dashboard"; st.rerun()
+                    # 💡 SOLUCCIÓN MAESTRA DEFINITIVA: Extrae la posición cero result[0] para romper el TypeError
+                    st.session_state.user = int(result[0])
+                    st.session_state.page = "Dashboard"; st.rerun()
                 else: st.error("Incorrect username or password.")
                     
         if st.session_state.page != "Home":
@@ -225,7 +228,7 @@ else:
         cursor = conn.cursor()
         cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = ?", (current_user_id,))
         f_count_data = cursor.fetchone()
-        f_count = int(f_count_data) if f_count_data else 0
+        f_count = int(f_count_data[0]) if f_count_data else 0
         
         st.markdown("<h1 style='font-size:28px; font-weight:700;'>Your Johari Control Panel</h1>", unsafe_allow_html=True)
         tab1, tab2 = st.tabs(["🎯 Step 1: Self Assessment & Link", "📊 Step 2: Results & AI Report"])
@@ -234,10 +237,9 @@ else:
             st.write("Select 3 to 10 adjectives that best describe you today:")
             cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
             existing_assessment = cursor.fetchone()
-            saved_words = existing_assessment.split(",") if existing_assessment else []
+            saved_words = existing_assessment[0].split(",") if existing_assessment else []
             
             selected_my_words = []
-            # 💡 REESTRUCTURACIÓN: Cambiado de 4 a 2 columnas para una alineación horizontal robusta
             cols = st.columns(2)
             for i, adj in enumerate(JOHARI_ADJECTIVES):
                 with cols[i % 2]:
@@ -254,7 +256,7 @@ else:
             st.markdown("### 🔗 Distribute Your Anonymous Link")
             cursor.execute("SELECT share_token FROM user WHERE id = ?", (current_user_id,))
             token_res = cursor.fetchone()
-            user_token = token_res if token_res else "error"
+            user_token = token_res[0] if token_res else "error"
             try:
                 ctx = st.context
                 current_host = ctx.headers.get("Host", "localhost:8501")
@@ -269,14 +271,14 @@ else:
             else:
                 cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
                 user_res = cursor.fetchone()
-                user_set = set(user_res.split(",")) if user_res else set()
+                user_set = set(user_res[0].split(",")) if user_res else set()
                 cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (current_user_id,))
                 feedbacks = cursor.fetchall()
                 friends_set = set()
                 all_friends_list = []
                 for f in feedbacks:
-                    if f and f:
-                        words = f.split(",")
+                    if f and f[0]:
+                        words = f[0].split(",")
                         friends_set.update(words)
                         all_friends_list.extend(words)
                 
