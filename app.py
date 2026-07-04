@@ -12,7 +12,7 @@ from google import genai
 # 1. Configuración de la pestaña del navegador
 st.set_page_config(page_title="JAHORI - Discover Your Blind Spots", page_icon="🔮", layout="centered")
 
-# 2. Inyección de Estilo CSS Corporativo (Garantiza el diseño Azul Centrado Premium Mobile-First)
+# 2. Inyección de Estilo CSS Corporativo (Fuerza magnéticamente a los botones a moverse al centro)
 st.markdown("""
     <style>
     /* Fondo blanco limpio estilo Google */
@@ -22,32 +22,46 @@ st.markdown("""
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
     .compliance-box { background-color: #F1F3F9; border-left: 4px solid #3E63DD; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
     
-    /* 💡 SOLUCCIÓN MASTER MÓVIL: Fuerza el diseño vertical ordenado en móviles y centrado absoluto */
-    .button-center-zone {
-        display: flex !important;
-        flex-direction: column !important; /* Apila los botones de forma elegante en vertical */
-        justify-content: center !important;
-        align-items: center !important;
-        gap: 12px !important; /* Espacio simétrico entre ambos botones */
+    /* 💡 SOLUCIÓN MAESTRA DE DESPLAZAMIENTO: Desactiva la rejilla fija y centra la capa raíz */
+    [data-testid="stHorizontalBlock"] {
         width: 100% !important;
-        margin-top: 25px !important;
+        display: block !important; 
+        text-align: center !important;
     }
     
-        /* Diseño premium unificado para todos los botones de la aplicación: más compactos para móviles */
+    [data-testid="column"] {
+        width: 100% !important;
+        display: block !important;
+        text-align: center !important;
+        margin: 0 auto !important;
+    }
+    
+    div[data-testid="stElementContainer"] {
+        display: flex !important;
+        justify-content: center !important; /* Fuerza el centrado horizontal en smartphones */
+        align-items: center !important;
+        width: 100% !important;
+    }
+    
+    /* Diseño premium unificado para todos los botones de la aplicación: centrados y sin dobles líneas */
     .stButton>button { 
-        width: 160px !important; /* Achicado de 220px a 160px para encajar perfectamente en horizontal */
+        width: 160px !important; /* Ancho compacto y elegante estilo Google */
         background-color: #3E63DD !important; 
         color: white !important; 
-        border-radius: 20px !important; 
+        border-radius: 20px !important; /* Bordes redondeados */
         border: 1px solid #3E63DD !important; 
-        padding: 8px 14px !important; /* Un poco menos de relleno interno */
+        padding: 8px 14px !important; 
         font-weight: 500 !important;
-        font-size: 13.5px !important; /* Fuente un pelín más pequeña estilo Google */
+        font-size: 13.5px !important; 
         cursor: pointer !important;
         transition: background-color 0.2s ease !important;
         box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
-        margin: 0 auto !important; 
-        white-space: nowrap !important; /* Evita por completo la doble línea */
+        
+        /* 💡 EL SECRETO DEL CENTRADO MÓVIL: Centra de forma matemática el botón dentro de su contenedor */
+        margin-left: auto !important;
+        margin-right: auto !important;
+        display: block !important;
+        white-space: nowrap !important; /* Evita terminantemente la doble línea */
     }
     .stButton>button:hover { 
         background-color: #2E4cbd !important; 
@@ -124,19 +138,14 @@ else:
 
     if st.session_state.user is None:
         if st.session_state.page == "Home":
-            # Título y Subtítulo corporativos limpios estilo Google
             st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 48px; margin-top: 50px;'><span style='color: #3E63DD;'>Discover Your</span> Blind Spots</h1>", unsafe_allow_html=True)
-            st.markdown("<p style='text-align: center; color: #555555; font-size: 18px; max-width: 580px; margin: 0 auto 10px auto; line-height: 1.6;'>Analyze your personality with the Johari Window powered by Artificial Intelligence. 100% private. No software installations required.</p>", unsafe_allow_html=True)
+            st.markdown("<p style='text-align: center; color: #555555; font-size: 18px; max-width: 580px; margin: 0 auto 30px auto; line-height: 1.6;'>Analyze your personality with the Johari Window powered by Artificial Intelligence. 100% private. No software installations required.</p>", unsafe_allow_html=True)
             
-            # Espaciador sutil
             st.write("")
             
-            # 💡 CONTENEDOR FLEXBOX VERTICAL: Apila los botones eliminando las celdas estrechas que causaban la doble línea
-            with st.container():
-                st.markdown("<div class='button-center-zone'>", unsafe_allow_html=True)
-                btn_get = st.button("Get Started ➡️", key="home_azul_get")
-                btn_log = st.button("Log In", key="home_azul_log")
-                st.markdown("</div>", unsafe_allow_html=True)
+            # Los botones se despliegan lineales. El CSS se encargará de centrarlos de manera compacta en cualquier móvil
+            btn_get = st.button("Get Started ➡️", key="home_azul_get")
+            btn_log = st.button("Log In", key="home_azul_log")
                 
             if btn_get:
                 st.session_state.page = "Register"
@@ -165,7 +174,6 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        # Extrae el ID entero plano (id limpio)
                         st.session_state.user = int(user_data[0]) if user_data else None
                         st.session_state.page = "Dashboard"
                         st.rerun()
@@ -182,7 +190,7 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    # Extrae el ID entero plano (id limpio para destruir el TypeError de tuplas)
+                    # 💡 SOLUCIÓN AL TYPEEROR: Extrae la posición cero para guardar el entero puro
                     st.session_state.user = int(result[0])
                     st.session_state.page = "Dashboard"
                     st.rerun()
@@ -196,14 +204,13 @@ else:
 #    [STREAMLIT PRODUCTION VERSION] - USER DASHBOARD, JOHARI MATRIX & GEMINI AI REPORT (PART 3)
 # ===================================================================================================
     else:
-        # Panel de control privado tras el inicio de sesión
         st.sidebar.markdown(f"### 🔒 Session Secure")
         if st.sidebar.button("🚪 Log Out"):
             st.session_state.user = None
             st.session_state.page = "Home"
             st.rerun()
             
-        current_user_id = int(st.session_state.user) if isinstance(st.session_state.user, tuple) else int(st.session_state.user)
+        current_user_id = int(st.session_state.user)
             
         cursor = conn.cursor()
         cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = ?", (current_user_id,))
@@ -218,7 +225,7 @@ else:
             
             cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
             existing_assessment = cursor.fetchone()
-            saved_words = existing_assessment[0].split(",") if existing_assessment else []
+            saved_words = existing_assessment[0].split(",") if existing_assessment and existing_assessment[0] else []
             
             selected_my_words = []
             cols = st.columns(4)
@@ -256,10 +263,9 @@ else:
             if f_count < 3:
                 st.warning(f"Threshold not met. You need at least 3 evaluations to unlock your AI matrix. (Current progress: {f_count}/3)")
             else:
-                # 🧮 LÓGICA DE CRUCE MATRICIAL GEOMÉTRICO
                 cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
                 user_res = cursor.fetchone()
-                user_set = set(user_res[0].split(",")) if user_res else set()
+                user_set = set(user_res[0].split(",")) if user_res and user_res[0] else set()
                 
                 cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (current_user_id,))
                 feedbacks = cursor.fetchall()
@@ -275,16 +281,14 @@ else:
                 blind_area = friends_set.difference(user_set)
                 hidden_area = user_set.difference(friends_set)
                 
-                                # 💡 SOLUCCIÓN MAESTRA: Pintar la cuadrícula con contenedores nativos de color para una simetría perfecta
+                # 💡 FIX ABSOLUTO DE CUADRANTES: Los 4 bloques usan contenedores de color oficiales para simetría milimétrica
                 c1, c2 = st.columns(2)
                 with c1:
                     st.info(f"👐 **1. Open Area:** \n\n {', '.join(open_area) if open_area else 'None'}")
-                    # Usamos st.error para simular un fondo grisáceo/rojo corporativo para el Área Oculta
                     st.error(f"🔒 **3. Hidden Area:** \n\n {', '.join(hidden_area) if hidden_area else 'None'}")
                 with c2:
                     st.warning(f"👁️ **2. Blind Area:** \n\n {', '.join(blind_area) if blind_area else 'None'}")
-                    # Usamos st.success para darle un fondo verde premium al Área Desconocida
-                    st.success("🔮 **4. Unknown Area:** \n\n Undiscovered qualities left to explore.")
+                    st.success(f"🔮 **4. Unknown Area:** \n\n Undiscovered qualities left to explore.")
                 
                 st.markdown("<br>### 🧠 Executive Coaching Report", unsafe_allow_html=True)
                 api_key = os.environ.get("GEMINI_API_KEY")
