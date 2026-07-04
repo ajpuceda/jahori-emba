@@ -138,7 +138,7 @@ JOHARI_ADJECTIVES = [
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
 # ===================================================================================================
-#    [STREAMLIT PRODUCTION VERSION] - PEER PANEL & AUTHENTICATION NATIVE (PART 2)
+#    [STREAMLIT PRODUCTION VERSION] - PEER PANEL & AUTHENTICATION NATIVE WITH ABOUT (PART 2)
 # ===================================================================================================
 
 query_params = st.query_params
@@ -152,7 +152,7 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        target_user_id = int(user_data[0]) if isinstance(user_data, tuple) else int(user_data)
+        target_user_id = int(user_data) if isinstance(user_data, tuple) else int(user_data)
         st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Friend</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO compliant.</p>", unsafe_allow_html=True)
         st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No tracking.</div>", unsafe_allow_html=True)
@@ -160,7 +160,6 @@ if "token" in query_params:
         st.write("Select 3 to 10 adjectives that best describe your colleague:")
         
         selected_friend_words = []
-        # Rejilla fija de 2 columnas para el panel público de amigos
         cols = st.columns(2)
         for i, adj in enumerate(JOHARI_ADJECTIVES):
             with cols[i % 2]:
@@ -192,9 +191,25 @@ else:
                 
             if btn_get: st.session_state.page = "Register"; st.rerun()
             if btn_log: st.session_state.page = "Login"; st.rerun()
+            
+            # 💡 SECCIÓN ABOUT: Desplegable ejecutivo elegante al fondo de la Landing Page
+            st.markdown("<br><br>", unsafe_allow_html=True)
+            with st.expander("ℹ️ Learn more about the Johari Window framework"):
+                st.markdown("""
+                    ### What is the Johari Window?
+                    Developed by psychologists Joseph Luft and Harrington Ingham, the **Johari Window** is a cognitive psychological tool used to enhance self-awareness, interpersonal relationships, and leadership dynamics. It fragments human behavioral traits into four distinct quadrants based on whether the information is known or unknown to oneself and others.
+                    
+                    ### How the AI Pipeline Works
+                    1. **Self-Assessment:** You select a set of adjectives that you believe represent your professional persona.
+                    2. **Anonymous Peer Feedback:** You distribute a secure cryptographic token to your EMBA colleagues to collect their objective perception.
+                    3. **Vector Matrix Mapping:** The system automatically cross-references both datasets to calculate your *Open, Blind, Hidden, and Unknown areas*.
+                    4. **Gemini Coaching Report:** Google Gemini 2.5 Flash processes your psychological matrix to generate an immediate, tailored leadership execution strategy.
+                """)
                     
         elif st.session_state.page == "Register":
             st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 36px;'><span style='color: #3E63DD;'>Create Your</span> Account</h1>", unsafe_allow_html=True)
+            st.write("Choose a unique nickname. No email or personal data required.")
+            
             new_user = st.text_input("Choose a Username")
             new_pass = st.text_input("Password", type="password")
             rodo = st.checkbox("I accept the anonymous data handling under RODO/RGPD guidelines.")
@@ -210,8 +225,7 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        # Extracción segura de la posición 0 al registrarse
-                        st.session_state.user = int(user_data[0]) if user_data else None
+                        st.session_state.user = int(user_data) if user_data else None
                         st.session_state.page = "Dashboard"; st.rerun()
                     except sqlite3.IntegrityError: st.error("This username is already taken.")
                         
@@ -225,13 +239,13 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    # 💡 SOLUCCIÓN DEFINITIVA: Extrae la posición cero result[0] para fulminar el TypeError al loguearse
-                    st.session_state.user = int(result[0])
+                    st.session_state.user = int(result)
                     st.session_state.page = "Dashboard"; st.rerun()
                 else: st.error("Incorrect username or password.")
                     
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
+
 # ===================================================================================================
 #    [STREAMLIT PRODUCTION VERSION] - USER DASHBOARD & AI REPORT (PART 3)
 # ===================================================================================================
