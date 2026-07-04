@@ -6,13 +6,11 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [STREAMLIT PRODUCTION VERSION - FINAL FIX] - JAHORI WINDOW EMBA SAAS (PART 1)
+#    [STREAMLIT PRODUCTION VERSION - PERFECT GRID & ALIGNMENT] - JAHORI WINDOW EMBA SAAS (PART 1)
 # ===================================================================================================
 
-# 1. Configuración de la pestaña del navegador
 st.set_page_config(page_title="JAHORI - Discover Your Blind Spots", page_icon="🔮", layout="centered")
 
-# 2. Inyección de Estilo CSS Corporativo (Centra la Home y tiñe los botones en azul sin romper la matriz interna)
 st.markdown("""
     <style>
     /* Fondo blanco limpio estilo Google */
@@ -22,7 +20,7 @@ st.markdown("""
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
     .compliance-box { background-color: #F1F3F9; border-left: 4px solid #3E63DD; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
     
-    /* 💡 BLINDAJE TOTAL DE LA HOME: Estas reglas SOLO se ejecutan si NO existe la barra lateral (Pantalla Home) */
+    /* CSS ISOLADO PARA LA HOME (Solo actúa si NO hay barra lateral) */
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] {
         display: flex !important;
         flex-direction: row !important;
@@ -33,7 +31,6 @@ st.markdown("""
         max-width: 400px !important;
         margin: 25px auto 0 auto !important;
     }
-    
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="column"] {
         width: 50% !important;
         flex: 1 !important;
@@ -43,14 +40,11 @@ st.markdown("""
         padding: 0 !important;
         margin: 0 !important;
     }
-    
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stElementContainer"] {
         display: flex !important;
         justify-content: center !important;
-        align-items: center !important;
         width: 100% !important;
     }
-    
     .stApp:not(:has(div[data-testid="stSidebar"])) .stButton>button { 
         width: 160px !important; 
         background-color: #3E63DD !important; 
@@ -61,16 +55,45 @@ st.markdown("""
         font-weight: 500 !important;
         font-size: 14.5px !important; 
         cursor: pointer !important;
-        transition: background-color 0.2s ease !important;
         box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
         margin-left: auto !important;
         margin-right: auto !important;
         display: block !important;
         white-space: nowrap !important;
     }
-    .stApp:not(:has(div[data-testid="stSidebar"])) .stButton>button:hover { 
-        background-color: #2E4cbd !important; 
-        border-color: #2E4cbd !important; 
+    
+    /* 💡 SOLUCCIÓN MAESTRA INTERNA: Fuerza a expandir el ancho de la cuadrícula de adjetivos */
+    .stApp:has(div[data-testid="stSidebar"]) div[data-testid="stHorizontalBlock"] {
+        max-width: 100% !important;
+        width: 100% !important;
+        gap: 12px !important;
+    }
+    .stApp:has(div[data-testid="stSidebar"]) div[data-testid="column"] {
+        min-width: 165px !important; /* Ensancha cada columna para que quepan palabras largas */
+    }
+    
+    /* Estilizado de casillas premium con alineación vertical estricta y sin dobles líneas */
+    div[data-testid="stCheckbox"] {
+        background-color: #F8F9FA !important;
+        padding: 8px 12px !important;
+        border-radius: 8px !important;
+        border: 1px solid #E4E7EB !important;
+        margin-bottom: 6px !important;
+        width: 100% !important;
+        display: flex !important;
+        align-items: center !important; /* Alinea el cuadrado rojo con el texto perfectamente en vertical */
+        transition: all 0.2s ease-in-out !important;
+    }
+    div[data-testid="stCheckbox"]:hover {
+        background-color: #F1F3F9 !important;
+        border-color: #3E63DD !important;
+    }
+    div[data-testid="stCheckbox"] label p {
+        color: #333333 !important;
+        font-weight: 500 !important;
+        font-size: 14px !important;
+        white-space: nowrap !important; /* 🔥 PROHÍBE LA DOBLE LÍNEA: Todo el adjetivo entra recto */
+        word-break: keep-all !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -91,11 +114,12 @@ def init_db():
 
 conn = init_db()
 
-# Los 30 adjetivos oficiales de la Ventana de Johari
 JOHARI_ADJECTIVES = [
     "Able", "Accepting", "Adaptable", "Bold", "Brave", "Calm", "Caring", "Cheerful", "Clever", "Complex", 
     "Confident", "Dependable", "Dignified", "Empathetic", "Energetic", "Friendly", "Giving", "Happy", "Helpful", "Idealistic", 
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
+]
+
 ]
 # ===================================================================================================
 #    [STREAMLIT PRODUCTION VERSION - FINAL FIX] - PEER PANEL & AUTHENTICATION NATIVE (PART 2)
