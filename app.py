@@ -30,7 +30,7 @@ st.markdown("""
         width: 100%;
     }
     
-    /* 💡 SOLUCIÓN MAESTRA PARA MÓVILES: Fuerza a los botones a flotar juntos y centrados en horizontal en cualquier pantalla */
+    /* 💡 FIX DE SIMETRÍA: Fuerza a las columnas de los botones a unirse en el centro exacto sin márgenes fantasma */
     .google-buttons {
         display: flex;
         flex-direction: row !important;
@@ -41,6 +41,36 @@ st.markdown("""
         margin-top: 10px !important;
         margin-bottom: 20px !important;
     }
+    
+    /* Elimina el espacio vacío que Streamlit mete a la izquierda de la columna 1 */
+    div.google-buttons [data-testid="column"] {
+        width: auto !important;
+        flex: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    /* Tipografía ejecutiva limpia */
+    .johari-title { font-weight: 700; color: #111111; font-size: 48px; margin-bottom: 12px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    .johari-blue { color: #3E63DD; }
+    .johari-subtitle { color: #555555; font-size: 18px; margin-bottom: 40px; max-width: 580px; line-height: 1.6; margin-left: auto; margin-right: auto; }
+    
+    /* Ajuste de botones premium redondeados idénticos */
+    .stButton>button { 
+        width: 140px !important; 
+        background-color: #3E63DD !important; 
+        color: white !important; 
+        border-radius: 20px !important; 
+        border: 1px solid #3E63DD !important; 
+        padding: 8px 16px !important; 
+        font-weight: 500 !important;
+        font-size: 14px !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        margin: 0 !important;
+        display: block !important;
+    }
+
     
     /* Tipografía ejecutiva limpia */
     .johari-title { font-weight: 700; color: #111111; font-size: 48px; margin-bottom: 12px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
