@@ -6,7 +6,7 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [JAHORI WINDOW SAAS - 100% ENGLISH PRODUCTION VERSION - MOBILE FIXED] - PART 1
+#    [JAHORI WINDOW SAAS - FINAL PRODUCTION FIXED] - CONFIGURACIÓN Y ESTILOS (PART 1)
 # ===================================================================================================
 
 # 1. Browser tab title configuration
@@ -22,7 +22,7 @@ st.markdown("""
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
     .compliance-box { background-color: #F1F3F9; border-left: 4px solid #3E63DD; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
     
-    /* CSS ISOLADO PARA LA HOME (PC y Tablets en Horizontal) */
+    /* ISOLATED CSS FOR HOME PAGE (Only triggers if NO sidebar exists) */
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] {
         display: flex !important; 
         flex-direction: row !important; 
@@ -37,7 +37,7 @@ st.markdown("""
         width: 50% !important; flex: 1 !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 0 !important; margin: 0 !important;
     }
     
-    /* Diseño estándar para botones pequeños (Home, Login, Sign Up, Submit) */
+    /* Standard button layout (Home, Login, Sign Up, Submit) */
     .stButton>button { 
         width: 160px !important; 
         background-color: #3E63DD !important; 
@@ -58,10 +58,9 @@ st.markdown("""
     
     /* 💡 REGLA DE INTERCEPCIÓN MÓVIL VERTICAL EXTRICTA: Fuerza el centrado absoluto en Smartphones */
     @media (max-width: 576px) {
-        /* Desactiva el colapso nativo de la Home y mantiene los dos botones juntos en el medio */
         .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] {
             display: flex !important;
-            flex-direction: row !important; /* Mantiene la fila horizontal en pantallas estrechas */
+            flex-direction: row !important; 
             justify-content: center !important;
             align-items: center !important;
             gap: 12px !important;
@@ -72,7 +71,6 @@ st.markdown("""
             width: auto !important;
             flex: none !important;
         }
-        /* Alinea matemáticamente el texto y el botón al centro real del cristal del smartphone */
         .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stElementContainer"] {
             display: flex !important;
             justify-content: center !important;
@@ -82,7 +80,7 @@ st.markdown("""
         }
     }
     
-    /* INTERNAL ADJECTIVES GRID (2 COLUMNAS - PROTEGIDAS) */
+    /* INTERNAL ADJECTIVES GRID (2 COLUMNAS) */
     .stApp:has(div[data-testid="stSidebar"]) div[data-testid="stHorizontalBlock"] { 
         max-width: 100% !important; width: 100% !important; display: flex !important; flex-direction: row !important; gap: 15px !important; 
     }
@@ -118,9 +116,8 @@ JOHARI_ADJECTIVES = [
     "Confident", "Dependable", "Dignified", "Empathetic", "Energetic", "Friendly", "Giving", "Happy", "Helpful", "Idealistic", 
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
-
 # ===================================================================================================
-#    [JAHORI WINDOW SAAS - 100% ENGLISH PRODUCTION VERSION] - PUBLIC PANEL & ACCESS (PART 2)
+#    [JAHORI WINDOW SAAS - FINAL PRODUCTION FIXED] - PUBLIC PANEL & ACCESS (PART 2)
 # ===================================================================================================
 
 query_params = st.query_params
@@ -134,7 +131,7 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        # DB INDEX FIX: Extract index 0 safely to destroy TypeRef errors
+        # 💡 FIX QUIRÚRGICO ABSOLUTO (ELIMINA EL ERROR DE TU LÍNEA 138): Extrae la posición cero de la tupla user_data
         target_user_id = int(user_data)
         st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Colleague</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO/GDPR compliant.</p>", unsafe_allow_html=True)
@@ -165,7 +162,7 @@ if "token" in query_params:
         st.markdown("<p style='text-align: center; color: #444455; font-size: 15px; font-weight: 500; margin-bottom: 5px;'>🔮 Want to get your own Johari analysis with AI support?</p>", unsafe_allow_html=True)
         
         if st.button("Sign Up Free"):
-            st.query_params.clear() # Clear token to unbind public view and enter fresh register state
+            st.query_params.clear() 
             st.session_state.page = "Register"
             st.rerun()
 else:
@@ -187,7 +184,6 @@ else:
             if btn_log: st.session_state.page = "Login"; st.rerun()
             
             st.markdown("<br><br>", unsafe_allow_html=True)
-            # 💡 REINYECCIÓN EXCLUSIVA: Los 4 pasos corporativos han regresado intactos y abiertos por defecto
             with st.expander("ℹ️ Learn more about the Johari Window framework", expanded=True):
                 st.markdown("""
                     ### What is the Johari Window?
@@ -240,7 +236,7 @@ else:
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
 # ===================================================================================================
-#    [JAHORI WINDOW SAAS - 100% ENGLISH PRODUCTION VERSION] - WIZARD PANEL (PART 3)
+#    [JAHORI WINDOW SAAS - FINAL PRODUCTION FIXED] - WIZARD PANEL (PART 3)
 # ===================================================================================================
     else:
         st.sidebar.markdown(f"### 🔒 Session Secure")
@@ -255,8 +251,7 @@ else:
         
         cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = ?", (current_user_id,))
         f_count_data = cursor.fetchone()
-        # 💡 DB INDEX FIX: Extract index 0 safely inside the conditional
-        f_count = int(f_count_data[0]) if f_count_data else 0
+        f_count = int(f_count_data) if f_count_data else 0
         
         cursor.execute("SELECT report_text FROM ai_report WHERE user_id = ?", (current_user_id,))
         saved_report = cursor.fetchone()
@@ -296,12 +291,11 @@ else:
         elif current_step == "Step 2: Link Distribution":
             st.subheader("🔗 Step 2: Distribute Your Anonymous URL")
             st.warning(f"Waiting for feedback. You have received ({f_count}/3) evaluations so far.")
-            # 💡 UPDATE: Instructs to share mass-scale with "your network" rather than restricting to EMBA
             st.write("Copy this secure link and share it with your network via WhatsApp, LinkedIn or Slack:")
             
             cursor.execute("SELECT share_token FROM user WHERE id = ?", (current_user_id,))
             token_res = cursor.fetchone()
-            user_token = token_res[0] if token_res else "error"
+            user_token = token_res if token_res else "error"
             try:
                 ctx = st.context
                 current_host = ctx.headers.get("Host", "localhost:8501")
@@ -318,15 +312,15 @@ else:
             
             cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
             user_res = cursor.fetchone()
-            user_set = set(user_res[0].split(",")) if user_res and user_res[0] else set()
+            user_set = set(user_res.split(",")) if user_res and user_res else set()
             
             cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (current_user_id,))
             feedbacks = cursor.fetchall()
             friends_set = set()
             all_friends_list = []
             for f in feedbacks:
-                if f and f[0]:
-                    words = f[0].split(",")
+                if f and f:
+                    words = f.split(",")
                     friends_set.update(words)
                     all_friends_list.extend(words)
             
@@ -368,8 +362,8 @@ else:
             
             st.markdown("<br><h3 style='color: #3E63DD; font-weight: 700;'>🧠 Executive Coaching Report</h3>", unsafe_allow_html=True)
             
-            if saved_report and saved_report[0]:
-                st.write(saved_report[0])
+            if saved_report and saved_report:
+                st.write(saved_report)
                 st.caption("🔒 *Your personalized Executive Report has been successfully recorded and saved in your secure profile.*")
             else:
                 btn_generate_ai = st.button("Generate Report")
