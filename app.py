@@ -236,11 +236,14 @@ else:
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
 # ===================================================================================================
-#    [JAHORI WINDOW EMBA SAAS - BLINDADO V6] - WIZARD PANEL Y MATRIX GRID (PART 3)
+#    [JAHORI WINDOW EMBA SAAS - REAL DYNAMIC GRID V7] - WIZARD PANEL Y MATRIX GRID (PART 3)
 # ===================================================================================================
     else:
         st.sidebar.markdown(f"### 🔒 Session Secure")
-        if st.sidebar.button("🚪 Log Out"): st.session_state.user = None; st.session_state.page = "Home"; st.rerun()
+        if st.sidebar.button("🚪 Log Out"): 
+            st.session_state.user = None
+            st.session_state.page = "Home"
+            st.rerun()
             
         current_user_id = int(st.session_state.user)
         cursor = conn.cursor()
@@ -250,14 +253,14 @@ else:
         
         cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = ?", (current_user_id,))
         f_count_data = cursor.fetchone()
-        # 💡 CORRECCIÓN 4: Extrae la posición cero de forma nativa para el conteo de votos recibidos
-        f_count = int(f_count_data[0]) if f_count_data else 0
+        f_count = int(f_count_data) if f_count_data else 0
         
         cursor.execute("SELECT report_text FROM ai_report WHERE user_id = ?", (current_user_id,))
         saved_report = cursor.fetchone()
         
         st.markdown("<h1 style='font-size:28px; font-weight:700;'>Your Johari Control Panel</h1>", unsafe_allow_html=True)
         
+        # Enrutamiento forzado por pasos secuenciales (Wizard)
         if not has_self:
             current_step = "Step 1: Self Assessment"
         elif f_count < 3 and not saved_report:
@@ -295,52 +298,51 @@ else:
             
             cursor.execute("SELECT share_token FROM user WHERE id = ?", (current_user_id,))
             token_res = cursor.fetchone()
-            # 💡 CORRECCIÓN 5: Extrae la posición cero para construir la URL criptográfica en limpio sin romper las rutas de red
-            user_token = token_res[0] if token_res else "error"
+            user_token = token_res if token_res else "error"
             try:
                 ctx = st.context
                 current_host = ctx.headers.get("Host", "localhost:8501")
                 protocol = "https" if "streamlit.app" in current_host else "http"
                 generated_url = f"{protocol}://{current_host}/?token={user_token}"
-            except Exception: generated_url = f"http://localhost:8501/?token={user_token}"
+            except Exception: 
+                generated_url = f"http://localhost:8501/?token={user_token}"
             
             st.code(generated_url)
             st.info("💡 Once you receive at least 3 anonymous evaluations from your colleagues, this window will automatically unlock the AI coaching report button.")
-            if st.button("🔄 Refresh Progress"): st.rerun()
+            if st.button("🔄 Refresh Progress"): 
+                st.rerun()
                 
         elif current_step == "Step 3: Executive AI Matrix":
             st.subheader("📊 Step 3: Your Personality Matrix & Leadership Plan")
             
             cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
             user_res = cursor.fetchone()
-            # 💡 CORRECCIÓN 6: Extrae la posición cero para limpiar la cadena de texto de tus adjetivos propios
-            user_set = set(user_res[0].split(",")) if user_res and user_res[0] else set()
+            user_set = set(user_res.split(",")) if user_res and user_res else set()
             
             cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (current_user_id,))
             feedbacks = cursor.fetchall()
             friends_set = set()
             all_friends_list = []
             for f in feedbacks:
-                if f and f[0]:
-                    words = f[0].split(",")
+                if f and f:
+                    words = f.split(",")
                     friends_set.update(words)
                     all_friends_list.extend(words)
             
-                        # Lógicas de cruce de conjuntos (se mantienen intactas)
             open_area = user_set.intersection(friends_set)
             blind_area = friends_set.difference(user_set)
             hidden_area = user_set.difference(friends_set)
             
-            # 💡 MOTOR DINÁMICO DE SIMETRÍA: Contamos cuántos adjetivos tiene el bloque más saturado
-            # Añadimos un valor mínimo de 1 para evitar que de cero si un cuadrante está vacío
-            max_adjectives = max(len(open_area), len(blind_area), len(hidden_area), 1)
+            # 💡 RESOLUCIÓN MAESTRA DINÁMICA: Contamos de forma estricta las líneas que ocuparán los adjetivos
+            # Como se muestran separados por comas y saltos de línea verticales, el número de elementos es igual al número de filas físicas
+            max_lines = max(len(open_area), len(blind_area), len(hidden_area), 1)
             
-            # Calculamos la altura perfecta: 90px de cabecera/márgenes + 25px por cada adjetivo (estimando 2 por fila)
-            # Puedes ajustar estos números si quieres que las cajas sean más altas o más compactas
-            dynamic_height = 90 + (int(max_adjectives / 2) * 25)
-            if dynamic_height < 130: dynamic_height = 130 # Forzamos un mínimo estético elegante
-            
-            # Inyectamos en caliente la altura calculada SOLO para esta carga de pantalla
+            # Cálculo matemático exacto: 80px de cabecera del título + 28px por cada adjetivo real en vertical
+            dynamic_height = 80 + (max_lines * 28)
+            if dynamic_height < 150: 
+                dynamic_height = 150  # Mínimo estético para que no se vea comprimido si hay pocos datos
+                
+            # Inyectamos el CSS calculado en caliente en el bloque actual de la pantalla
             st.markdown(f"""
                 <style>
                 div[data-testid="stNotification"] {{
@@ -350,12 +352,12 @@ else:
                     display: flex !important;
                     flex-direction: column !important;
                     justify-content: flex-start !important;
-                    overflow-y: auto !important;
+                    overflow-y: hidden !important; /* Eliminamos el scroll para forzar el estiramiento visual */
                 }}
                 </style>
             """, unsafe_allow_html=True)
             
-            # 🎨 Pintamos la cuadrícula nativa. Ahora el CSS dinámico de arriba obligará a las 4 cajas a medir exactamente lo mismo
+            # Pintamos los 4 bloques. Ahora medirán exactamente lo mismo basándose en el cálculo vertical de arriba
             c1, c2 = st.columns(2)
             with c1:
                 st.info(f"👐 **1. Open Area:** \n\n {', '.join(open_area) if open_area else 'None'}")
@@ -363,12 +365,11 @@ else:
             with c2:
                 st.warning(f"👁️ **2. Blind Area:** \n\n {', '.join(blind_area) if blind_area else 'None'}")
                 st.success(f"🔮 **4. Unknown Area:** \n\n Undiscovered qualities left to explore.")
-             
+            
             st.markdown("<br><h3 style='color: #3E63DD; font-weight: 700;'>🧠 Executive Coaching Report</h3>", unsafe_allow_html=True)
             
-            if saved_report and saved_report[0]:
-                # 💡 CORRECCIÓN 7: Lee de la posición cero el informe guardado de Gemini
-                st.write(saved_report[0])
+            if saved_report and saved_report:
+                st.write(saved_report)
                 st.caption("🔒 *Your personalized Executive Report has been successfully recorded and saved in your secure profile.*")
             else:
                 st.markdown("<div class='long-text-button'>", unsafe_allow_html=True)
@@ -377,7 +378,8 @@ else:
                 
                 if btn_generate_ai:
                     api_key = os.environ.get("GEMINI_API_KEY")
-                    if not api_key: st.error("API Secret Key missing.")
+                    if not api_key: 
+                        st.error("API Secret Key missing.")
                     else:
                         with st.spinner("Gemini is analyzing your psychological vectors..."):
                             try:
@@ -391,4 +393,6 @@ else:
                                 st.write(raw_text)
                                 st.success("Report successfully generated and locked!")
                                 st.rerun()
-                            except Exception as e: st.error(f"Google GenAI Connection temporary suspended: {e}")
+                            except Exception as e: 
+                                st.error(f"Google GenAI Connection temporary suspended: {e}")
+
