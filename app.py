@@ -199,7 +199,7 @@ else:
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
 # ===================================================================================================
-#    [JAHORI WINDOW EMBA SAAS - PRODUCTION BLINDADO V12] - WIZARD PANEL SECTOR (PART 3)
+#    [JAHORI WINDOW EMBA SAAS - DEFINITIVE HTML MATRIX] - WIZARD PANEL (PART 3)
 # ===================================================================================================
     else:
         st.sidebar.markdown(f"### 🔒 Session Secure")
@@ -216,7 +216,7 @@ else:
         
         cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = ?", (current_user_id,))
         f_count_data = cursor.fetchone()
-        # 💡 FIX DE TU ÚLTIMO ERROR TRACEBACK: Extrae de forma estricta la posición [0] de la tupla antes de convertir
+        # 💡 FIX ABSOLUTO: Extrae el entero usando la posición cero de la tupla para fulminar el TypeError
         f_count = int(f_count_data[0]) if f_count_data else 0
         
         cursor.execute("SELECT report_text FROM ai_report WHERE user_id = ?", (current_user_id,))
@@ -224,7 +224,7 @@ else:
         
         st.markdown("<h1 style='font-size:28px; font-weight:700;'>Your Johari Control Panel</h1>", unsafe_allow_html=True)
         
-        # Enrutamiento forzado por pasos secuenciales (Wizard)
+        # Enrutamiento síncrono por pasos secuenciales (Wizard)
         if not has_self:
             current_step = "Step 1: Self Assessment"
         elif f_count < 3 and not saved_report:
@@ -239,10 +239,11 @@ else:
             cols = st.columns(2)
             for i, adj in enumerate(JOHARI_ADJECTIVES):
                 with cols[i % 2]:
-                    if st.checkbox(adj, key=f"my_{adj}"):
+                    st.checkbox(adj, key=f"my_{adj}")
+                    if st.session_state.get(f"my_{adj}"):
                         selected_my_words.append(adj)
                         
-            # 💡 TEXTO CORTO ADAPTADO: "Next ➡️" impecable de 160px
+            # 💡 TEXTO CORTO ADAPTADO: Botón compacto de 160px que nunca se cortará
             btn_save_self = st.button("Next ➡️")
             
             if btn_save_self:
@@ -262,7 +263,7 @@ else:
             
             cursor.execute("SELECT share_token FROM user WHERE id = ?", (current_user_id,))
             token_res = cursor.fetchone()
-            # 💡 FIX SANO: Extrae el token de la posición cero de la tupla
+            # 💡 FIX ABSOLUTO: Extrae el string limpio de la tupla para construir la URL sin errores
             user_token = token_res[0] if token_res else "error"
             try:
                 ctx = st.context
@@ -281,8 +282,8 @@ else:
             
             cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
             user_res = cursor.fetchone()
-            # 💡 FIX SANO: Extrae los adjetivos de la posición cero antes de separarlos por comas
-            user_set = set(user_res[0].split(",")) if user_res and user_res[0] else set()
+            # 💡 FIX ABSOLUTO: Extrae la cadena de texto de la tupla antes del split
+            user_set = set(user_res[0].split(",")) if user_res and user_res else set()
             
             cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (current_user_id,))
             feedbacks = cursor.fetchall()
@@ -297,50 +298,58 @@ else:
             open_area = user_set.intersection(friends_set)
             blind_area = friends_set.difference(user_set)
             hidden_area = user_set.difference(friends_set)
+            unknown_area = ["Undiscovered qualities left to explore."]
             
-            # 💡 LA SOLUCIÓN ESTABLE: Contamos de forma estricta las líneas visuales reales del cuadrante más lleno
-            max_lines = max(len(open_area), len(blind_area), len(hidden_area), 1)
+            # Formateamos las listas convirtiendo las comas en saltos de línea HTML puros (<br>)
+            open_html = "<br>".join(open_area) if open_area else "None"
+            blind_html = "<br>".join(blind_area) if blind_area else "None"
+            hidden_html = "<br>".join(hidden_area) if hidden_area else "None"
+            unknown_html = "<br>".join(unknown_area)
             
-            # Cálculo matemático adaptativo: 80px fijos de título + 28px por cada adjetivo real apilado verticalmente
-            dynamic_height = 80 + (max_lines * 28)
-            if dynamic_height < 160: dynamic_height = 160
-                
-            # Inyectamos el CSS dinámico forzando que las 4 cajas nativas midan exactamente lo mismo al píxel
+            # 💡 LA VERSIÓN EXCELENTE RECUPERADA: Tabla HTML inline pura que clava las 2 filas simétricas del 50%
             st.markdown(f"""
-                <style>
-                div[data-testid="stNotification"] {{
-                    height: {dynamic_height}px !important;
-                    min-height: {dynamic_height}px !important;
-                    max-height: {dynamic_height}px !important;
-                    display: flex !important;
-                    flex-direction: column !important;
-                    justify-content: flex-start !important;
-                    overflow: hidden !important;
-                }}
-                </style>
+                <table style="width:100%; border-collapse: separate; border-spacing: 15px; font-family: -apple-system, sans-serif; table-layout: fixed;">
+                    <tr>
+                        <!-- 👐 1. OPEN AREA (Azul Corporativo) -->
+                        <td style="width:50%; background-color: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 16px; vertical-align: top;">
+                            <div style="color: #1E40AF; font-weight: 700; margin-bottom: 12px; font-size: 16px;">👐 1. Open Area:</div>
+                            <div style="color: #1E3A8A; font-weight: 500; font-size: 15px; line-height: 1.6;">{open_html}</div>
+                        </td>
+                        <!-- 👁️ 2. BLIND AREA (Amarillo Corporativo) -->
+                        <td style="width:50%; background-color: #FEFCE8; border: 1px solid #FEF08A; border-radius: 8px; padding: 16px; vertical-align: top;">
+                            <div style="color: #854D0E; font-weight: 700; margin-bottom: 12px; font-size: 16px;">👁️ 2. Blind Area:</div>
+                            <div style="color: #713F12; font-weight: 500; font-size: 15px; line-height: 1.6;">{blind_html}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <!-- 🔒 3. HIDDEN AREA (Rojo Corporativo) -->
+                        <td style="width:50%; background-color: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; padding: 16px; vertical-align: top;">
+                            <div style="color: #991B1B; font-weight: 700; margin-bottom: 12px; font-size: 16px;">🔒 3. Hidden Area:</div>
+                            <div style="color: #7F1D1D; font-weight: 500; font-size: 15px; line-height: 1.6;">{hidden_html}</div>
+                        </td>
+                        <!-- 🔮 4. UNKNOWN AREA (Verde Corporativo) -->
+                        <td style="width:50%; background-color: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; padding: 16px; vertical-align: top;">
+                            <div style="color: #166534; font-weight: 700; margin-bottom: 12px; font-size: 16px;">🔮 4. Unknown Area:</div>
+                            <div style="color: #14532D; font-weight: 500; font-size: 15px; line-height: 1.6;">{unknown_html}</div>
+                        </td>
+                    </tr>
+                </table>
             """, unsafe_allow_html=True)
-            
-            c1, c2 = st.columns(2)
-            with c1:
-                st.info(f"👐 **1. Open Area:** \n\n {', '.join(open_area) if open_area else 'None'}")
-                st.error(f"🔒 **3. Hidden Area:** \n\n {', '.join(hidden_area) if hidden_area else 'None'}")
-            with c2:
-                st.warning(f"👁️ **2. Blind Area:** \n\n {', '.join(blind_area) if blind_area else 'None'}")
-                st.success(f"🔮 **4. Unknown Area:** \n\n Undiscovered qualities left to explore.")
             
             st.markdown("<br><h3 style='color: #3E63DD; font-weight: 700;'>🧠 Executive Coaching Report</h3>", unsafe_allow_html=True)
             
             if saved_report and saved_report[0]:
-                # 💡 FIX SANO: Extrae el informe guardado de la posición cero de la tupla
+                # 💡 FIX ABSOLUTO: Extrae el texto del reporte guardado en la posición cero
                 st.write(saved_report[0])
                 st.caption("🔒 *Your personalized Executive Report has been successfully recorded and saved in your secure profile.*")
             else:
-                # 💡 TEXTO CORTO ADAPTADO: "Generate Report" limpio y compacto de 160px
+                # 💡 TEXTO CORTO ADAPTADO: Botón minimalista impecable de 160px
                 btn_generate_ai = st.button("Generate Report")
                 
                 if btn_generate_ai:
                     api_key = os.environ.get("GEMINI_API_KEY")
-                    if not api_key: st.error("API Secret Key missing.")
+                    if not api_key: 
+                        st.error("API Secret Key missing.")
                     else:
                         with st.spinner("Gemini is analyzing your psychological vectors..."):
                             try:
@@ -354,4 +363,5 @@ else:
                                 st.write(raw_text)
                                 st.success("Report successfully generated and locked!")
                                 st.rerun()
-                            except Exception as e: st.error(f"Google GenAI Connection temporary suspended: {e}")
+                            except Exception as e: 
+                                st.error(f"Google GenAI Connection temporary suspended: {e}")
