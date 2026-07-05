@@ -125,6 +125,7 @@ JOHARI_ADJECTIVES = [
     "Confident", "Dependable", "Dignified", "Empathetic", "Energetic", "Friendly", "Giving", "Happy", "Helpful", "Idealistic", 
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
+
 # ===================================================================================================
 #    [JAHORI WINDOW SAAS - EXECUTIVE EDUCATIONAL UPGRADE] - PUBLIC PANEL & ACCESS (PART 2)
 # ===================================================================================================
@@ -254,130 +255,8 @@ else:
                     
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
-# ===================================================================================================
-#    [JAHORI WINDOW SAAS - RIGID BUTTON PROTECTION V19] - PUBLIC PANEL & ACCESS (PART 2)
-# ===================================================================================================
 
-query_params = st.query_params
 
-if "token" in query_params:
-    target_token = str(query_params["token"])
-    cursor = conn.cursor()
-    cursor.execute("SELECT id FROM user WHERE share_token = ?", (target_token,))
-    user_data = cursor.fetchone()
-    
-    if not user_data:
-        st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
-    else:
-        # 💡 FIX ABSOLUTO DE TU TUPLA (FÚLMINA EL ERROR EN LÍNEA 144): Extrae la posición [0] de user_data de forma limpia
-        target_user_id = int(user_data[0])
-        st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Colleague</h1>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO/GDPR compliant.</p>", unsafe_allow_html=True)
-        st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No names tracked.</div>", unsafe_allow_html=True)
-        
-        st.write("Select 3 to 10 adjectives that best describe your colleague:")
-        selected_friend_words = []
-        cols = st.columns(2)
-        for i, adj in enumerate(JOHARI_ADJECTIVES):
-            with cols[i % 2]:
-                if st.checkbox(adj, key=f"friend_{adj}"):
-                    selected_friend_words.append(adj)
-                    
-        # Instrucción secuencial en inglés para guiar el flujo móvil perfectamente emparejado
-        st.markdown("<p style='text-align: center; color: #444455; font-size: 15px; font-weight: 500; margin-top: 25px; margin-bottom: 0px;'>🔮 Want to get your own Johari analysis with AI support?<br><span style='font-size:13.5px; color:#666677; font-weight:400;'>Submit first, and then sign up with us!</span></p>", unsafe_allow_html=True)
-        
-        col_left, col_right = st.columns(2)
-        with col_left:
-            btn_submit_friend = st.button("Submit")
-        with col_right:
-            btn_signup_viral = st.button("Sign Up Free")
-            
-        if btn_submit_friend:
-            if len(selected_friend_words) < 3 or len(selected_friend_words) > 10:
-                st.error("Please select between 3 and 10 adjectives.")
-            else:
-                feedback_str = ",".join(selected_friend_words)
-                cursor.execute("INSERT INTO feedback (user_id, anonymous_adjectives) VALUES (?, ?)", (target_user_id, feedback_str))
-                conn.commit()
-                st.success("Thank you! Your feedback has been securely submitted.")
-                st.balloons()
-                
-        if btn_signup_viral:
-            st.query_params.clear() 
-            st.session_state.page = "Register"
-            st.rerun()
-else:
-    if "user" not in st.session_state:
-        st.session_state.user = None
-        st.session_state.page = "Home"
-
-    if st.session_state.user is None:
-        if st.session_state.page == "Home":
-            st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 48px; margin-top: 50px;'><span style='color: #3E63DD;'>Discover Your</span> Blind Spots</h1>", unsafe_allow_html=True)
-            st.markdown("<p style='text-align: center; color: #555555; font-size: 18px; max-width: 580px; margin: 0 auto 10px auto; line-height: 1.6;'>Analyze your personality with the Johari Window powered by Artificial Intelligence. 100% private. No software installations required.</p>", unsafe_allow_html=True)
-            
-            st.write("")
-            col1, col2 = st.columns(2)
-            with col1: btn_get = st.button("Get Started ➡️", key="home_azul_get")
-            with col2: btn_log = st.button("Log In", key="home_azul_log")
-                
-            if btn_get: st.session_state.page = "Register"; st.rerun()
-            if btn_log: st.session_state.page = "Login"; st.rerun()
-            
-            st.markdown("<br><br>", unsafe_allow_html=True)
-            with st.expander("ℹ️ Learn more about the Johari Window framework", expanded=True):
-                st.markdown("""
-                    ### What is the Johari Window?
-                    Developed by psychologists Joseph Luft and Harrington Ingham, the **Johari Window** is a cognitive psychological tool used to enhance self-awareness, interpersonal relationships, and leadership dynamics. It fragments human behavioral traits into four distinct quadrants based on whether the information is known or unknown to oneself and others.
-                    
-                    ### How the AI Pipeline Works
-                    1. **Self-Assessment:** You select a set of adjectives that you believe represent your professional persona.
-                    2. **Anonymous Peer Feedback:** You distribute a secure cryptographic token to your network to collect their objective perception.
-                    3. **Vector Matrix Mapping:** The system automatically cross-references both datasets to calculate your *Open, Blind, Hidden, and Unknown areas*.
-                    4. **Gemini Coaching Report:** Google Gemini 2.5 Flash processes your psychological matrix to generate an immediate, tailored leadership execution strategy.
-                """)
-                    
-        elif st.session_state.page == "Register":
-            st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 36px;'><span style='color: #3E63DD;'>Create Your</span> Account</h1>", unsafe_allow_html=True)
-            st.info("🔒 No email required. You can use any custom username and password.")
-            new_user = st.text_input("Choose a Username")
-            new_pass = st.text_input("Password", type="password")
-            rodo = st.checkbox("I accept the anonymous data handling under RODO/GDPR guidelines.")
-            if st.button("Sign Up"):
-                if not rodo: st.error("You must accept the terms to register.")
-                elif not new_user or not new_pass: st.error("Please fill in all fields.")
-                else:
-                    hashed = hashlib.sha256(new_pass.encode()).hexdigest()
-                    generated_token = str(uuid.uuid4())
-                    cursor = conn.cursor()
-                    try:
-                        cursor.execute("INSERT INTO user (username, password_hash, share_token) VALUES (?, ?, ?)", (new_user, hashed, generated_token))
-                        conn.commit()
-                        cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
-                        user_data = cursor.fetchone()
-                        # 💡 EXTRAE EL ENTERO DE LA TUPLA EN POSICIÓN [0]
-                        st.session_state.user = int(user_data[0]) if user_data else None
-                        st.session_state.page = "Dashboard"; st.rerun()
-                    except sqlite3.IntegrityError: st.error("This username is already taken.")
-                        
-        elif st.session_state.page == "Login":
-            st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 36px;'>Log <span style='color: #3E63DD;'>In</span></h1>", unsafe_allow_html=True)
-            st.info("🔒 No email needed. Enter your configured nickname and password to access.")
-            log_user = st.text_input("Username")
-            log_pass = st.text_input("Password", type="password")
-            if st.button("Sign In"):
-                hashed = hashlib.sha256(log_pass.encode()).hexdigest()
-                cursor = conn.cursor()
-                cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
-                result = cursor.fetchone()
-                if result:
-                    # 💡 EXTRAE EL ENTERO DE LA TUPLA EN POSICIÓN [0]
-                    st.session_state.user = int(result[0])
-                    st.session_state.page = "Dashboard"; st.rerun()
-                else: st.error("Incorrect username or password.")
-                    
-        if st.session_state.page != "Home":
-            if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
 # ===================================================================================================
 #    [JAHORI WINDOW SAAS - FINAL PRODUCTION FIXED] - WIZARD PANEL (PART 3)
 # ===================================================================================================
