@@ -326,10 +326,36 @@ else:
                     friends_set.update(words)
                     all_friends_list.extend(words)
             
+                        # Lógicas de cruce de conjuntos (se mantienen intactas)
             open_area = user_set.intersection(friends_set)
             blind_area = friends_set.difference(user_set)
             hidden_area = user_set.difference(friends_set)
             
+            # 💡 MOTOR DINÁMICO DE SIMETRÍA: Contamos cuántos adjetivos tiene el bloque más saturado
+            # Añadimos un valor mínimo de 1 para evitar que de cero si un cuadrante está vacío
+            max_adjectives = max(len(open_area), len(blind_area), len(hidden_area), 1)
+            
+            # Calculamos la altura perfecta: 90px de cabecera/márgenes + 25px por cada adjetivo (estimando 2 por fila)
+            # Puedes ajustar estos números si quieres que las cajas sean más altas o más compactas
+            dynamic_height = 90 + (int(max_adjectives / 2) * 25)
+            if dynamic_height < 130: dynamic_height = 130 # Forzamos un mínimo estético elegante
+            
+            # Inyectamos en caliente la altura calculada SOLO para esta carga de pantalla
+            st.markdown(f"""
+                <style>
+                div[data-testid="stNotification"] {{
+                    height: {dynamic_height}px !important;
+                    min-height: {dynamic_height}px !important;
+                    max-height: {dynamic_height}px !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    justify-content: flex-start !important;
+                    overflow-y: auto !important;
+                }}
+                </style>
+            """, unsafe_allow_html=True)
+            
+            # 🎨 Pintamos la cuadrícula nativa. Ahora el CSS dinámico de arriba obligará a las 4 cajas a medir exactamente lo mismo
             c1, c2 = st.columns(2)
             with c1:
                 st.info(f"👐 **1. Open Area:** \n\n {', '.join(open_area) if open_area else 'None'}")
@@ -337,7 +363,7 @@ else:
             with c2:
                 st.warning(f"👁️ **2. Blind Area:** \n\n {', '.join(blind_area) if blind_area else 'None'}")
                 st.success(f"🔮 **4. Unknown Area:** \n\n Undiscovered qualities left to explore.")
-            
+             
             st.markdown("<br><h3 style='color: #3E63DD; font-weight: 700;'>🧠 Executive Coaching Report</h3>", unsafe_allow_html=True)
             
             if saved_report and saved_report[0]:
