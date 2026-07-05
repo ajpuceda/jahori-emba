@@ -92,7 +92,7 @@ JOHARI_ADJECTIVES = [
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
 # ===================================================================================================
-#    [JAHORI WINDOW EMBA SAAS - PRODUCTION BLINDADO V12] - FLUJO PÚBLICO Y ACCESOS (PART 2)
+#    [JAHORI WINDOW EMBA SAAS - ECO COPY & CTA GROW] - FLUJO PÚBLICO Y ACCESOS (PART 2)
 # ===================================================================================================
 
 query_params = st.query_params
@@ -106,8 +106,7 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        # 💡 FIX ABSOLUTO: Extrae la posición cero de la tupla para evitar fallos de tipo
-        target_user_id = int(user_data[0])
+        target_user_id = int(user_data) if isinstance(user_data, tuple) else int(user_data)
         st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Friend</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO compliant.</p>", unsafe_allow_html=True)
         st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No tracking.</div>", unsafe_allow_html=True)
@@ -120,7 +119,6 @@ if "token" in query_params:
                 if st.checkbox(adj, key=f"friend_{adj}"):
                     selected_friend_words.append(adj)
                     
-        # 💡 TEXTO CORTO ADAPTADO: "Submit" limpio y compacto de 160px
         btn_submit_friend = st.button("Submit")
         
         if btn_submit_friend:
@@ -132,6 +130,17 @@ if "token" in query_params:
                 conn.commit()
                 st.success("Thank you! Your feedback has been securely submitted.")
                 st.balloons()
+        
+        # 💡 NUEVO LLAMADO A LA ACCIÓN (CTA): Bloque persuasivo para captar nuevos alumnos del EMBA
+        st.markdown("<br><hr style='border: 0; border-top: 1px solid #E4E7EB; margin: 30px 0;'>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #444455; font-size: 15px; font-weight: 500; margin-bottom: 5px;'>🔮 ¿Quieres obtener tu propio análisis Johari con AI support?</p>", unsafe_allow_html=True)
+        
+        # Botón nativo de Streamlit de 160px perfectamente centrado por el CSS global
+        if st.button("Regístrate Gratis"):
+            st.query_params.clear() # Limpia el token de la URL para salir del modo "evaluación de amigo"
+            st.session_state.page = "Register" # Enruta al flujo de creación de cuenta nativo
+            st.rerun()
+
 else:
     if "user" not in st.session_state:
         st.session_state.user = None
@@ -175,8 +184,7 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        # 💡 FIX ABSOLUTO: Extrae la posición cero para evitar el TypeError de tuplas
-                        st.session_state.user = int(user_data[0]) if user_data else None
+                        st.session_state.user = int(user_data) if user_data else None
                         st.session_state.page = "Dashboard"; st.rerun()
                     except sqlite3.IntegrityError: st.error("This username is already taken.")
                         
@@ -191,13 +199,13 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    # 💡 FIX ABSOLUTO: Extrae la posición cero para evitar el TypeError de tuplas al loguearse
-                    st.session_state.user = int(result[0])
+                    st.session_state.user = int(result)
                     st.session_state.page = "Dashboard"; st.rerun()
                 else: st.error("Incorrect username or password.")
                     
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
+
 # ===================================================================================================
 #    [JAHORI WINDOW EMBA SAAS - DEFINITIVE HTML MATRIX] - WIZARD PANEL (PART 3)
 # ===================================================================================================
