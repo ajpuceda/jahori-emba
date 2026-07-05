@@ -286,34 +286,51 @@ else:
                     friends_set.update(words)
                     all_friends_list.extend(words)
             
+                       # Lógicas de cruce de conjuntos (se mantienen intactas)
             open_area = user_set.intersection(friends_set)
             blind_area = friends_set.difference(user_set)
             hidden_area = user_set.difference(friends_set)
             
-            # 💡 LOGIC RECIÉN AJUSTADA: Contamos de forma estricta las líneas visuales reales del cuadrante más lleno
+            # Cálculo de líneas del bloque más lleno
             max_lines = max(len(open_area), len(blind_area), len(hidden_area), 1)
             
-            # Cálculo matemático adaptativo: 80px fijos de título + 28px por cada adjetivo real apilado verticalmente
+            # Altura adaptativa perfecta: 80px fijos + 28px por cada adjetivo
             dynamic_height = 80 + (max_lines * 28)
-            if dynamic_height < 160: 
-                dynamic_height = 160  # Mínimo elegante para que no se vea comprimido si hay pocos datos
+            if dynamic_height < 160: dynamic_height = 160
                 
-            # Inyectamos el CSS dinámico forzando tanto la altura del bloque como del contenedor de notificación
+            # 💡 INSTRUCCIÓN MAESTRA DE EXPANSIÓN: Fuerza a las capas internas de Streamlit a rellenar el 100% de la altura calculada
             st.markdown(f"""
                 <style>
-                div[data-testid="stNotification"], .stAlert {{
+                /* Contenedor de la celda de Streamlit */
+                div[data-testid="stNotification"] {{
                     height: {dynamic_height}px !important;
                     min-height: {dynamic_height}px !important;
                     max-height: {dynamic_height}px !important;
                     display: flex !important;
                     flex-direction: column !important;
-                    justify-content: flex-start !important;
                     overflow: hidden !important;
+                }}
+                
+                /* 🔥 EL SECRETO: Fuerza al recuadro de color nativo (.stAlert) a estirarse por completo */
+                div[data-testid="stNotification"] > div,
+                div[data-testid="stNotification"] .stAlert,
+                div[data-testid="stNotification"] div[role="alert"] {{
+                    height: 100% !important;
+                    min-height: 100% !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    flex: 1 1 auto !important;
+                    box-sizing: border-box !important;
+                }}
+                
+                /* Centra sutilmente el contenido interior */
+                div[data-testid="stNotification"] div[data-testid="stMarkdownContainer"] {{
+                    flex-grow: 1 !important;
                 }}
                 </style>
             """, unsafe_allow_html=True)
             
-            # Pintamos los 4 bloques. Ahora el CSS dinámico de arriba obligará a las 4 cajas a medir exactamente la misma altura
+            # Pintamos los 4 bloques simétricos adaptativos
             c1, c2 = st.columns(2)
             with c1:
                 st.info(f"👐 **1. Open Area:** \n\n {', '.join(open_area) if open_area else 'None'}")
@@ -321,6 +338,7 @@ else:
             with c2:
                 st.warning(f"👁️ **2. Blind Area:** \n\n {', '.join(blind_area) if blind_area else 'None'}")
                 st.success(f"🔮 **4. Unknown Area:** \n\n Undiscovered qualities left to explore.")
+
             
             st.markdown("<br><h3 style='color: #3E63DD; font-weight: 700;'>🧠 Executive Coaching Report</h3>", unsafe_allow_html=True)
             
