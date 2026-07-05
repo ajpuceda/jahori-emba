@@ -6,23 +6,23 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [JAHORI WINDOW EMBA SAAS - STABLE V14 CERTIFIED] - CONFIGURACIÓN Y ESTILOS (PART 1)
+#    [JAHORI WINDOW SAAS - 100% ENGLISH PRODUCTION VERSION] - CONFIGURACIÓN Y ESTILOS (PART 1)
 # ===================================================================================================
 
-# 1. Configuración de la pestaña del navegador
+# 1. Browser tab title configuration
 st.set_page_config(page_title="JAHORI - Discover Your Blind Spots", page_icon="🔮", layout="centered")
 
-# 2. Inyección de Estilo CSS Corporativo
+# 2. Premium Corporate CSS Injection
 st.markdown("""
     <style>
-    /* Fondo blanco limpio estilo Google */
+    /* Clean white background style Google */
     .stApp { background-color: #FFFFFF; }
     
-    /* Ocultar elementos nativos de Streamlit */
+    /* Hide native Streamlit layout headers and footers */
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
     .compliance-box { background-color: #F1F3F9; border-left: 4px solid #3E63DD; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
     
-    /* CSS ISOLADO PARA LA HOME (Solo actúa si NO hay barra lateral) */
+    /* ISOLATED CSS FOR HOME PAGE (Only triggers if NO sidebar exists) */
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] {
         display: flex !important; 
         flex-direction: row !important; 
@@ -37,7 +37,7 @@ st.markdown("""
         width: 50% !important; flex: 1 !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 0 !important; margin: 0 !important;
     }
     
-    /* Diseño estándar para botones pequeños (Home, Login, Sign Up, Submit) */
+    /* Standard button layout (Home, Login, Sign Up, Submit) */
     .stButton>button { 
         width: 160px !important; 
         background-color: #3E63DD !important; 
@@ -56,7 +56,7 @@ st.markdown("""
     }
     .stButton>button:hover { background-color: #2E4cbd !important; border-color: #2E4cbd !important; }
     
-    /* REJILLA DE ADJETIVOS INTERNA (2 COLUMNAS) */
+    /* INTERNAL ADJECTIVES GRID (2 COLUMNS) */
     .stApp:has(div[data-testid="stSidebar"]) div[data-testid="stHorizontalBlock"] { 
         max-width: 100% !important; width: 100% !important; display: flex !important; flex-direction: row !important; gap: 15px !important; 
     }
@@ -73,7 +73,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 3. Inicialización síncrona de la Base de Datos SQLite
+# 3. Synchronous Database Initialization
 def init_db():
     conn = sqlite3.connect("reflex.db", check_same_thread=False)
     cursor = conn.cursor()
@@ -86,13 +86,14 @@ def init_db():
 
 conn = init_db()
 
+# The 30 official Johari Window Adjectives
 JOHARI_ADJECTIVES = [
     "Able", "Accepting", "Adaptable", "Bold", "Brave", "Calm", "Caring", "Cheerful", "Clever", "Complex", 
     "Confident", "Dependable", "Dignified", "Empathetic", "Energetic", "Friendly", "Giving", "Happy", "Helpful", "Idealistic", 
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
 # ===================================================================================================
-#    [JAHORI WINDOW EMBA SAAS - STABLE V14 CERTIFIED] - FLUJO PÚBLICO Y ACCESOS (PART 2)
+#    [JAHORI WINDOW SAAS - 100% ENGLISH PRODUCTION VERSION] - PUBLIC PANEL & ACCESS (PART 2)
 # ===================================================================================================
 
 query_params = st.query_params
@@ -106,11 +107,12 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        # 💡 FIX BLINDAJE 1: Extrae la posición cero directamente de la tupla para fulminar el error en links de votación
+        # 💡 BLINDAJE EXTRACTION: Pure integer index to destroy TypeErrors
         target_user_id = int(user_data[0])
-        st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Friend</h1>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO compliant.</p>", unsafe_allow_html=True)
-        st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No tracking.</div>", unsafe_allow_html=True)
+        # 💡 UPDATE: Changed 'Evaluate your Friend' to 'Evaluate Your Colleague' as requested
+        st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Colleague</h1>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO/GDPR compliant.</p>", unsafe_allow_html=True)
+        st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No names or personal tracking.</div>", unsafe_allow_html=True)
         
         st.write("Select 3 to 10 adjectives that best describe your colleague:")
         selected_friend_words = []
@@ -132,12 +134,12 @@ if "token" in query_params:
                 st.success("Thank you! Your feedback has been securely submitted.")
                 st.balloons()
                 
-        # Bloque publicitario de registro orgánico viral
+        # 💡 UPDATE GLOBAL CTA: Transformed to 100% English organic conversion funnel
         st.markdown("<br><hr style='border: 0; border-top: 1px solid #E4E7EB; margin: 30px 0;'>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center; color: #444455; font-size: 15px; font-weight: 500; margin-bottom: 5px;'>🔮 ¿Quieres obtener tu propio análisis Johari con AI support?</p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #444455; font-size: 15px; font-weight: 500; margin-bottom: 5px;'>🔮 Want to get your own Johari analysis with AI support?</p>", unsafe_allow_html=True)
         
-        if st.button("Regístrate Gratis"):
-            st.query_params.clear()
+        if st.button("Sign Up Free"):
+            st.query_params.clear() # Clear token to unbind public view and enter fresh register state
             st.session_state.page = "Register"
             st.rerun()
 else:
@@ -170,9 +172,9 @@ else:
             st.info("🔒 No email required. You can use any custom username and password.")
             new_user = st.text_input("Choose a Username")
             new_pass = st.text_input("Password", type="password")
-            rodo = st.checkbox("I accept the anonymous data handling under RODO/RGPD guidelines.")
+            rodo = st.checkbox("I accept the anonymous data handling under RODO/GDPR guidelines.")
             if st.button("Sign Up"):
-                if not rodo: st.error("You must accept the RODO terms to register.")
+                if not rodo: st.error("You must accept the terms to register.")
                 elif not new_user or not new_pass: st.error("Please fill in all fields.")
                 else:
                     hashed = hashlib.sha256(new_pass.encode()).hexdigest()
@@ -183,7 +185,7 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        # 💡 FIX BLINDAJE 2: Extrae la posición cero para evitar el TypeError de tuplas al registrarse
+                        # 💡 DB INDEX FIX: Extract index 0 to bulletproof new sign ups
                         st.session_state.user = int(user_data[0]) if user_data else None
                         st.session_state.page = "Dashboard"; st.rerun()
                     except sqlite3.IntegrityError: st.error("This username is already taken.")
@@ -199,7 +201,7 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    # 💡 FIX BLINDAJE 3 (ELIMINA TU ERROR DE LA LÍNEA 203): Extrae la posición cero directamente de la tupla result
+                    # 💡 DB INDEX FIX: Extract index 0 to bulletproof login redirect
                     st.session_state.user = int(result[0])
                     st.session_state.page = "Dashboard"; st.rerun()
                 else: st.error("Incorrect username or password.")
@@ -207,7 +209,7 @@ else:
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
 # ===================================================================================================
-#    [JAHORI WINDOW EMBA SAAS - STABLE V14 CERTIFIED] - WIZARD PANEL SECTOR (PART 3)
+#    [JAHORI WINDOW SAAS - 100% ENGLISH PRODUCTION VERSION] - WIZARD PANEL (PART 3)
 # ===================================================================================================
     else:
         st.sidebar.markdown(f"### 🔒 Session Secure")
@@ -222,7 +224,7 @@ else:
         
         cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = ?", (current_user_id,))
         f_count_data = cursor.fetchone()
-        # 💡 FIX BLINDAJE 4 (ELIMINA TU ERROR DE LA LÍNEA 219): Coloca [0] de forma limpia para liquidar el conteo por tupla
+        # 💡 DB INDEX FIX: Extract index 0 safely inside the conditional
         f_count = int(f_count_data[0]) if f_count_data else 0
         
         cursor.execute("SELECT report_text FROM ai_report WHERE user_id = ?", (current_user_id,))
@@ -230,7 +232,7 @@ else:
         
         st.markdown("<h1 style='font-size:28px; font-weight:700;'>Your Johari Control Panel</h1>", unsafe_allow_html=True)
         
-        # Enrutamiento síncrono por pasos secuenciales (Wizard)
+        # Sequential Wizard Routing
         if not has_self:
             current_step = "Step 1: Self Assessment"
         elif f_count < 3 and not saved_report:
@@ -263,11 +265,11 @@ else:
         elif current_step == "Step 2: Link Distribution":
             st.subheader("🔗 Step 2: Distribute Your Anonymous URL")
             st.warning(f"Waiting for feedback. You have received ({f_count}/3) evaluations so far.")
-            st.write("Copy this secure link and share it with your EMBA network via WhatsApp or Slack:")
+            # 💡 UPDATE: Instructs to share mass-scale with "your network" rather than restricting to EMBA
+            st.write("Copy this secure link and share it with your network via WhatsApp, LinkedIn or Slack:")
             
             cursor.execute("SELECT share_token FROM user WHERE id = ?", (current_user_id,))
             token_res = cursor.fetchone()
-            # 💡 FIX BLINDAJE 5: Extrae la posición cero para construir la URL criptográfica limpia sin fallos
             user_token = token_res[0] if token_res else "error"
             try:
                 ctx = st.context
@@ -278,15 +280,14 @@ else:
                 generated_url = f"http://localhost:8501/?token={user_token}"
             
             st.code(generated_url)
-            st.info("💡 Once you receive at least 3 anonymous evaluations from your colleagues, this window will automatically unlock the AI coaching report button.")
+            st.info("💡 Once you receive at least 3 anonymous evaluations from your network, this window will automatically unlock the AI coaching report button.")
             if st.button("🔄 Refresh Progress"): st.rerun()
         elif current_step == "Step 3: Executive AI Matrix":
             st.subheader("📊 Step 3: Your Personality Matrix & Leadership Plan")
             
             cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
             user_res = cursor.fetchone()
-            # 💡 FIX BLINDAJE 6: Extrae la cadena de texto de la posición cero de la tupla antes de separar por comas
-            user_set = set(user_res[0].split(",")) if user_res and user_res else set()
+            user_set = set(user_res[0].split(",")) if user_res and user_res[0] else set()
             
             cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (current_user_id,))
             feedbacks = cursor.fetchall()
@@ -308,7 +309,7 @@ else:
             hidden_html = "<br>".join(hidden_area) if hidden_area else "None"
             unknown_html = "<br>".join(unknown_area)
             
-            # 💡 LA MATRIZ DE ALTA FIDELIDAD: Tabla HTML pura que clava las celdas simétricas del 50% en 2 filas fijas perfectas
+            # THE ABSOLUTE SYMMETRIC GRID: Pure inline HTML layout forcing 50% parallel blocks
             st.markdown(f"""
                 <table style="width:100%; border-collapse: separate; border-spacing: 15px; font-family: -apple-system, sans-serif; table-layout: fixed;">
                     <tr>
@@ -337,7 +338,6 @@ else:
             st.markdown("<br><h3 style='color: #3E63DD; font-weight: 700;'>🧠 Executive Coaching Report</h3>", unsafe_allow_html=True)
             
             if saved_report and saved_report[0]:
-                # 💡 FIX BLINDAJE 7: Lee de la posición cero el informe guardado de Gemini
                 st.write(saved_report[0])
                 st.caption("🔒 *Your personalized Executive Report has been successfully recorded and saved in your secure profile.*")
             else:
