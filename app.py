@@ -126,7 +126,7 @@ JOHARI_ADJECTIVES = [
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
 # ===================================================================================================
-#    [JAHORI WINDOW SAAS - RIGID BUTTON PROTECTION V17] - PUBLIC PANEL & ACCESS (PART 2)
+#    [JAHORI WINDOW SAAS - RIGID BUTTON PROTECTION V18] - PUBLIC PANEL & ACCESS (PART 2)
 # ===================================================================================================
 
 query_params = st.query_params
@@ -140,8 +140,8 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        # 💡 FIX QUIRÚRGICO MÁXIMO (ELIMINA EL ERROR DE TU LÍNEA 144): Extrae la posición [0] de la tupla sqlite de forma estricta
-        target_user_id = int(user_data[0])
+        # DB INDEX FIX: Pure extraction to block error loops
+        target_user_id = int(user_data)
         st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Colleague</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO/GDPR compliant.</p>", unsafe_allow_html=True)
         st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No names tracked.</div>", unsafe_allow_html=True)
@@ -154,8 +154,8 @@ if "token" in query_params:
                 if st.checkbox(adj, key=f"friend_{adj}"):
                     selected_friend_words.append(adj)
                     
-        # 💡 SOLUCIÓN MAESTRA NATIVA: Desempaquetamos st.columns(2) en dos variables independientes para evitar colapsos
-        st.markdown("<p style='text-align: center; color: #444455; font-size: 15px; font-weight: 500; margin-top: 25px; margin-bottom: 0px;'>🔮 Want to get your own Johari analysis with AI support?</p>", unsafe_allow_html=True)
+        # 💡 UPDATE SECUENCIAL: Instrucción clara en inglés para guiar el flujo de conversión del usuario
+        st.markdown("<p style='text-align: center; color: #444455; font-size: 15px; font-weight: 500; margin-top: 25px; margin-bottom: 0px;'>🔮 Want to get your own Johari analysis with AI support?<br><span style='font-size:13.5px; color:#666677; font-weight:400;'>Submit first, and then sign up with us!</span></p>", unsafe_allow_html=True)
         
         col_left, col_right = st.columns(2)
         with col_left:
@@ -226,8 +226,7 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        # 💡 DB INDEX FIX 2: Extrae la posición cero de la tupla de registro de forma segura
-                        st.session_state.user = int(user_data[0]) if user_data else None
+                        st.session_state.user = int(user_data) if user_data else None
                         st.session_state.page = "Dashboard"; st.rerun()
                     except sqlite3.IntegrityError: st.error("This username is already taken.")
                         
@@ -242,15 +241,12 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    # 💡 DB INDEX FIX 3: Extrae la posición cero para evitar fallos al iniciar sesión
-                    st.session_state.user = int(result[0])
+                    st.session_state.user = int(result)
                     st.session_state.page = "Dashboard"; st.rerun()
                 else: st.error("Incorrect username or password.")
                     
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
-
-
 # ===================================================================================================
 #    [JAHORI WINDOW SAAS - FIXED V15] - WIZARD PANEL (PART 3)
 # ===================================================================================================
