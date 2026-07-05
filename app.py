@@ -6,13 +6,13 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [JAHORI WINDOW EMBA SAAS - PRODUCTION BLINDADO V11] - CONFIGURACIÓN Y ESTILOS (PART 1)
+#    [JAHORI WINDOW EMBA SAAS - PRODUCTION BLINDADO V12] - CONFIGURACIÓN Y ESTILOS (PART 1)
 # ===================================================================================================
 
 # 1. Configuración de la pestaña del navegador
 st.set_page_config(page_title="JAHORI - Discover Your Blind Spots", page_icon="🔮", layout="centered")
 
-# 2. Inyección de Estilo CSS Corporativo
+# 2. Inyección de Estilo CSS Corporativo (Centrado y rejilla de adjetivos de 2 columnas)
 st.markdown("""
     <style>
     /* Fondo blanco limpio estilo Google */
@@ -37,22 +37,26 @@ st.markdown("""
         width: 50% !important; flex: 1 !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 0 !important; margin: 0 !important;
     }
     
-    /* Diseño estándar para botones pequeños (Home, Login, Sign Up) */
+    /* Diseño estándar para botones pequeños (Home, Login, Sign Up, y los nuevos textos cortos) */
     .stButton>button { 
-        width: 160px !important; background-color: #3E63DD !important; color: white !important; border-radius: 20px !important; border: 1px solid #3E63DD !important; padding: 10px 20px !important; font-weight: 500 !important; font-size: 14.5px !important; cursor: pointer !important; box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important; margin-left: auto !important; margin-right: auto !important; display: block !important; white-space: nowrap !important;
+        width: 160px !important; 
+        background-color: #3E63DD !important; 
+        color: white !important; 
+        border-radius: 20px !important; 
+        border: 1px solid #3E63DD !important; 
+        padding: 10px 20px !important; 
+        font-weight: 500 !important; 
+        font-size: 14.5px !important; 
+        cursor: pointer !important; 
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important; 
+        margin-left: auto !important; 
+        margin-right: auto !important; 
+        display: block !important; 
+        white-space: nowrap !important;
     }
     .stButton>button:hover { background-color: #2E4cbd !important; border-color: #2E4cbd !important; }
     
-    /* Ajuste para los botones con textos limpios y cortos */
-    div.long-text-button .stButton>button {
-        width: 100% !important;
-        max-width: 200px !important;
-        white-space: nowrap !important;
-        display: block !important;
-        margin: 15px auto !important;
-    }
-    
-    /* REJILLA DE ADJETIVOS (2 COLUMNAS) */
+    /* REJILLA DE ADJETIVOS INTERNA (2 COLUMNAS) */
     .stApp:has(div[data-testid="stSidebar"]) div[data-testid="stHorizontalBlock"] { 
         max-width: 100% !important; width: 100% !important; display: flex !important; flex-direction: row !important; gap: 15px !important; 
     }
@@ -69,7 +73,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 3. Inicialización de la Base de Datos SQLite
+# 3. Inicialización síncrona de la Base de Datos SQLite
 def init_db():
     conn = sqlite3.connect("reflex.db", check_same_thread=False)
     cursor = conn.cursor()
@@ -88,7 +92,7 @@ JOHARI_ADJECTIVES = [
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
 # ===================================================================================================
-#    [JAHORI WINDOW EMBA SAAS - BLINDADO V11] - FLUJO PÚBLICO Y ACCESOS (PART 2)
+#    [JAHORI WINDOW EMBA SAAS - PRODUCTION BLINDADO V12] - FLUJO PÚBLICO Y ACCESOS (PART 2)
 # ===================================================================================================
 
 query_params = st.query_params
@@ -102,7 +106,7 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        # 💡 FIX SEGURO: Extracción correcta del entero desde la tupla
+        # 💡 FIX ABSOLUTO: Extrae la posición cero de la tupla para evitar fallos de tipo
         target_user_id = int(user_data[0])
         st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Friend</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO compliant.</p>", unsafe_allow_html=True)
@@ -113,14 +117,11 @@ if "token" in query_params:
         cols = st.columns(2)
         for i, adj in enumerate(JOHARI_ADJECTIVES):
             with cols[i % 2]:
-                st.checkbox(adj, key=f"friend_{adj}")
-                if st.session_state.get(f"friend_{adj}"):
+                if st.checkbox(adj, key=f"friend_{adj}"):
                     selected_friend_words.append(adj)
                     
-        # 💡 TEXTO CORTO OPTIMIZADO: "Submit" impecable para móviles estrechos
-        st.markdown("<div class='long-text-button'>", unsafe_allow_html=True)
+        # 💡 TEXTO CORTO ADAPTADO: "Submit" limpio y compacto de 160px
         btn_submit_friend = st.button("Submit")
-        st.markdown("</div>", unsafe_allow_html=True)
         
         if btn_submit_friend:
             if len(selected_friend_words) < 3 or len(selected_friend_words) > 10:
@@ -174,7 +175,7 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        # 💡 FIX SEGURO: Extracción correcta del ID en el registro
+                        # 💡 FIX ABSOLUTO: Extrae la posición cero para evitar el TypeError de tuplas
                         st.session_state.user = int(user_data[0]) if user_data else None
                         st.session_state.page = "Dashboard"; st.rerun()
                     except sqlite3.IntegrityError: st.error("This username is already taken.")
@@ -190,7 +191,7 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    # 💡 FIX SEGURO: Extracción correcta del ID en el inicio de sesión
+                    # 💡 FIX ABSOLUTO: Extrae la posición cero para evitar el TypeError de tuplas al loguearse
                     st.session_state.user = int(result[0])
                     st.session_state.page = "Dashboard"; st.rerun()
                 else: st.error("Incorrect username or password.")
@@ -198,7 +199,7 @@ else:
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
 # ===================================================================================================
-#    [JAHORI WINDOW EMBA SAAS - BLINDADO V11] - WIZARD PANEL SECTOR (PART 3)
+#    [JAHORI WINDOW EMBA SAAS - PRODUCTION BLINDADO V12] - WIZARD PANEL SECTOR (PART 3)
 # ===================================================================================================
     else:
         st.sidebar.markdown(f"### 🔒 Session Secure")
@@ -215,15 +216,15 @@ else:
         
         cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = ?", (current_user_id,))
         f_count_data = cursor.fetchone()
-        # 💡 FIX SEGURO: Coloca los datos de SQLite dentro de int() de forma nativa limpia
-        f_count = int(f_count_data) if f_count_data else 0
+        # 💡 FIX DE TU ÚLTIMO ERROR TRACEBACK: Extrae de forma estricta la posición [0] de la tupla antes de convertir
+        f_count = int(f_count_data[0]) if f_count_data else 0
         
         cursor.execute("SELECT report_text FROM ai_report WHERE user_id = ?", (current_user_id,))
         saved_report = cursor.fetchone()
         
         st.markdown("<h1 style='font-size:28px; font-weight:700;'>Your Johari Control Panel</h1>", unsafe_allow_html=True)
         
-        # Enrutamiento síncrono por pasos secuenciales (Wizard)
+        # Enrutamiento forzado por pasos secuenciales (Wizard)
         if not has_self:
             current_step = "Step 1: Self Assessment"
         elif f_count < 3 and not saved_report:
@@ -238,14 +239,11 @@ else:
             cols = st.columns(2)
             for i, adj in enumerate(JOHARI_ADJECTIVES):
                 with cols[i % 2]:
-                    st.checkbox(adj, key=f"my_{adj}")
-                    if st.session_state.get(f"my_{adj}"):
+                    if st.checkbox(adj, key=f"my_{adj}"):
                         selected_my_words.append(adj)
                         
-            # Botón corto y optimizado para móviles sin desvíos
-            st.markdown("<div class='long-text-button'>", unsafe_allow_html=True)
+            # 💡 TEXTO CORTO ADAPTADO: "Next ➡️" impecable de 160px
             btn_save_self = st.button("Next ➡️")
-            st.markdown("</div>", unsafe_allow_html=True)
             
             if btn_save_self:
                 if len(selected_my_words) < 3 or len(selected_my_words) > 10:
@@ -264,7 +262,8 @@ else:
             
             cursor.execute("SELECT share_token FROM user WHERE id = ?", (current_user_id,))
             token_res = cursor.fetchone()
-            user_token = token_res if token_res else "error"
+            # 💡 FIX SANO: Extrae el token de la posición cero de la tupla
+            user_token = token_res[0] if token_res else "error"
             try:
                 ctx = st.context
                 current_host = ctx.headers.get("Host", "localhost:8501")
@@ -282,69 +281,66 @@ else:
             
             cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
             user_res = cursor.fetchone()
-            user_set = set(user_res.split(",")) if user_res and user_res else set()
+            # 💡 FIX SANO: Extrae los adjetivos de la posición cero antes de separarlos por comas
+            user_set = set(user_res[0].split(",")) if user_res and user_res[0] else set()
             
             cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (current_user_id,))
             feedbacks = cursor.fetchall()
             friends_set = set()
             all_friends_list = []
             for f in feedbacks:
-                if f and f:
-                    words = f.split(",")
+                if f and f[0]:
+                    words = f[0].split(",")
                     friends_set.update(words)
                     all_friends_list.extend(words)
             
             open_area = user_set.intersection(friends_set)
             blind_area = friends_set.difference(user_set)
             hidden_area = user_set.difference(friends_set)
-            unknown_area = ["Undiscovered qualities left to explore."]
             
-            open_html = "<br>".join(open_area) if open_area else "None"
-            blind_html = "<br>".join(blind_area) if blind_area else "None"
-            hidden_html = "<br>".join(hidden_area) if hidden_area else "None"
-            unknown_html = "<br>".join(unknown_area)
+            # 💡 LA SOLUCIÓN ESTABLE: Contamos de forma estricta las líneas visuales reales del cuadrante más lleno
+            max_lines = max(len(open_area), len(blind_area), len(hidden_area), 1)
             
-            # MATRIZ HTML BLINDADA: Celdas del 50% perfectas con fondos corporativos homogéneos
+            # Cálculo matemático adaptativo: 80px fijos de título + 28px por cada adjetivo real apilado verticalmente
+            dynamic_height = 80 + (max_lines * 28)
+            if dynamic_height < 160: dynamic_height = 160
+                
+            # Inyectamos el CSS dinámico forzando que las 4 cajas nativas midan exactamente lo mismo al píxel
             st.markdown(f"""
-                <table style="width:100%; border-collapse: separate; border-spacing: 15px; font-family: -apple-system, sans-serif; table-layout: fixed;">
-                    <tr>
-                        <td style="width:50%; background-color: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 16px; vertical-align: top;">
-                            <div style="color: #1E40AF; font-weight: 700; margin-bottom: 12px; font-size: 16px;">👐 1. Open Area:</div>
-                            <div style="color: #1E3A8A; font-weight: 500; font-size: 15px; line-height: 1.6;">{open_html}</div>
-                        </td>
-                        <td style="width:50%; background-color: #FEFCE8; border: 1px solid #FEF08A; border-radius: 8px; padding: 16px; vertical-align: top;">
-                            <div style="color: #854D0E; font-weight: 700; margin-bottom: 12px; font-size: 16px;">👁️ 2. Blind Area:</div>
-                            <div style="color: #713F12; font-weight: 500; font-size: 15px; line-height: 1.6;">{blind_html}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width:50%; background-color: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; padding: 16px; vertical-align: top;">
-                            <div style="color: #991B1B; font-weight: 700; margin-bottom: 12px; font-size: 16px;">🔒 3. Hidden Area:</div>
-                            <div style="color: #7F1D1D; font-weight: 500; font-size: 15px; line-height: 1.6;">{hidden_html}</div>
-                        </td>
-                        <td style="width:50%; background-color: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; padding: 16px; vertical-align: top;">
-                            <div style="color: #166534; font-weight: 700; margin-bottom: 12px; font-size: 16px;">🔮 4. Unknown Area:</div>
-                            <div style="color: #14532D; font-weight: 500; font-size: 15px; line-height: 1.6;">{unknown_html}</div>
-                        </td>
-                    </tr>
-                </table>
+                <style>
+                div[data-testid="stNotification"] {{
+                    height: {dynamic_height}px !important;
+                    min-height: {dynamic_height}px !important;
+                    max-height: {dynamic_height}px !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    justify-content: flex-start !important;
+                    overflow: hidden !important;
+                }}
+                </style>
             """, unsafe_allow_html=True)
+            
+            c1, c2 = st.columns(2)
+            with c1:
+                st.info(f"👐 **1. Open Area:** \n\n {', '.join(open_area) if open_area else 'None'}")
+                st.error(f"🔒 **3. Hidden Area:** \n\n {', '.join(hidden_area) if hidden_area else 'None'}")
+            with c2:
+                st.warning(f"👁️ **2. Blind Area:** \n\n {', '.join(blind_area) if blind_area else 'None'}")
+                st.success(f"🔮 **4. Unknown Area:** \n\n Undiscovered qualities left to explore.")
             
             st.markdown("<br><h3 style='color: #3E63DD; font-weight: 700;'>🧠 Executive Coaching Report</h3>", unsafe_allow_html=True)
             
-            if saved_report and saved_report:
-                st.write(saved_report)
+            if saved_report and saved_report[0]:
+                # 💡 FIX SANO: Extrae el informe guardado de la posición cero de la tupla
+                st.write(saved_report[0])
                 st.caption("🔒 *Your personalized Executive Report has been successfully recorded and saved in your secure profile.*")
             else:
-                # Botón de texto corto y limpio
-                st.markdown("<div class='long-text-button'>", unsafe_allow_html=True)
+                # 💡 TEXTO CORTO ADAPTADO: "Generate Report" limpio y compacto de 160px
                 btn_generate_ai = st.button("Generate Report")
-                st.markdown("</div>", unsafe_allow_html=True)
                 
                 if btn_generate_ai:
                     api_key = os.environ.get("GEMINI_API_KEY")
-                    if not api_key: 
-                        st.error("API Secret Key missing.")
+                    if not api_key: st.error("API Secret Key missing.")
                     else:
                         with st.spinner("Gemini is analyzing your psychological vectors..."):
                             try:
@@ -358,5 +354,4 @@ else:
                                 st.write(raw_text)
                                 st.success("Report successfully generated and locked!")
                                 st.rerun()
-                            except Exception as e: 
-                                st.error(f"Google GenAI Connection temporary suspended: {e}")
+                            except Exception as e: st.error(f"Google GenAI Connection temporary suspended: {e}")
