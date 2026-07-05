@@ -6,7 +6,7 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [JAHORI WINDOW SAAS - RIGID BUTTON PROTECTION V16] - CONFIGURACIÓN Y ESTILOS (PART 1)
+#    [JAHORI WINDOW SAAS - RIGID BUTTON PROTECTION V17] - CONFIGURACIÓN Y ESTILOS (PART 1)
 # ===================================================================================================
 
 # 1. Browser tab title configuration
@@ -22,15 +22,15 @@ st.markdown("""
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
     .compliance-box { background-color: #F1F3F9; border-left: 4px solid #3E63DD; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
     
-    /* 💡 REGLA MAESTRA DE COLUMNAS PÚBLICAS: Solo actúa en la Home o Votación (Cuando NO hay barra lateral) */
+    /* 💡 REGLA DE COLUMNAS PÚBLICAS: Solo actúa en la Home o Votación (Cuando NO hay barra lateral) */
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] {
         display: flex !important; 
         flex-direction: row !important; /* Fuerza a mantener la fila horizontal en móviles para evitar el efecto escalera */
         justify-content: center !important; 
         align-items: center !important; 
-        gap: 20px !important; 
+        gap: 15px !important; 
         width: 100% !important; 
-        max-width: 420px !important; /* Ensanchado sutilmente para acomodar "Sign Up Free" de forma holgada */
+        max-width: 420px !important; /* Ensanchado sutilmente para acomodar los dos botones holgadamente */
         margin: 25px auto 0 auto !important;
     }
     
@@ -126,7 +126,7 @@ JOHARI_ADJECTIVES = [
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
 # ===================================================================================================
-#    [JAHORI WINDOW SAAS - RIGID BUTTON PROTECTION V16] - PUBLIC PANEL & ACCESS (PART 2)
+#    [JAHORI WINDOW SAAS - RIGID BUTTON PROTECTION V17] - PUBLIC PANEL & ACCESS (PART 2)
 # ===================================================================================================
 
 query_params = st.query_params
@@ -140,8 +140,8 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        # DB INDEX FIX: Pure extraction to block error loops
-        target_user_id = int(user_data)
+        # 💡 FIX QUIRÚRGICO MÁXIMO (ELIMINA EL ERROR DE TU LÍNEA 144): Extrae la posición [0] de la tupla sqlite de forma estricta
+        target_user_id = int(user_data[0])
         st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Colleague</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO/GDPR compliant.</p>", unsafe_allow_html=True)
         st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No names tracked.</div>", unsafe_allow_html=True)
@@ -154,13 +154,13 @@ if "token" in query_params:
                 if st.checkbox(adj, key=f"friend_{adj}"):
                     selected_friend_words.append(adj)
                     
-        # 💡 SOLUCIÓN DEFINITIVA DE ALINEACIÓN: Dividimos la sección inferior en 2 columnas físicas para emparejar los botones
+        # 💡 SOLUCIÓN MAESTRA NATIVA: Desempaquetamos st.columns(2) en dos variables independientes para evitar colapsos
         st.markdown("<p style='text-align: center; color: #444455; font-size: 15px; font-weight: 500; margin-top: 25px; margin-bottom: 0px;'>🔮 Want to get your own Johari analysis with AI support?</p>", unsafe_allow_html=True)
         
-        btn_cols = st.columns(2)
-        with btn_cols[0]:
+        col_left, col_right = st.columns(2)
+        with col_left:
             btn_submit_friend = st.button("Submit")
-        with btn_cols[1]:
+        with col_right:
             btn_signup_viral = st.button("Sign Up Free")
             
         if btn_submit_friend:
@@ -226,7 +226,8 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        st.session_state.user = int(user_data) if user_data else None
+                        # 💡 DB INDEX FIX 2: Extrae la posición cero de la tupla de registro de forma segura
+                        st.session_state.user = int(user_data[0]) if user_data else None
                         st.session_state.page = "Dashboard"; st.rerun()
                     except sqlite3.IntegrityError: st.error("This username is already taken.")
                         
@@ -241,12 +242,14 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    st.session_state.user = int(result)
+                    # 💡 DB INDEX FIX 3: Extrae la posición cero para evitar fallos al iniciar sesión
+                    st.session_state.user = int(result[0])
                     st.session_state.page = "Dashboard"; st.rerun()
                 else: st.error("Incorrect username or password.")
                     
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
+
 
 # ===================================================================================================
 #    [JAHORI WINDOW SAAS - FIXED V15] - WIZARD PANEL (PART 3)
