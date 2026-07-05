@@ -6,7 +6,7 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [JAHORI WINDOW SAAS - FINAL PRODUCTION FIXED] - CONFIGURACIÓN Y ESTILOS (PART 1)
+#    [JAHORI WINDOW SAAS - FIXED V15] - CONFIGURACIÓN Y ESTILOS (PART 1)
 # ===================================================================================================
 
 # 1. Browser tab title configuration
@@ -56,7 +56,7 @@ st.markdown("""
     }
     .stButton>button:hover { background-color: #2E4cbd !important; border-color: #2E4cbd !important; }
     
-    /* 💡 REGLA DE INTERCEPCIÓN MÓVIL VERTICAL EXTRICTA: Fuerza el centrado absoluto en Smartphones */
+    /* REGLA DE INTERCEPCIÓN MÓVIL VERTICAL EXTRICTA: Fuerza el centrado absoluto en Smartphones */
     @media (max-width: 576px) {
         .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] {
             display: flex !important;
@@ -97,7 +97,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 3. Synchronous Database Initialization
+# 3. Database Initialization
 def init_db():
     conn = sqlite3.connect("reflex.db", check_same_thread=False)
     cursor = conn.cursor()
@@ -110,14 +110,13 @@ def init_db():
 
 conn = init_db()
 
-# The 30 official Johari Window Adjectives
 JOHARI_ADJECTIVES = [
     "Able", "Accepting", "Adaptable", "Bold", "Brave", "Calm", "Caring", "Cheerful", "Clever", "Complex", 
     "Confident", "Dependable", "Dignified", "Empathetic", "Energetic", "Friendly", "Giving", "Happy", "Helpful", "Idealistic", 
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
 # ===================================================================================================
-#    [JAHORI WINDOW SAAS - FINAL PRODUCTION FIXED] - PUBLIC PANEL & ACCESS (PART 2)
+#    [JAHORI WINDOW SAAS - FIXED V15] - PUBLIC PANEL & ACCESS (PART 2)
 # ===================================================================================================
 
 query_params = st.query_params
@@ -131,8 +130,8 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        # 💡 FIX QUIRÚRGICO ABSOLUTO (ELIMINA EL ERROR DE TU LÍNEA 138): Extrae la posición cero de la tupla user_data
-        target_user_id = int(user_data)
+        # 💡 DB INDEX FIX 1: Extracción limpia de la tupla para la vista de colegas
+        target_user_id = int(user_data[0])
         st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Colleague</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO/GDPR compliant.</p>", unsafe_allow_html=True)
         st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No names or personal tracking.</div>", unsafe_allow_html=True)
@@ -214,7 +213,8 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        st.session_state.user = int(user_data) if user_data else None
+                        # 💡 DB INDEX FIX 2 (FÚLMINA EL ERROR DE REGISTRO): Extrae la posición cero de la tupla
+                        st.session_state.user = int(user_data[0]) if user_data else None
                         st.session_state.page = "Dashboard"; st.rerun()
                     except sqlite3.IntegrityError: st.error("This username is already taken.")
                         
@@ -229,14 +229,15 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    st.session_state.user = int(result)
+                    # 💡 DB INDEX FIX 3: Extrae la posición cero para evitar fallos al iniciar sesión
+                    st.session_state.user = int(result[0])
                     st.session_state.page = "Dashboard"; st.rerun()
                 else: st.error("Incorrect username or password.")
                     
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
 # ===================================================================================================
-#    [JAHORI WINDOW SAAS - FINAL PRODUCTION FIXED] - WIZARD PANEL (PART 3)
+#    [JAHORI WINDOW SAAS - FIXED V15] - WIZARD PANEL (PART 3)
 # ===================================================================================================
     else:
         st.sidebar.markdown(f"### 🔒 Session Secure")
@@ -251,7 +252,8 @@ else:
         
         cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = ?", (current_user_id,))
         f_count_data = cursor.fetchone()
-        f_count = int(f_count_data) if f_count_data else 0
+        # 💡 DB INDEX FIX 4: Extrae la posición cero de forma nativa de la tupla de recuento
+        f_count = int(f_count_data[0]) if f_count_data else 0
         
         cursor.execute("SELECT report_text FROM ai_report WHERE user_id = ?", (current_user_id,))
         saved_report = cursor.fetchone()
@@ -295,7 +297,8 @@ else:
             
             cursor.execute("SELECT share_token FROM user WHERE id = ?", (current_user_id,))
             token_res = cursor.fetchone()
-            user_token = token_res if token_res else "error"
+            # 💡 DB INDEX FIX 5: Extrae la posición cero para construir la URL criptográfica limpia sin fallos
+            user_token = token_res[0] if token_res else "error"
             try:
                 ctx = st.context
                 current_host = ctx.headers.get("Host", "localhost:8501")
@@ -312,15 +315,16 @@ else:
             
             cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
             user_res = cursor.fetchone()
-            user_set = set(user_res.split(",")) if user_res and user_res else set()
+            # 💡 DB INDEX FIX 6: Extrae los adjetivos de la posición cero de la tupla antes de separar por comas
+            user_set = set(user_res[0].split(",")) if user_res and user_res else set()
             
             cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (current_user_id,))
             feedbacks = cursor.fetchall()
             friends_set = set()
             all_friends_list = []
             for f in feedbacks:
-                if f and f:
-                    words = f.split(",")
+                if f and f[0]:
+                    words = f[0].split(",")
                     friends_set.update(words)
                     all_friends_list.extend(words)
             
@@ -362,8 +366,9 @@ else:
             
             st.markdown("<br><h3 style='color: #3E63DD; font-weight: 700;'>🧠 Executive Coaching Report</h3>", unsafe_allow_html=True)
             
-            if saved_report and saved_report:
-                st.write(saved_report)
+            if saved_report and saved_report[0]:
+                # 💡 DB INDEX FIX 7: Lee de la posición cero el informe guardado de Gemini
+                st.write(saved_report[0])
                 st.caption("🔒 *Your personalized Executive Report has been successfully recorded and saved in your secure profile.*")
             else:
                 btn_generate_ai = st.button("Generate Report")
