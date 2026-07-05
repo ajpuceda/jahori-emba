@@ -62,7 +62,7 @@ st.markdown("""
     }
     .stButton>button:hover { background-color: #2E4cbd !important; border-color: #2E4cbd !important; }
     
-    /* 💡 MEJORA EN BOTONES LARGOS: Fuerza un ancho extendido para evitar cortes de texto */
+    /* MEJORA EN BOTONES LARGOS: Fuerza un ancho extendido para evitar cortes de texto */
     div.long-text-button .stButton>button {
         width: 260px !important;
         white-space: nowrap !important;
@@ -99,7 +99,7 @@ st.markdown("""
     div[data-testid="stCheckbox"] label { display: flex !important; align-items: center !important; height: 100% !important; width: 100% !important; }
     div[data-testid="stCheckbox"] label p { color: #333333 !important; font-weight: 500 !important; font-size: 15px !important; white-space: nowrap !important; margin: 0 !important; }
     
-    /* 💡 MEJORA MATRIZ CUADRANTES: Obliga a las cajas de color a tener una altura mínima idéntica para formar un bloque simétrico */
+    /* MEJORA MATRIZ CUADRANTES: Obliga a las cajas de color a tener una altura mínima idéntica para formar un bloque simétrico */
     div[data-testid="stNotification"] {
         min-height: 140px !important;
         display: flex !important;
@@ -118,7 +118,7 @@ def init_db():
     cursor.execute("CREATE TABLE IF NOT EXISTS feedback (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, anonymous_adjectives TEXT)")
     cursor.execute("CREATE TABLE IF NOT EXISTS ai_report (user_id INTEGER PRIMARY KEY, report_text TEXT)")
     conn.commit()
-    return conn  # 💡 CORRECCIÓN NATIVA: Ahora el return está perfectamente metido dentro de la función
+    return conn  # 💡 IDENTACIÓN FIJADA AL PÍXEL: Dentro de la función para eliminar el SyntaxError
 
 conn = init_db()
 
@@ -128,7 +128,7 @@ JOHARI_ADJECTIVES = [
     "Confident", "Dependable", "Dignified", "Empathetic", "Energetic", "Friendly", "Giving", "Happy", "Helpful", "Idealistic", 
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
-#===================================================================================================
+# ===================================================================================================
 #    [JAHORI WINDOW EMBA SAAS - PREMIUM SIMETRÍA V5] - FLUJO PÚBLICO Y ACCESOS (PART 2)
 # ===================================================================================================
 
@@ -155,7 +155,7 @@ if "token" in query_params:
             with cols[i % 2]:
                 if st.checkbox(adj, key=f"friend_{adj}"): selected_friend_words.append(adj)
                     
-        # 💡 BOTÓN LARGO: Enmarcado en la clase larga para que quepa entero sin cortes
+        # BOTÓN LARGO: Enmarcado en la clase larga para que quepa entero sin cortes
         st.markdown("<div class='long-text-button'>", unsafe_allow_html=True)
         btn_submit_friend = st.button("Submit Anonymous Feedback")
         st.markdown("</div>", unsafe_allow_html=True)
@@ -188,7 +188,7 @@ else:
             if btn_log: st.session_state.page = "Login"; st.rerun()
             
             st.markdown("<br><br>", unsafe_allow_html=True)
-            # 💡 MEJORA COMPORTAMIENTO: Desplegado por defecto para educar de entrada al usuario
+            # MEJORA COMPORTAMIENTO: Desplegado por defecto para educar de entrada al usuario
             with st.expander("ℹ️ Learn more about the Johari Window framework", expanded=True):
                 st.markdown("""
                     ### What is the Johari Window?
@@ -225,7 +225,7 @@ else:
                         
         elif st.session_state.page == "Login":
             st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 36px;'>Log <span style='color: #3E63DD;'>In</span></h1>", unsafe_allow_html=True)
-            # 💡 MEJORA INFORMATIVA: Notificación de anonimato sin emails
+            # MEJORA INFORMATIVA: Notificación de anonimato sin emails
             st.info("🔒 No email needed. Enter your configured nickname and password to access.")
             log_user = st.text_input("Username")
             log_pass = st.text_input("Password", type="password")
@@ -280,7 +280,7 @@ else:
                 with cols[i % 2]:
                     if st.checkbox(adj, key=f"my_{adj}"): selected_my_words.append(adj)
                         
-            # 💡 BOTÓN LARGO: Enmarcado en la clase larga para que "Save & Proceed to Next Step" quepa entero
+            # BOTÓN LARGO: Enmarcado en la clase larga para que "Save & Proceed to Next Step" quepa entero
             st.markdown("<div class='long-text-button'>", unsafe_allow_html=True)
             btn_save_self = st.button("Save & Proceed to Next Step ➡️")
             st.markdown("</div>", unsafe_allow_html=True)
@@ -302,7 +302,7 @@ else:
             
             cursor.execute("SELECT share_token FROM user WHERE id = ?", (current_user_id,))
             user_token = cursor.fetchone()
-            user_token = user_token if user_token else "error"
+            user_token = user_token[0] if user_token else "error"
             try:
                 ctx = st.context
                 current_host = ctx.headers.get("Host", "localhost:8501")
@@ -319,15 +319,15 @@ else:
             
             cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
             user_res = cursor.fetchone()
-            user_set = set(user_res.split(",")) if user_res and user_res else set()
+            user_set = set(user_res[0].split(",")) if user_res and user_res[0] else set()
             
             cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (current_user_id,))
             feedbacks = cursor.fetchall()
             friends_set = set()
             all_friends_list = []
             for f in feedbacks:
-                if f and f:
-                    words = f.split(",")
+                if f and f[0]:
+                    words = f[0].split(",")
                     friends_set.update(words)
                     all_friends_list.extend(words)
             
@@ -335,7 +335,7 @@ else:
             blind_area = friends_set.difference(user_set)
             hidden_area = user_set.difference(friends_set)
             
-            # 💡 CUADRÍCULA SIMÉTRICA: Forzada por CSS de la Parte 1 a tener un alto mínimo homogéneo
+            # CUADRÍCULA SIMÉTRICA: Forzada por CSS de la Parte 1 a tener un alto mínimo homogéneo
             c1, c2 = st.columns(2)
             with c1:
                 st.info(f"👐 **1. Open Area:** \n\n {', '.join(open_area) if open_area else 'None'}")
@@ -346,12 +346,12 @@ else:
             
             st.markdown("<br><h3 style='color: #3E63DD; font-weight: 700;'>🧠 Executive Coaching Report</h3>", unsafe_allow_html=True)
             
-            # 💡 REPORTE FIJO CACHED: Lee de la DB y muestra el texto premium corporativo definitivo
-            if saved_report and saved_report:
-                st.write(saved_report)
+            # REPORTE FIJO CACHED: Lee de la DB y muestra el texto premium corporativo definitivo refinado
+            if saved_report and saved_report[0]:
+                st.write(saved_report[0])
                 st.caption("🔒 *Your personalized Executive Report has been successfully recorded and saved in your secure profile.*")
             else:
-                # 💡 BOTÓN LARGO: Enmarcado para que el comando de la IA quepa entero en horizontal
+                # BOTÓN LARGO: Enmarcado para que el comando de la IA quepa entero en horizontal
                 st.markdown("<div class='long-text-button'>", unsafe_allow_html=True)
                 btn_generate_ai = st.button("🚀 Generate Executive Coaching Plan via Gemini AI")
                 st.markdown("</div>", unsafe_allow_html=True)
@@ -373,15 +373,3 @@ else:
                                 st.success("Report successfully generated and locked!")
                                 st.rerun()
                             except Exception as e: st.error(f"Google GenAI Connection temporary suspended: {e}")
-
-    conn.commit()
-    return conn
-
-conn = init_db()
-
-# Los 30 adjetivos oficiales de la Ventana de Johari
-JOHARI_ADJECTIVES = [
-    "Able", "Accepting", "Adaptable", "Bold", "Brave", "Calm", "Caring", "Cheerful", "Clever", "Complex", 
-    "Confident", "Dependable", "Dignified", "Empathetic", "Energetic", "Friendly", "Giving", "Happy", "Helpful", "Idealistic", 
-    "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
-]
