@@ -6,7 +6,7 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [JAHORI WINDOW EMBA SAAS - PRODUCTION BLINDADO V8] - CONFIGURACIÓN Y ESTILOS (PART 1)
+#    [STREAMLIT PRODUCTION VERSION - FLEXIBLE BUTTONS] - JAHORI WINDOW EMBA SAAS (PART 1)
 # ===================================================================================================
 
 # 1. Configuración de la pestaña del navegador
@@ -22,7 +22,7 @@ st.markdown("""
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
     .compliance-box { background-color: #F1F3F9; border-left: 4px solid #3E63DD; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
     
-    /* CSS ISOLADO PARA LA HOME (Solo actúa si NO hay barra lateral) */
+    /* 💡 CSS ISOLADO PARA LA HOME (Solo actúa si NO hay barra lateral) */
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] {
         display: flex !important; 
         flex-direction: row !important; 
@@ -34,31 +34,70 @@ st.markdown("""
         margin: 25px auto 0 auto !important;
     }
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="column"] {
-        width: 50% !important; flex: 1 !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 0 !important; margin: 0 !important;
+        width: 50% !important; 
+        flex: 1 !important; 
+        display: flex !important; 
+        justify-content: center !important; 
+        align-items: center !important; 
+        padding: 0 !important; 
+        margin: 0 !important;
     }
     
-    /* Diseño estándar para botones pequeños (Home, Login, Sign Up) */
+    /* Diseño estándar base para los botones pequeños de la Home */
     .stButton>button { 
-        width: 160px !important; background-color: #3E63DD !important; color: white !important; border-radius: 20px !important; border: 1px solid #3E63DD !important; padding: 10px 20px !important; font-weight: 500 !important; font-size: 14.5px !important; cursor: pointer !important; box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important; margin-left: auto !important; margin-right: auto !important; display: block !important; white-space: nowrap !important;
+        width: 160px !important; 
+        background-color: #3E63DD !important; 
+        color: white !important; 
+        border-radius: 20px !important; 
+        border: 1px solid #3E63DD !important; 
+        padding: 10px 20px !important; 
+        font-weight: 500 !important; 
+        font-size: 14.5px !important; 
+        cursor: pointer !important; 
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important; 
+        margin-left: auto !important; 
+        margin-right: auto !important; 
+        display: block !important; 
+        white-space: nowrap !important;
     }
     .stButton>button:hover { background-color: #2E4cbd !important; border-color: #2E4cbd !important; }
     
-    /* MEJORA EN BOTONES LARGOS: Fuerza un ancho extendido para evitar cortes de texto */
+    /* 💡 FIX ABSOLUTO PARA BOTONES LARGOS: Sobrescribe el ancho estricto y permite expandirse en móviles y PC */
     div.long-text-button .stButton>button {
-        width: 260px !important;
-        white-space: nowrap !important;
+        width: 100% !important;
+        max-width: 320px !important; /* Ancho extendido perfecto para textos de más de 25 caracteres */
+        padding: 10px 24px !important;
+        white-space: nowrap !important; /* Prohíbe la doble línea de texto */
+        display: block !important;
+        margin: 15px auto !important;
     }
     
     /* REJILLA DE ADJETIVOS (2 COLUMNAS) */
-    .stApp:has(div[data-testid="stSidebar"]) div[data-testid="stHorizontalBlock"]:not(:has(div[data-testid="stNotification"])) { 
-        max-width: 100% !important; width: 100% !important; display: flex !important; flex-direction: row !important; gap: 15px !important; 
+    .stApp:has(div[data-testid="stSidebar"]) div[data-testid="stHorizontalBlock"] { 
+        max-width: 100% !important; 
+        width: 100% !important; 
+        display: flex !important; 
+        flex-direction: row !important; 
+        gap: 15px !important; 
     }
-    .stApp:has(div[data-testid="stSidebar"]) div[data-testid="stHorizontalBlock"]:not(:has(div[data-testid="stNotification"])) div[data-testid="column"] { 
-        width: 50% !important; max-width: 50% !important; flex: 1 1 50% !important; 
+    .stApp:has(div[data-testid="stSidebar"]) div[data-testid="stHorizontalBlock"] div[data-testid="column"] { 
+        width: 50% !important; 
+        max-width: 50% !important; 
+        flex: 1 1 50% !important; 
     }
     
     div[data-testid="stCheckbox"] {
-        background-color: #F8F9FA !important; padding: 10px 16px !important; border-radius: 10px !important; border: 1px solid #E4E7EB !important; margin-bottom: 10px !important; width: 100% !important; height: 50px !important; display: flex !important; align-items: center !important; transition: all 0.2s ease-in-out !important; box-sizing: border-box !important;
+        background-color: #F8F9FA !important; 
+        padding: 10px 16px !important; 
+        border-radius: 10px !important; 
+        border: 1px solid #E4E7EB !important; 
+        margin-bottom: 10px !important; 
+        width: 100% !important; 
+        height: 50px !important; 
+        display: flex !important; 
+        align-items: center !important; 
+        transition: all 0.2s ease-in-out !important; 
+        box-sizing: border-box !important;
     }
     div[data-testid="stCheckbox"]:hover { background-color: #F1F3F9 !important; border-color: #3E63DD !important; }
     div[data-testid="stCheckbox"] label { display: flex !important; align-items: center !important; height: 100% !important; width: 100% !important; }
@@ -84,6 +123,7 @@ JOHARI_ADJECTIVES = [
     "Confident", "Dependable", "Dignified", "Empathetic", "Energetic", "Friendly", "Giving", "Happy", "Helpful", "Idealistic", 
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
+
 # ===================================================================================================
 #    [JAHORI WINDOW EMBA SAAS - BLINDADO V8] - FLUJO PÚBLICO Y ACCESOS (PART 2)
 # ===================================================================================================
