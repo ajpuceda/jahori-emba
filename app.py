@@ -6,7 +6,7 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [STREAMLIT PRODUCTION VERSION - FLEXIBLE BUTTONS] - JAHORI WINDOW EMBA SAAS (PART 1)
+#    [JAHORI WINDOW EMBA SAAS - PRODUCTION BLINDADO V11] - CONFIGURACIÓN Y ESTILOS (PART 1)
 # ===================================================================================================
 
 # 1. Configuración de la pestaña del navegador
@@ -22,7 +22,7 @@ st.markdown("""
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
     .compliance-box { background-color: #F1F3F9; border-left: 4px solid #3E63DD; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
     
-    /* 💡 CSS ISOLADO PARA LA HOME (Solo actúa si NO hay barra lateral) */
+    /* CSS ISOLADO PARA LA HOME (Solo actúa si NO hay barra lateral) */
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] {
         display: flex !important; 
         flex-direction: row !important; 
@@ -34,70 +34,34 @@ st.markdown("""
         margin: 25px auto 0 auto !important;
     }
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="column"] {
-        width: 50% !important; 
-        flex: 1 !important; 
-        display: flex !important; 
-        justify-content: center !important; 
-        align-items: center !important; 
-        padding: 0 !important; 
-        margin: 0 !important;
+        width: 50% !important; flex: 1 !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 0 !important; margin: 0 !important;
     }
     
-    /* Diseño estándar base para los botones pequeños de la Home */
+    /* Diseño estándar para botones pequeños (Home, Login, Sign Up) */
     .stButton>button { 
-        width: 160px !important; 
-        background-color: #3E63DD !important; 
-        color: white !important; 
-        border-radius: 20px !important; 
-        border: 1px solid #3E63DD !important; 
-        padding: 10px 20px !important; 
-        font-weight: 500 !important; 
-        font-size: 14.5px !important; 
-        cursor: pointer !important; 
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important; 
-        margin-left: auto !important; 
-        margin-right: auto !important; 
-        display: block !important; 
-        white-space: nowrap !important;
+        width: 160px !important; background-color: #3E63DD !important; color: white !important; border-radius: 20px !important; border: 1px solid #3E63DD !important; padding: 10px 20px !important; font-weight: 500 !important; font-size: 14.5px !important; cursor: pointer !important; box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important; margin-left: auto !important; margin-right: auto !important; display: block !important; white-space: nowrap !important;
     }
     .stButton>button:hover { background-color: #2E4cbd !important; border-color: #2E4cbd !important; }
     
-    /* 💡 FIX ABSOLUTO PARA BOTONES LARGOS: Sobrescribe el ancho estricto y permite expandirse en móviles y PC */
+    /* Ajuste para los botones con textos limpios y cortos */
     div.long-text-button .stButton>button {
         width: 100% !important;
-        max-width: 320px !important; /* Ancho extendido perfecto para textos de más de 25 caracteres */
-        padding: 10px 24px !important;
-        white-space: nowrap !important; /* Prohíbe la doble línea de texto */
+        max-width: 200px !important;
+        white-space: nowrap !important;
         display: block !important;
         margin: 15px auto !important;
     }
     
     /* REJILLA DE ADJETIVOS (2 COLUMNAS) */
     .stApp:has(div[data-testid="stSidebar"]) div[data-testid="stHorizontalBlock"] { 
-        max-width: 100% !important; 
-        width: 100% !important; 
-        display: flex !important; 
-        flex-direction: row !important; 
-        gap: 15px !important; 
+        max-width: 100% !important; width: 100% !important; display: flex !important; flex-direction: row !important; gap: 15px !important; 
     }
     .stApp:has(div[data-testid="stSidebar"]) div[data-testid="stHorizontalBlock"] div[data-testid="column"] { 
-        width: 50% !important; 
-        max-width: 50% !important; 
-        flex: 1 1 50% !important; 
+        width: 50% !important; max-width: 50% !important; flex: 1 1 50% !important; 
     }
     
     div[data-testid="stCheckbox"] {
-        background-color: #F8F9FA !important; 
-        padding: 10px 16px !important; 
-        border-radius: 10px !important; 
-        border: 1px solid #E4E7EB !important; 
-        margin-bottom: 10px !important; 
-        width: 100% !important; 
-        height: 50px !important; 
-        display: flex !important; 
-        align-items: center !important; 
-        transition: all 0.2s ease-in-out !important; 
-        box-sizing: border-box !important;
+        background-color: #F8F9FA !important; padding: 10px 16px !important; border-radius: 10px !important; border: 1px solid #E4E7EB !important; margin-bottom: 10px !important; width: 100% !important; height: 50px !important; display: flex !important; align-items: center !important; transition: all 0.2s ease-in-out !important; box-sizing: border-box !important;
     }
     div[data-testid="stCheckbox"]:hover { background-color: #F1F3F9 !important; border-color: #3E63DD !important; }
     div[data-testid="stCheckbox"] label { display: flex !important; align-items: center !important; height: 100% !important; width: 100% !important; }
@@ -105,7 +69,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 3. Inicialización síncrona de la Base de Datos SQLite
+# 3. Inicialización de la Base de Datos SQLite
 def init_db():
     conn = sqlite3.connect("reflex.db", check_same_thread=False)
     cursor = conn.cursor()
@@ -123,9 +87,8 @@ JOHARI_ADJECTIVES = [
     "Confident", "Dependable", "Dignified", "Empathetic", "Energetic", "Friendly", "Giving", "Happy", "Helpful", "Idealistic", 
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
-
 # ===================================================================================================
-#    [JAHORI WINDOW EMBA SAAS - ECO COPY] - FLUJO PÚBLICO Y ACCESOS (PART 2)
+#    [JAHORI WINDOW EMBA SAAS - BLINDADO V11] - FLUJO PÚBLICO Y ACCESOS (PART 2)
 # ===================================================================================================
 
 query_params = st.query_params
@@ -139,7 +102,8 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        target_user_id = int(user_data)[0] if isinstance(user_data, tuple) else int(user_data)
+        # 💡 FIX SEGURO: Extracción correcta del entero desde la tupla
+        target_user_id = int(user_data[0])
         st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Friend</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO compliant.</p>", unsafe_allow_html=True)
         st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No tracking.</div>", unsafe_allow_html=True)
@@ -149,9 +113,11 @@ if "token" in query_params:
         cols = st.columns(2)
         for i, adj in enumerate(JOHARI_ADJECTIVES):
             with cols[i % 2]:
-                if st.checkbox(adj, key=f"friend_{adj}"): selected_friend_words.append(adj)
+                st.checkbox(adj, key=f"friend_{adj}")
+                if st.session_state.get(f"friend_{adj}"):
+                    selected_friend_words.append(adj)
                     
-        # 💡 ECO COPY OPTIMIZADO: "Submit" corto e impecable
+        # 💡 TEXTO CORTO OPTIMIZADO: "Submit" impecable para móviles estrechos
         st.markdown("<div class='long-text-button'>", unsafe_allow_html=True)
         btn_submit_friend = st.button("Submit")
         st.markdown("</div>", unsafe_allow_html=True)
@@ -208,7 +174,8 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        st.session_state.user = int(user_data)[0] if user_data else None
+                        # 💡 FIX SEGURO: Extracción correcta del ID en el registro
+                        st.session_state.user = int(user_data[0]) if user_data else None
                         st.session_state.page = "Dashboard"; st.rerun()
                     except sqlite3.IntegrityError: st.error("This username is already taken.")
                         
@@ -223,14 +190,15 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    st.session_state.user = int(result)[0]
+                    # 💡 FIX SEGURO: Extracción correcta del ID en el inicio de sesión
+                    st.session_state.user = int(result[0])
                     st.session_state.page = "Dashboard"; st.rerun()
                 else: st.error("Incorrect username or password.")
                     
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
 # ===================================================================================================
-#    [JAHORI WINDOW EMBA SAAS - ECO COPY] - WIZARD PANEL Y MATRIX GRID (PART 3)
+#    [JAHORI WINDOW EMBA SAAS - BLINDADO V11] - WIZARD PANEL Y MATRIX GRID (PART 3)
 # ===================================================================================================
     else:
         st.sidebar.markdown(f"### 🔒 Session Secure")
@@ -244,13 +212,15 @@ else:
         
         cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = ?", (current_user_id,))
         f_count_data = cursor.fetchone()
-        f_count = int(f_count_data)[0] if f_count_data else 0
+        # 💡 FIX SEGURO DE LA LÍNEA SOLICITADA: Coloca los corchetes ceros estrictamente ADENTRO de la función int()
+        f_count = int(f_count_data[0]) if f_count_data else 0
         
         cursor.execute("SELECT report_text FROM ai_report WHERE user_id = ?", (current_user_id,))
         saved_report = cursor.fetchone()
         
         st.markdown("<h1 style='font-size:28px; font-weight:700;'>Your Johari Control Panel</h1>", unsafe_allow_html=True)
         
+        # Enrutamiento por pasos secuenciales (Wizard)
         if not has_self:
             current_step = "Step 1: Self Assessment"
         elif f_count < 3 and not saved_report:
@@ -265,9 +235,11 @@ else:
             cols = st.columns(2)
             for i, adj in enumerate(JOHARI_ADJECTIVES):
                 with cols[i % 2]:
-                    if st.checkbox(adj, key=f"my_{adj}"): selected_my_words.append(adj)
+                    st.checkbox(adj, key=f"my_{adj}")
+                    if st.session_state.get(f"my_{adj}"):
+                        selected_my_words.append(adj)
                         
-            # 💡 ECO COPY OPTIMIZADO: "Next ➡️" corto, limpio y súper intuitivo
+            # 💡 TEXTO CORTO OPTIMIZADO: "Next ➡️" para una usabilidad móvil perfecta
             st.markdown("<div class='long-text-button'>", unsafe_allow_html=True)
             btn_save_self = st.button("Next ➡️")
             st.markdown("</div>", unsafe_allow_html=True)
@@ -306,7 +278,7 @@ else:
             
             cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
             user_res = cursor.fetchone()
-            user_set = set(user_res[0].split(",")) if user_res and user_res else set()
+            user_set = set(user_res[0].split(",")) if user_res and user_res[0] else set()
             
             cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (current_user_id,))
             feedbacks = cursor.fetchall()
@@ -328,6 +300,7 @@ else:
             hidden_html = "<br>".join(hidden_area) if hidden_area else "None"
             unknown_html = "<br>".join(unknown_area)
             
+            # MATRIZ HTML BLINDADA: Garantiza la alineación y colores sin romperse
             st.markdown(f"""
                 <table style="width:100%; border-collapse: separate; border-spacing: 15px; font-family: -apple-system, sans-serif; table-layout: fixed;">
                     <tr>
@@ -359,7 +332,7 @@ else:
                 st.write(saved_report[0])
                 st.caption("🔒 *Your personalized Executive Report has been successfully recorded and saved in your secure profile.*")
             else:
-                # 💡 ECO COPY OPTIMIZADO: "Generate Report" para un look corporativo e impecable
+                # 💡 TEXTO CORTO OPTIMIZADO: "Generate Report" limpio para el botón ejecutivo
                 st.markdown("<div class='long-text-button'>", unsafe_allow_html=True)
                 btn_generate_ai = st.button("Generate Report")
                 st.markdown("</div>", unsafe_allow_html=True)
@@ -380,4 +353,4 @@ else:
                                 st.write(raw_text)
                                 st.success("Report successfully generated and locked!")
                                 st.rerun()
-                            except Exception as e: st.error(f"Google GenAI Connection temporary suspended: {e}")
+				except Exception as e: st.error(f"Google GenAI Connection temporary suspended: {e}")
