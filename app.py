@@ -6,13 +6,13 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [JAHORI WINDOW SAAS - 100% ENGLISH PRODUCTION VERSION] - CONFIGURACIÓN Y ESTILOS (PART 1)
+#    [JAHORI WINDOW SAAS - 100% ENGLISH PRODUCTION VERSION - MOBILE FIXED] - PART 1
 # ===================================================================================================
 
 # 1. Browser tab title configuration
 st.set_page_config(page_title="JAHORI - Discover Your Blind Spots", page_icon="🔮", layout="centered")
 
-# 2. Premium Corporate CSS Injection
+# 2. Premium Corporate CSS Injection (With strict mobile vertical centering override)
 st.markdown("""
     <style>
     /* Clean white background style Google */
@@ -22,7 +22,7 @@ st.markdown("""
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
     .compliance-box { background-color: #F1F3F9; border-left: 4px solid #3E63DD; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
     
-    /* ISOLATED CSS FOR HOME PAGE (Only triggers if NO sidebar exists) */
+    /* CSS ISOLADO PARA LA HOME (PC y Tablets en Horizontal) */
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] {
         display: flex !important; 
         flex-direction: row !important; 
@@ -37,7 +37,7 @@ st.markdown("""
         width: 50% !important; flex: 1 !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 0 !important; margin: 0 !important;
     }
     
-    /* Standard button layout (Home, Login, Sign Up, Submit) */
+    /* Diseño estándar para botones pequeños (Home, Login, Sign Up, Submit) */
     .stButton>button { 
         width: 160px !important; 
         background-color: #3E63DD !important; 
@@ -56,7 +56,33 @@ st.markdown("""
     }
     .stButton>button:hover { background-color: #2E4cbd !important; border-color: #2E4cbd !important; }
     
-    /* INTERNAL ADJECTIVES GRID (2 COLUMNS) */
+    /* 💡 REGLA DE INTERCEPCIÓN MÓVIL VERTICAL EXTRICTA: Fuerza el centrado absoluto en Smartphones */
+    @media (max-width: 576px) {
+        /* Desactiva el colapso nativo de la Home y mantiene los dos botones juntos en el medio */
+        .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] {
+            display: flex !important;
+            flex-direction: row !important; /* Mantiene la fila horizontal en pantallas estrechas */
+            justify-content: center !important;
+            align-items: center !important;
+            gap: 12px !important;
+            width: 100% !important;
+            margin: 20px auto !important;
+        }
+        .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="column"] {
+            width: auto !important;
+            flex: none !important;
+        }
+        /* Alinea matemáticamente el texto y el botón al centro real del cristal del smartphone */
+        .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stElementContainer"] {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 100% !important;
+            text-align: center !important;
+        }
+    }
+    
+    /* INTERNAL ADJECTIVES GRID (2 COLUMNAS - PROTEGIDAS) */
     .stApp:has(div[data-testid="stSidebar"]) div[data-testid="stHorizontalBlock"] { 
         max-width: 100% !important; width: 100% !important; display: flex !important; flex-direction: row !important; gap: 15px !important; 
     }
@@ -92,6 +118,7 @@ JOHARI_ADJECTIVES = [
     "Confident", "Dependable", "Dignified", "Empathetic", "Energetic", "Friendly", "Giving", "Happy", "Helpful", "Idealistic", 
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
+
 # ===================================================================================================
 #    [JAHORI WINDOW SAAS - 100% ENGLISH PRODUCTION VERSION] - PUBLIC PANEL & ACCESS (PART 2)
 # ===================================================================================================
