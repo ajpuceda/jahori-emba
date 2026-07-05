@@ -198,11 +198,14 @@ else:
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
 # ===================================================================================================
-#    [JAHORI WINDOW EMBA SAAS - BLINDADO V11] - WIZARD PANEL Y MATRIX GRID (PART 3)
+#    [JAHORI WINDOW EMBA SAAS - BLINDADO V11] - WIZARD PANEL SECTOR (PART 3)
 # ===================================================================================================
     else:
         st.sidebar.markdown(f"### 🔒 Session Secure")
-        if st.sidebar.button("🚪 Log Out"): st.session_state.user = None; st.session_state.page = "Home"; st.rerun()
+        if st.sidebar.button("🚪 Log Out"): 
+            st.session_state.user = None
+            st.session_state.page = "Home"
+            st.rerun()
             
         current_user_id = int(st.session_state.user)
         cursor = conn.cursor()
@@ -212,15 +215,15 @@ else:
         
         cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = ?", (current_user_id,))
         f_count_data = cursor.fetchone()
-        # 💡 FIX SEGURO DE LA LÍNEA SOLICITADA: Coloca los corchetes ceros estrictamente ADENTRO de la función int()
-        f_count = int(f_count_data[0]) if f_count_data else 0
+        # 💡 FIX SEGURO: Coloca los datos de SQLite dentro de int() de forma nativa limpia
+        f_count = int(f_count_data) if f_count_data else 0
         
         cursor.execute("SELECT report_text FROM ai_report WHERE user_id = ?", (current_user_id,))
         saved_report = cursor.fetchone()
         
         st.markdown("<h1 style='font-size:28px; font-weight:700;'>Your Johari Control Panel</h1>", unsafe_allow_html=True)
         
-        # Enrutamiento por pasos secuenciales (Wizard)
+        # Enrutamiento síncrono por pasos secuenciales (Wizard)
         if not has_self:
             current_step = "Step 1: Self Assessment"
         elif f_count < 3 and not saved_report:
@@ -239,7 +242,7 @@ else:
                     if st.session_state.get(f"my_{adj}"):
                         selected_my_words.append(adj)
                         
-            # 💡 TEXTO CORTO OPTIMIZADO: "Next ➡️" para una usabilidad móvil perfecta
+            # Botón corto y optimizado para móviles sin desvíos
             st.markdown("<div class='long-text-button'>", unsafe_allow_html=True)
             btn_save_self = st.button("Next ➡️")
             st.markdown("</div>", unsafe_allow_html=True)
@@ -261,32 +264,33 @@ else:
             
             cursor.execute("SELECT share_token FROM user WHERE id = ?", (current_user_id,))
             token_res = cursor.fetchone()
-            user_token = token_res[0] if token_res else "error"
+            user_token = token_res if token_res else "error"
             try:
                 ctx = st.context
                 current_host = ctx.headers.get("Host", "localhost:8501")
                 protocol = "https" if "streamlit.app" in current_host else "http"
                 generated_url = f"{protocol}://{current_host}/?token={user_token}"
-            except Exception: generated_url = f"http://localhost:8501/?token={user_token}"
+            except Exception: 
+                generated_url = f"http://localhost:8501/?token={user_token}"
             
             st.code(generated_url)
             st.info("💡 Once you receive at least 3 anonymous evaluations from your colleagues, this window will automatically unlock the AI coaching report button.")
-            if st.button("🔄 Refresh Progress"): st.rerun()
-                
+            if st.button("🔄 Refresh Progress"): 
+                st.rerun()
         elif current_step == "Step 3: Executive AI Matrix":
             st.subheader("📊 Step 3: Your Personality Matrix & Leadership Plan")
             
             cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
             user_res = cursor.fetchone()
-            user_set = set(user_res[0].split(",")) if user_res and user_res[0] else set()
+            user_set = set(user_res.split(",")) if user_res and user_res else set()
             
             cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (current_user_id,))
             feedbacks = cursor.fetchall()
             friends_set = set()
             all_friends_list = []
             for f in feedbacks:
-                if f and f[0]:
-                    words = f[0].split(",")
+                if f and f:
+                    words = f.split(",")
                     friends_set.update(words)
                     all_friends_list.extend(words)
             
@@ -300,7 +304,7 @@ else:
             hidden_html = "<br>".join(hidden_area) if hidden_area else "None"
             unknown_html = "<br>".join(unknown_area)
             
-            # MATRIZ HTML BLINDADA: Garantiza la alineación y colores sin romperse
+            # MATRIZ HTML BLINDADA: Celdas del 50% perfectas con fondos corporativos homogéneos
             st.markdown(f"""
                 <table style="width:100%; border-collapse: separate; border-spacing: 15px; font-family: -apple-system, sans-serif; table-layout: fixed;">
                     <tr>
@@ -328,18 +332,19 @@ else:
             
             st.markdown("<br><h3 style='color: #3E63DD; font-weight: 700;'>🧠 Executive Coaching Report</h3>", unsafe_allow_html=True)
             
-            if saved_report and saved_report[0]:
-                st.write(saved_report[0])
+            if saved_report and saved_report:
+                st.write(saved_report)
                 st.caption("🔒 *Your personalized Executive Report has been successfully recorded and saved in your secure profile.*")
             else:
-                # 💡 TEXTO CORTO OPTIMIZADO: "Generate Report" limpio para el botón ejecutivo
+                # Botón de texto corto y limpio
                 st.markdown("<div class='long-text-button'>", unsafe_allow_html=True)
                 btn_generate_ai = st.button("Generate Report")
                 st.markdown("</div>", unsafe_allow_html=True)
                 
                 if btn_generate_ai:
                     api_key = os.environ.get("GEMINI_API_KEY")
-                    if not api_key: st.error("API Secret Key missing.")
+                    if not api_key: 
+                        st.error("API Secret Key missing.")
                     else:
                         with st.spinner("Gemini is analyzing your psychological vectors..."):
                             try:
@@ -353,4 +358,5 @@ else:
                                 st.write(raw_text)
                                 st.success("Report successfully generated and locked!")
                                 st.rerun()
-				except Exception as e: st.error(f"Google GenAI Connection temporary suspended: {e}")
+                            except Exception as e: 
+                                st.error(f"Google GenAI Connection temporary suspended: {e}")
