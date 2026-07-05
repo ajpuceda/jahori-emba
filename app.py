@@ -192,11 +192,14 @@ else:
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
 # ===================================================================================================
-#    [JAHORI WINDOW EMBA SAAS - BLINDADO V8] - WIZARD PANEL Y MATRIX GRID (PART 3)
+#    [JAHORI WINDOW EMBA SAAS - REAL DYNAMIC GRID V9] - WIZARD PANEL Y MATRIX GRID (PART 3)
 # ===================================================================================================
     else:
         st.sidebar.markdown(f"### 🔒 Session Secure")
-        if st.sidebar.button("🚪 Log Out"): st.session_state.user = None; st.session_state.page = "Home"; st.rerun()
+        if st.sidebar.button("🚪 Log Out"): 
+            st.session_state.user = None
+            st.session_state.page = "Home"
+            st.rerun()
             
         current_user_id = int(st.session_state.user)
         cursor = conn.cursor()
@@ -206,7 +209,6 @@ else:
         
         cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = ?", (current_user_id,))
         f_count_data = cursor.fetchone()
-        # 💡 FIX F_COUNT (ELIMINA EL ERROR DE TU ÚLTIMA SOLICITUD): Extrae la posición [0] de forma limpia de SQLite
         f_count = int(f_count_data[0]) if f_count_data else 0
         
         cursor.execute("SELECT report_text FROM ai_report WHERE user_id = ?", (current_user_id,))
@@ -252,25 +254,26 @@ else:
             
             cursor.execute("SELECT share_token FROM user WHERE id = ?", (current_user_id,))
             token_res = cursor.fetchone()
-            # 💡 FIX SANO: Extrae la posición [0] de la tupla para construir el enlace sin carácteres basura
             user_token = token_res[0] if token_res else "error"
             try:
                 ctx = st.context
                 current_host = ctx.headers.get("Host", "localhost:8501")
                 protocol = "https" if "streamlit.app" in current_host else "http"
                 generated_url = f"{protocol}://{current_host}/?token={user_token}"
-            except Exception: generated_url = f"http://localhost:8501/?token={user_token}"
+            except Exception: 
+                generated_url = f"http://localhost:8501/?token={user_token}"
             
             st.code(generated_url)
             st.info("💡 Once you receive at least 3 anonymous evaluations from your colleagues, this window will automatically unlock the AI coaching report button.")
-            if st.button("🔄 Refresh Progress"): st.rerun()
+            if st.button("🔄 Refresh Progress"): 
+                st.rerun()
                 
         elif current_step == "Step 3: Executive AI Matrix":
             st.subheader("📊 Step 3: Your Personality Matrix & Leadership Plan")
             
             cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
             user_res = cursor.fetchone()
-            # 💡 FIX SANO: Extrae la posición [0] para procesar el string de adjetivos de la DB
+            # 💡 FIX QUIRÚRGICO: Extraemos la posición [0] de la tupla para limpiar la cadena antes del split
             user_set = set(user_res[0].split(",")) if user_res and user_res[0] else set()
             
             cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (current_user_id,))
@@ -287,27 +290,30 @@ else:
             blind_area = friends_set.difference(user_set)
             hidden_area = user_set.difference(friends_set)
             
-            # 💡 RESOLUCIÓN MAESTRA RECTANGULAR: Contamos las líneas reales que ocupará la lista vertical de adjetivos
+            # 💡 LOGIC RECIÉN AJUSTADA: Contamos de forma estricta las líneas visuales reales del cuadrante más lleno
             max_lines = max(len(open_area), len(blind_area), len(hidden_area), 1)
             
-            # Cálculo matemático exacto: 80px fijos de título + 28px por cada adjetivo real hacia abajo
+            # Cálculo matemático adaptativo: 80px fijos de título + 28px por cada adjetivo real apilado verticalmente
             dynamic_height = 80 + (max_lines * 28)
-            if dynamic_height < 150: dynamic_height = 150
+            if dynamic_height < 160: 
+                dynamic_height = 160  # Mínimo elegante para que no se vea comprimido si hay pocos datos
                 
+            # Inyectamos el CSS dinámico forzando tanto la altura del bloque como del contenedor de notificación
             st.markdown(f"""
                 <style>
-                div[data-testid="stNotification"] {{
+                div[data-testid="stNotification"], .stAlert {{
                     height: {dynamic_height}px !important;
                     min-height: {dynamic_height}px !important;
                     max-height: {dynamic_height}px !important;
                     display: flex !important;
                     flex-direction: column !important;
                     justify-content: flex-start !important;
-                    overflow-y: hidden !important;
+                    overflow: hidden !important;
                 }}
                 </style>
             """, unsafe_allow_html=True)
             
+            # Pintamos los 4 bloques. Ahora el CSS dinámico de arriba obligará a las 4 cajas a medir exactamente la misma altura
             c1, c2 = st.columns(2)
             with c1:
                 st.info(f"👐 **1. Open Area:** \n\n {', '.join(open_area) if open_area else 'None'}")
@@ -319,7 +325,6 @@ else:
             st.markdown("<br><h3 style='color: #3E63DD; font-weight: 700;'>🧠 Executive Coaching Report</h3>", unsafe_allow_html=True)
             
             if saved_report and saved_report[0]:
-                # 💡 FIX SANO: Extrae la posición [0] para leer el reporte de Gemini guardado de la DB
                 st.write(saved_report[0])
                 st.caption("🔒 *Your personalized Executive Report has been successfully recorded and saved in your secure profile.*")
             else:
@@ -329,7 +334,8 @@ else:
                 
                 if btn_generate_ai:
                     api_key = os.environ.get("GEMINI_API_KEY")
-                    if not api_key: st.error("API Secret Key missing.")
+                    if not api_key: 
+                        st.error("API Secret Key missing.")
                     else:
                         with st.spinner("Gemini is analyzing your psychological vectors..."):
                             try:
@@ -343,4 +349,5 @@ else:
                                 st.write(raw_text)
                                 st.success("Report successfully generated and locked!")
                                 st.rerun()
-                            except Exception as e: st.error(f"Google GenAI Connection temporary suspended: {e}")
+                            except Exception as e: 
+                                st.error(f"Google GenAI Connection temporary suspended: {e}")
