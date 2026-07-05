@@ -6,7 +6,7 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [JAHORI WINDOW SAAS - RIGID BUTTON PROTECTION V17] - CONFIGURACIÓN Y ESTILOS (PART 1)
+#    [JAHORI WINDOW SAAS - RIGID PROTECTION V19] - CONFIGURACIÓN Y ESTILOS (PART 1)
 # ===================================================================================================
 
 # 1. Browser tab title configuration
@@ -22,7 +22,7 @@ st.markdown("""
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
     .compliance-box { background-color: #F1F3F9; border-left: 4px solid #3E63DD; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
     
-    /* 💡 REGLA DE COLUMNAS PÚBLICAS: Solo actúa en la Home o Votación (Cuando NO hay barra lateral) */
+    /* REGLA DE COLUMNAS PÚBLICAS: Solo actúa en la Home o Votación (Cuando NO hay barra lateral) */
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] {
         display: flex !important; 
         flex-direction: row !important; /* Fuerza a mantener la fila horizontal en móviles para evitar el efecto escalera */
@@ -73,7 +73,7 @@ st.markdown("""
         border-color: #2E4cbd !important; 
     }
     
-    /* 💡 REGLA MULTIMEDIA EXTRICTA: Asegura el centrado y comportamiento horizontal intocable en cualquier Smartphone */
+    /* REGLA MULTIMEDIA EXTRICTA: Asegura el centrado y comportamiento horizontal intocable en cualquier Smartphone */
     @media (max-width: 576px) {
         .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] {
             display: flex !important;
@@ -126,7 +126,7 @@ JOHARI_ADJECTIVES = [
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
 # ===================================================================================================
-#    [JAHORI WINDOW SAAS - RIGID BUTTON PROTECTION V18] - PUBLIC PANEL & ACCESS (PART 2)
+#    [JAHORI WINDOW SAAS - RIGID BUTTON PROTECTION V19] - PUBLIC PANEL & ACCESS (PART 2)
 # ===================================================================================================
 
 query_params = st.query_params
@@ -140,8 +140,8 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        # DB INDEX FIX: Pure extraction to block error loops
-        target_user_id = int(user_data)
+        # 💡 FIX ABSOLUTO DE TU TUPLA (FÚLMINA EL ERROR EN LÍNEA 144): Extrae la posición [0] de user_data de forma limpia
+        target_user_id = int(user_data[0])
         st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Colleague</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO/GDPR compliant.</p>", unsafe_allow_html=True)
         st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No names tracked.</div>", unsafe_allow_html=True)
@@ -154,7 +154,7 @@ if "token" in query_params:
                 if st.checkbox(adj, key=f"friend_{adj}"):
                     selected_friend_words.append(adj)
                     
-        # 💡 UPDATE SECUENCIAL: Instrucción clara en inglés para guiar el flujo de conversión del usuario
+        # Instrucción secuencial en inglés para guiar el flujo móvil perfectamente emparejado
         st.markdown("<p style='text-align: center; color: #444455; font-size: 15px; font-weight: 500; margin-top: 25px; margin-bottom: 0px;'>🔮 Want to get your own Johari analysis with AI support?<br><span style='font-size:13.5px; color:#666677; font-weight:400;'>Submit first, and then sign up with us!</span></p>", unsafe_allow_html=True)
         
         col_left, col_right = st.columns(2)
@@ -226,7 +226,8 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        st.session_state.user = int(user_data) if user_data else None
+                        # 💡 EXTRAE EL ENTERO DE LA TUPLA EN POSICIÓN [0]
+                        st.session_state.user = int(user_data[0]) if user_data else None
                         st.session_state.page = "Dashboard"; st.rerun()
                     except sqlite3.IntegrityError: st.error("This username is already taken.")
                         
@@ -241,14 +242,15 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    st.session_state.user = int(result)
+                    # 💡 EXTRAE EL ENTERO DE LA TUPLA EN POSICIÓN [0]
+                    st.session_state.user = int(result[0])
                     st.session_state.page = "Dashboard"; st.rerun()
                 else: st.error("Incorrect username or password.")
                     
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
 # ===================================================================================================
-#    [JAHORI WINDOW SAAS - FIXED V15] - WIZARD PANEL (PART 3)
+#    [JAHORI WINDOW SAAS - FINAL PRODUCTION FIXED] - WIZARD PANEL (PART 3)
 # ===================================================================================================
     else:
         st.sidebar.markdown(f"### 🔒 Session Secure")
@@ -263,7 +265,7 @@ else:
         
         cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = ?", (current_user_id,))
         f_count_data = cursor.fetchone()
-        # 💡 DB INDEX FIX 4: Extrae la posición cero de forma nativa de la tupla de recuento
+        # 💡 EXTRAE EL ENTERO DE LA TUPLA EN POSICIÓN [0]
         f_count = int(f_count_data[0]) if f_count_data else 0
         
         cursor.execute("SELECT report_text FROM ai_report WHERE user_id = ?", (current_user_id,))
@@ -308,7 +310,7 @@ else:
             
             cursor.execute("SELECT share_token FROM user WHERE id = ?", (current_user_id,))
             token_res = cursor.fetchone()
-            # 💡 DB INDEX FIX 5: Extrae la posición cero para construir la URL criptográfica limpia sin fallos
+            # 💡 EXTRAE EL ENTERO DE LA TUPLA EN POSICIÓN [0]
             user_token = token_res[0] if token_res else "error"
             try:
                 ctx = st.context
@@ -326,8 +328,8 @@ else:
             
             cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
             user_res = cursor.fetchone()
-            # 💡 DB INDEX FIX 6: Extrae los adjetivos de la posición cero de la tupla antes de separar por comas
-            user_set = set(user_res[0].split(",")) if user_res and user_res else set()
+            # 💡 EXTRAE EL STRING DE LA TUPLA EN POSICIÓN [0]
+            user_set = set(user_res[0].split(",")) if user_res and user_res[0] else set()
             
             cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (current_user_id,))
             feedbacks = cursor.fetchall()
@@ -378,7 +380,6 @@ else:
             st.markdown("<br><h3 style='color: #3E63DD; font-weight: 700;'>🧠 Executive Coaching Report</h3>", unsafe_allow_html=True)
             
             if saved_report and saved_report[0]:
-                # 💡 DB INDEX FIX 7: Lee de la posición cero el informe guardado de Gemini
                 st.write(saved_report[0])
                 st.caption("🔒 *Your personalized Executive Report has been successfully recorded and saved in your secure profile.*")
             else:
