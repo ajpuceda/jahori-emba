@@ -6,13 +6,13 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [JAHORI WINDOW SAAS - FIXED V15] - CONFIGURACIÓN Y ESTILOS (PART 1)
+#    [JAHORI WINDOW SAAS - RIGID BUTTON PROTECTION V16] - CONFIGURACIÓN Y ESTILOS (PART 1)
 # ===================================================================================================
 
 # 1. Browser tab title configuration
 st.set_page_config(page_title="JAHORI - Discover Your Blind Spots", page_icon="🔮", layout="centered")
 
-# 2. Premium Corporate CSS Injection (With strict mobile vertical centering override)
+# 2. Premium Corporate CSS Injection (With strict layout separation)
 st.markdown("""
     <style>
     /* Clean white background style Google */
@@ -22,23 +22,37 @@ st.markdown("""
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
     .compliance-box { background-color: #F1F3F9; border-left: 4px solid #3E63DD; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
     
-    /* ISOLATED CSS FOR HOME PAGE (Only triggers if NO sidebar exists) */
+    /* 💡 REGLA MAESTRA DE COLUMNAS PÚBLICAS: Solo actúa en la Home o Votación (Cuando NO hay barra lateral) */
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] {
         display: flex !important; 
-        flex-direction: row !important; 
+        flex-direction: row !important; /* Fuerza a mantener la fila horizontal en móviles para evitar el efecto escalera */
         justify-content: center !important; 
         align-items: center !important; 
         gap: 20px !important; 
         width: 100% !important; 
-        max-width: 400px !important; 
+        max-width: 420px !important; /* Ensanchado sutilmente para acomodar "Sign Up Free" de forma holgada */
         margin: 25px auto 0 auto !important;
     }
+    
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="column"] {
-        width: 50% !important; flex: 1 !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 0 !important; margin: 0 !important;
+        width: 50% !important; 
+        flex: 1 !important; 
+        display: flex !important; 
+        justify-content: center !important; 
+        align-items: center !important; 
+        padding: 0 !important; 
+        margin: 0 !important;
     }
     
-    /* Standard button layout (Home, Login, Sign Up, Submit) */
-    .stButton>button { 
+    .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stElementContainer"] {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        width: 100% !important;
+    }
+    
+    /* Diseño estándar para botones pequeños (Se centra de forma independiente sin tocar las pantallas internas) */
+    .stApp:not(:has(div[data-testid="stSidebar"])) .stButton>button { 
         width: 160px !important; 
         background-color: #3E63DD !important; 
         color: white !important; 
@@ -54,9 +68,12 @@ st.markdown("""
         display: block !important; 
         white-space: nowrap !important;
     }
-    .stButton>button:hover { background-color: #2E4cbd !important; border-color: #2E4cbd !important; }
+    .stApp:not(:has(div[data-testid="stSidebar"])) .stButton>button:hover { 
+        background-color: #2E4cbd !important; 
+        border-color: #2E4cbd !important; 
+    }
     
-    /* REGLA DE INTERCEPCIÓN MÓVIL VERTICAL EXTRICTA: Fuerza el centrado absoluto en Smartphones */
+    /* 💡 REGLA MULTIMEDIA EXTRICTA: Asegura el centrado y comportamiento horizontal intocable en cualquier Smartphone */
     @media (max-width: 576px) {
         .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] {
             display: flex !important;
@@ -71,16 +88,9 @@ st.markdown("""
             width: auto !important;
             flex: none !important;
         }
-        .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stElementContainer"] {
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            width: 100% !important;
-            text-align: center !important;
-        }
     }
     
-    /* INTERNAL ADJECTIVES GRID (2 COLUMNAS) */
+    /* REJILLA DE ADJETIVOS INTERNA DE 2 COLUMNAS (Totalmente aislada por el selector de barra lateral) */
     .stApp:has(div[data-testid="stSidebar"]) div[data-testid="stHorizontalBlock"] { 
         max-width: 100% !important; width: 100% !important; display: flex !important; flex-direction: row !important; gap: 15px !important; 
     }
@@ -116,7 +126,7 @@ JOHARI_ADJECTIVES = [
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
 # ===================================================================================================
-#    [JAHORI WINDOW SAAS - FIXED V15] - PUBLIC PANEL & ACCESS (PART 2)
+#    [JAHORI WINDOW SAAS - RIGID BUTTON PROTECTION V16] - PUBLIC PANEL & ACCESS (PART 2)
 # ===================================================================================================
 
 query_params = st.query_params
@@ -130,11 +140,11 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        # 💡 DB INDEX FIX 1: Extracción limpia de la tupla para la vista de colegas
-        target_user_id = int(user_data[0])
+        # DB INDEX FIX: Pure extraction to block error loops
+        target_user_id = int(user_data)
         st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Colleague</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO/GDPR compliant.</p>", unsafe_allow_html=True)
-        st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No names or personal tracking.</div>", unsafe_allow_html=True)
+        st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No names tracked.</div>", unsafe_allow_html=True)
         
         st.write("Select 3 to 10 adjectives that best describe your colleague:")
         selected_friend_words = []
@@ -144,8 +154,15 @@ if "token" in query_params:
                 if st.checkbox(adj, key=f"friend_{adj}"):
                     selected_friend_words.append(adj)
                     
-        btn_submit_friend = st.button("Submit")
+        # 💡 SOLUCIÓN DEFINITIVA DE ALINEACIÓN: Dividimos la sección inferior en 2 columnas físicas para emparejar los botones
+        st.markdown("<p style='text-align: center; color: #444455; font-size: 15px; font-weight: 500; margin-top: 25px; margin-bottom: 0px;'>🔮 Want to get your own Johari analysis with AI support?</p>", unsafe_allow_html=True)
         
+        btn_cols = st.columns(2)
+        with btn_cols[0]:
+            btn_submit_friend = st.button("Submit")
+        with btn_cols[1]:
+            btn_signup_viral = st.button("Sign Up Free")
+            
         if btn_submit_friend:
             if len(selected_friend_words) < 3 or len(selected_friend_words) > 10:
                 st.error("Please select between 3 and 10 adjectives.")
@@ -156,11 +173,7 @@ if "token" in query_params:
                 st.success("Thank you! Your feedback has been securely submitted.")
                 st.balloons()
                 
-        # Organic viral conversion funnel
-        st.markdown("<br><hr style='border: 0; border-top: 1px solid #E4E7EB; margin: 30px 0;'>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center; color: #444455; font-size: 15px; font-weight: 500; margin-bottom: 5px;'>🔮 Want to get your own Johari analysis with AI support?</p>", unsafe_allow_html=True)
-        
-        if st.button("Sign Up Free"):
+        if btn_signup_viral:
             st.query_params.clear() 
             st.session_state.page = "Register"
             st.rerun()
@@ -213,8 +226,7 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        # 💡 DB INDEX FIX 2 (FÚLMINA EL ERROR DE REGISTRO): Extrae la posición cero de la tupla
-                        st.session_state.user = int(user_data[0]) if user_data else None
+                        st.session_state.user = int(user_data) if user_data else None
                         st.session_state.page = "Dashboard"; st.rerun()
                     except sqlite3.IntegrityError: st.error("This username is already taken.")
                         
@@ -229,13 +241,13 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    # 💡 DB INDEX FIX 3: Extrae la posición cero para evitar fallos al iniciar sesión
-                    st.session_state.user = int(result[0])
+                    st.session_state.user = int(result)
                     st.session_state.page = "Dashboard"; st.rerun()
                 else: st.error("Incorrect username or password.")
                     
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
+
 # ===================================================================================================
 #    [JAHORI WINDOW SAAS - FIXED V15] - WIZARD PANEL (PART 3)
 # ===================================================================================================
