@@ -116,7 +116,19 @@ def init_db():
     cursor.execute("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password_hash TEXT, share_token TEXT UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS self_assessment (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, adjectives TEXT)")
     cursor.execute("CREATE TABLE IF NOT EXISTS feedback (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, anonymous_adjectives TEXT)")
-    cursor.execute("CREATE TABLE IF NOT EXISTS ai_report (user_id INTEGER PRIMARY KEY, report_text TEXT)")# ===================================================================================================
+    cursor.execute("CREATE TABLE IF NOT EXISTS ai_report (user_id INTEGER PRIMARY KEY, report_text TEXT)")
+    conn.commit()
+    return conn  # 💡 CORRECCIÓN NATIVA: Ahora el return está perfectamente metido dentro de la función
+
+conn = init_db()
+
+# Los 30 adjetivos oficiales de la Ventana de Johari
+JOHARI_ADJECTIVES = [
+    "Able", "Accepting", "Adaptable", "Bold", "Brave", "Calm", "Caring", "Cheerful", "Clever", "Complex", 
+    "Confident", "Dependable", "Dignified", "Empathetic", "Energetic", "Friendly", "Giving", "Happy", "Helpful", "Idealistic", 
+    "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
+]
+#===================================================================================================
 #    [JAHORI WINDOW EMBA SAAS - PREMIUM SIMETRÍA V5] - FLUJO PÚBLICO Y ACCESOS (PART 2)
 # ===================================================================================================
 
