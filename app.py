@@ -192,7 +192,7 @@ else:
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
 # ===================================================================================================
-#    [JAHORI WINDOW EMBA SAAS - TRUCO PRACTICO DE ESPACIOS V10] - WIZARD PANEL Y MATRIX GRID (PART 3)
+#    [JAHORI WINDOW EMBA SAAS - DEFINITIVE HTML MATRIX GRID] - WIZARD PANEL & MATRIX (PART 3)
 # ===================================================================================================
     else:
         st.sidebar.markdown(f"### 🔒 Session Secure")
@@ -285,46 +285,46 @@ else:
                     friends_set.update(words)
                     all_friends_list.extend(words)
             
-            open_area = list(user_set.intersection(friends_set))
-            blind_area = list(friends_set.difference(user_set))
-            hidden_area = list(user_set.difference(friends_set))
+            open_area = user_set.intersection(friends_set)
+            blind_area = friends_set.difference(user_set)
+            hidden_area = user_set.difference(friends_set)
             unknown_area = ["Undiscovered qualities left to explore."]
             
-            # 💡 TRUCO DE RELLENO PRÁCTICO: Calculamos cuántos elementos tiene el bloque más grande
-            max_lines = max(len(open_area), len(blind_area), len(hidden_area), len(unknown_area), 1)
+            # Convertimos las listas de adjetivos en saltos de línea HTML (<br>) para la tabla
+            open_html = "<br>".join(open_area) if open_area else "None"
+            blind_html = "<br>".join(blind_area) if blind_area else "None"
+            hidden_html = "<br>".join(hidden_area) if hidden_area else "None"
+            unknown_html = "<br>".join(unknown_area)
             
-            # Función auxiliar que rellena con saltos de línea invisibles (\n) para forzar que todas tengan la misma altura
-            def pad_list(area_list, target_len):
-                text = ", \n".join(area_list) if area_list else "None"
-                missing_lines = target_len - max(len(area_list), 1)
-                if missing_lines > 0:
-                    text += "\n" * missing_lines # Añade espacios invisibles abajo del texto
-                return text
-
-            open_text = pad_list(open_area, max_lines)
-            blind_text = pad_list(blind_area, max_lines)
-            hidden_text = pad_list(hidden_area, max_lines)
-            unknown_text = pad_list(unknown_area, max_lines)
-            
-            # Eliminamos cualquier instrucción CSS extraña de altura previa para que actúe el relleno natural por texto
-            st.markdown("""
-                <style>
-                div[data-testid="stNotification"] {
-                    height: auto !important;
-                    min-height: auto !important;
-                    max-height: none !important;
-                }
-                </style>
+            # 💡 MATRIZ EN HTML PURO ENCAPSULADO: Fija la visual simétrica sin depender del CSS de Streamlit
+            st.markdown(f"""
+                <table style="width:100%; border-collapse: separate; border-spacing: 15px; font-family: -apple-system, sans-serif; table-layout: fixed;">
+                    <tr>
+                        <!-- 👐 1. OPEN AREA (Azul) -->
+                        <td style="width:50%; background-color: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 16px; vertical-align: top;">
+                            <div style="color: #1E40AF; font-weight: 700; margin-bottom: 12px; font-size: 16px;">👐 1. Open Area:</div>
+                            <div style="color: #1E3A8A; font-weight: 500; font-size: 15px; line-height: 1.6;">{open_html}</div>
+                        </td>
+                        <!-- 👁️ 2. BLIND AREA (Amarillo) -->
+                        <td style="width:50%; background-color: #FEFCE8; border: 1px solid #FEF08A; border-radius: 8px; padding: 16px; vertical-align: top;">
+                            <div style="color: #854D0E; font-weight: 700; margin-bottom: 12px; font-size: 16px;">👁️ 2. Blind Area:</div>
+                            <div style="color: #713F12; font-weight: 500; font-size: 15px; line-height: 1.6;">{blind_html}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <!-- 🔒 3. HIDDEN AREA (Rojo) -->
+                        <td style="width:50%; background-color: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; padding: 16px; vertical-align: top;">
+                            <div style="color: #991B1B; font-weight: 700; margin-bottom: 12px; font-size: 16px;">🔒 3. Hidden Area:</div>
+                            <div style="color: #7F1D1D; font-weight: 500; font-size: 15px; line-height: 1.6;">{hidden_html}</div>
+                        </td>
+                        <!-- 🔮 4. UNKNOWN AREA (Verde) -->
+                        <td style="width:50%; background-color: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; padding: 16px; vertical-align: top;">
+                            <div style="color: #166534; font-weight: 700; margin-bottom: 12px; font-size: 16px;">🔮 4. Unknown Area:</div>
+                            <div style="color: #14532D; font-weight: 500; font-size: 15px; line-height: 1.6;">{unknown_html}</div>
+                        </td>
+                    </tr>
+                </table>
             """, unsafe_allow_html=True)
-            
-            # Pintamos los 4 bloques simétricos adaptativos
-            c1, c2 = st.columns(2)
-            with c1:
-                st.info(f"👐 **1. Open Area:** \n\n {open_text}")
-                st.error(f"🔒 **3. Hidden Area:** \n\n {hidden_text}")
-            with c2:
-                st.warning(f"👁️ **2. Blind Area:** \n\n {blind_text}")
-                st.success(f"🔮 **4. Unknown Area:** \n\n {unknown_text}")
             
             st.markdown("<br><h3 style='color: #3E63DD; font-weight: 700;'>🧠 Executive Coaching Report</h3>", unsafe_allow_html=True)
             
