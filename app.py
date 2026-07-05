@@ -6,7 +6,7 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [JAHORI WINDOW EMBA SAAS - PREMIUM SIMETRÍA V5] - CONFIGURACIÓN Y ESTILOS (PART 1)
+#    [JAHORI WINDOW EMBA SAAS - PRODUCTION BLINDADO V6] - CONFIGURACIÓN Y ESTILOS (PART 1)
 # ===================================================================================================
 
 # 1. Configuración de la pestaña del navegador
@@ -99,7 +99,7 @@ st.markdown("""
     div[data-testid="stCheckbox"] label { display: flex !important; align-items: center !important; height: 100% !important; width: 100% !important; }
     div[data-testid="stCheckbox"] label p { color: #333333 !important; font-weight: 500 !important; font-size: 15px !important; white-space: nowrap !important; margin: 0 !important; }
     
-    /* MEJORA MATRIZ CUADRANTES: Obliga a las cajas de color a tener una altura mínima idéntica para formar un bloque simétrico */
+    /* MEJORA MATRIZ CUADRANTES: Altura idéntica simétrica */
     div[data-testid="stNotification"] {
         min-height: 140px !important;
         display: flex !important;
@@ -109,7 +109,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 3. Inicialización síncrona de la Base de Datos SQLite
+# 3. Inicialización de la Base de Datos SQLite
 def init_db():
     conn = sqlite3.connect("reflex.db", check_same_thread=False)
     cursor = conn.cursor()
@@ -118,7 +118,7 @@ def init_db():
     cursor.execute("CREATE TABLE IF NOT EXISTS feedback (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, anonymous_adjectives TEXT)")
     cursor.execute("CREATE TABLE IF NOT EXISTS ai_report (user_id INTEGER PRIMARY KEY, report_text TEXT)")
     conn.commit()
-    return conn  # 💡 IDENTACIÓN FIJADA AL PÍXEL: Dentro de la función para eliminar el SyntaxError
+    return conn
 
 conn = init_db()
 
@@ -129,7 +129,7 @@ JOHARI_ADJECTIVES = [
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
 # ===================================================================================================
-#    [JAHORI WINDOW EMBA SAAS - PREMIUM SIMETRÍA V5] - FLUJO PÚBLICO Y ACCESOS (PART 2)
+#    [JAHORI WINDOW EMBA SAAS - BLINDADO V6] - FLUJO PÚBLICO Y ACCESOS (PART 2)
 # ===================================================================================================
 
 query_params = st.query_params
@@ -143,7 +143,8 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        target_user_id = int(user_data) if isinstance(user_data, tuple) else int(user_data)
+        # 💡 CORRECCIÓN 1: Extrae la posición cero para evitar fallos de tupla en evaluaciones públicas
+        target_user_id = int(user_data[0])
         st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Friend</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO compliant.</p>", unsafe_allow_html=True)
         st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No tracking.</div>", unsafe_allow_html=True)
@@ -155,7 +156,6 @@ if "token" in query_params:
             with cols[i % 2]:
                 if st.checkbox(adj, key=f"friend_{adj}"): selected_friend_words.append(adj)
                     
-        # BOTÓN LARGO: Enmarcado en la clase larga para que quepa entero sin cortes
         st.markdown("<div class='long-text-button'>", unsafe_allow_html=True)
         btn_submit_friend = st.button("Submit Anonymous Feedback")
         st.markdown("</div>", unsafe_allow_html=True)
@@ -188,17 +188,10 @@ else:
             if btn_log: st.session_state.page = "Login"; st.rerun()
             
             st.markdown("<br><br>", unsafe_allow_html=True)
-            # MEJORA COMPORTAMIENTO: Desplegado por defecto para educar de entrada al usuario
             with st.expander("ℹ️ Learn more about the Johari Window framework", expanded=True):
                 st.markdown("""
                     ### What is the Johari Window?
-                    Developed by psychologists Joseph Luft and Harrington Ingham, the **Johari Window** is a cognitive psychological tool used to enhance self-awareness, interpersonal relationships, and leadership dynamics. It fragments human behavioral traits into four distinct quadrants based on whether the information is known or unknown to oneself and others.
-                    
-                    ### How the AI Pipeline Works
-                    1. **Self-Assessment:** You select a set of adjectives that you believe represent your professional persona.
-                    2. **Anonymous Peer Feedback:** You distribute a secure cryptographic token to your EMBA colleagues to collect their objective perception.
-                    3. **Vector Matrix Mapping:** The system automatically cross-references both datasets to calculate your *Open, Blind, Hidden, and Unknown areas*.
-                    4. **Gemini Coaching Report:** Google Gemini 2.5 Flash processes your psychological matrix to generate an immediate, tailored leadership execution strategy.
+                    Developed by psychologists Joseph Luft and Harrington Ingham, the **Johari Window** is a cognitive psychological tool used to enhance self-awareness, interpersonal relationships, and leadership dynamics.
                 """)
                     
         elif st.session_state.page == "Register":
@@ -219,13 +212,13 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        st.session_state.user = int(user_data) if user_data else None
+                        # 💡 CORRECCIÓN 2: Extrae la posición cero para evitar el TypeError en el Registro de nuevos usuarios
+                        st.session_state.user = int(user_data[0]) if user_data else None
                         st.session_state.page = "Dashboard"; st.rerun()
                     except sqlite3.IntegrityError: st.error("This username is already taken.")
                         
         elif st.session_state.page == "Login":
             st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 36px;'>Log <span style='color: #3E63DD;'>In</span></h1>", unsafe_allow_html=True)
-            # MEJORA INFORMATIVA: Notificación de anonimato sin emails
             st.info("🔒 No email needed. Enter your configured nickname and password to access.")
             log_user = st.text_input("Username")
             log_pass = st.text_input("Password", type="password")
@@ -235,14 +228,15 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    st.session_state.user = int(result)
+                    # 💡 CORRECCIÓN 3 (ELIMINA EL ERROR DE TU ÚLTIMA CAPTURA): Extrae la posición cero para iniciar sesión en limpio
+                    st.session_state.user = int(result[0])
                     st.session_state.page = "Dashboard"; st.rerun()
                 else: st.error("Incorrect username or password.")
                     
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
 # ===================================================================================================
-#    [JAHORI WINDOW EMBA SAAS - PREMIUM SIMETRÍA V5] - WIZARD PANEL Y MATRIX GRID (PART 3)
+#    [JAHORI WINDOW EMBA SAAS - BLINDADO V6] - WIZARD PANEL Y MATRIX GRID (PART 3)
 # ===================================================================================================
     else:
         st.sidebar.markdown(f"### 🔒 Session Secure")
@@ -256,14 +250,14 @@ else:
         
         cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = ?", (current_user_id,))
         f_count_data = cursor.fetchone()
-        f_count = int(f_count_data) if f_count_data else 0
+        # 💡 CORRECCIÓN 4: Extrae la posición cero de forma nativa para el conteo de votos recibidos
+        f_count = int(f_count_data[0]) if f_count_data else 0
         
         cursor.execute("SELECT report_text FROM ai_report WHERE user_id = ?", (current_user_id,))
         saved_report = cursor.fetchone()
         
         st.markdown("<h1 style='font-size:28px; font-weight:700;'>Your Johari Control Panel</h1>", unsafe_allow_html=True)
         
-        # Enrutamiento forzado por pasos (Wizard)
         if not has_self:
             current_step = "Step 1: Self Assessment"
         elif f_count < 3 and not saved_report:
@@ -280,7 +274,6 @@ else:
                 with cols[i % 2]:
                     if st.checkbox(adj, key=f"my_{adj}"): selected_my_words.append(adj)
                         
-            # BOTÓN LARGO: Enmarcado en la clase larga para que "Save & Proceed to Next Step" quepa entero
             st.markdown("<div class='long-text-button'>", unsafe_allow_html=True)
             btn_save_self = st.button("Save & Proceed to Next Step ➡️")
             st.markdown("</div>", unsafe_allow_html=True)
@@ -301,8 +294,9 @@ else:
             st.write("Copy this secure link and share it with your EMBA network via WhatsApp or Slack:")
             
             cursor.execute("SELECT share_token FROM user WHERE id = ?", (current_user_id,))
-            user_token = cursor.fetchone()
-            user_token = user_token[0] if user_token else "error"
+            token_res = cursor.fetchone()
+            # 💡 CORRECCIÓN 5: Extrae la posición cero para construir la URL criptográfica en limpio sin romper las rutas de red
+            user_token = token_res[0] if token_res else "error"
             try:
                 ctx = st.context
                 current_host = ctx.headers.get("Host", "localhost:8501")
@@ -319,6 +313,7 @@ else:
             
             cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
             user_res = cursor.fetchone()
+            # 💡 CORRECCIÓN 6: Extrae la posición cero para limpiar la cadena de texto de tus adjetivos propios
             user_set = set(user_res[0].split(",")) if user_res and user_res[0] else set()
             
             cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (current_user_id,))
@@ -335,7 +330,6 @@ else:
             blind_area = friends_set.difference(user_set)
             hidden_area = user_set.difference(friends_set)
             
-            # CUADRÍCULA SIMÉTRICA: Forzada por CSS de la Parte 1 a tener un alto mínimo homogéneo
             c1, c2 = st.columns(2)
             with c1:
                 st.info(f"👐 **1. Open Area:** \n\n {', '.join(open_area) if open_area else 'None'}")
@@ -346,12 +340,11 @@ else:
             
             st.markdown("<br><h3 style='color: #3E63DD; font-weight: 700;'>🧠 Executive Coaching Report</h3>", unsafe_allow_html=True)
             
-            # REPORTE FIJO CACHED: Lee de la DB y muestra el texto premium corporativo definitivo refinado
             if saved_report and saved_report[0]:
+                # 💡 CORRECCIÓN 7: Lee de la posición cero el informe guardado de Gemini
                 st.write(saved_report[0])
                 st.caption("🔒 *Your personalized Executive Report has been successfully recorded and saved in your secure profile.*")
             else:
-                # BOTÓN LARGO: Enmarcado para que el comando de la IA quepa entero en horizontal
                 st.markdown("<div class='long-text-button'>", unsafe_allow_html=True)
                 btn_generate_ai = st.button("🚀 Generate Executive Coaching Plan via Gemini AI")
                 st.markdown("</div>", unsafe_allow_html=True)
