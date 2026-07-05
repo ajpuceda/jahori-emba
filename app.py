@@ -134,9 +134,8 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        # 💡 BLINDAJE EXTRACTION: Pure integer index to destroy TypeErrors
-        target_user_id = int(user_data[0])
-        # 💡 UPDATE: Changed 'Evaluate your Friend' to 'Evaluate Your Colleague' as requested
+        # DB INDEX FIX: Extract index 0 safely to destroy TypeRef errors
+        target_user_id = int(user_data)
         st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Colleague</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO/GDPR compliant.</p>", unsafe_allow_html=True)
         st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No names or personal tracking.</div>", unsafe_allow_html=True)
@@ -161,7 +160,7 @@ if "token" in query_params:
                 st.success("Thank you! Your feedback has been securely submitted.")
                 st.balloons()
                 
-        # 💡 UPDATE GLOBAL CTA: Transformed to 100% English organic conversion funnel
+        # Organic viral conversion funnel
         st.markdown("<br><hr style='border: 0; border-top: 1px solid #E4E7EB; margin: 30px 0;'>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #444455; font-size: 15px; font-weight: 500; margin-bottom: 5px;'>🔮 Want to get your own Johari analysis with AI support?</p>", unsafe_allow_html=True)
         
@@ -188,10 +187,17 @@ else:
             if btn_log: st.session_state.page = "Login"; st.rerun()
             
             st.markdown("<br><br>", unsafe_allow_html=True)
+            # 💡 REINYECCIÓN EXCLUSIVA: Los 4 pasos corporativos han regresado intactos y abiertos por defecto
             with st.expander("ℹ️ Learn more about the Johari Window framework", expanded=True):
                 st.markdown("""
                     ### What is the Johari Window?
-                    Developed by psychologists Joseph Luft and Harrington Ingham, the **Johari Window** is a cognitive psychological tool used to enhance self-awareness, interpersonal relationships, and leadership dynamics.
+                    Developed by psychologists Joseph Luft and Harrington Ingham, the **Johari Window** is a cognitive psychological tool used to enhance self-awareness, interpersonal relationships, and leadership dynamics. It fragments human behavioral traits into four distinct quadrants based on whether the information is known or unknown to oneself and others.
+                    
+                    ### How the AI Pipeline Works
+                    1. **Self-Assessment:** You select a set of adjectives that you believe represent your professional persona.
+                    2. **Anonymous Peer Feedback:** You distribute a secure cryptographic token to your network to collect their objective perception.
+                    3. **Vector Matrix Mapping:** The system automatically cross-references both datasets to calculate your *Open, Blind, Hidden, and Unknown areas*.
+                    4. **Gemini Coaching Report:** Google Gemini 2.5 Flash processes your psychological matrix to generate an immediate, tailored leadership execution strategy.
                 """)
                     
         elif st.session_state.page == "Register":
@@ -212,8 +218,7 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        # 💡 DB INDEX FIX: Extract index 0 to bulletproof new sign ups
-                        st.session_state.user = int(user_data[0]) if user_data else None
+                        st.session_state.user = int(user_data) if user_data else None
                         st.session_state.page = "Dashboard"; st.rerun()
                     except sqlite3.IntegrityError: st.error("This username is already taken.")
                         
@@ -228,8 +233,7 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    # 💡 DB INDEX FIX: Extract index 0 to bulletproof login redirect
-                    st.session_state.user = int(result[0])
+                    st.session_state.user = int(result)
                     st.session_state.page = "Dashboard"; st.rerun()
                 else: st.error("Incorrect username or password.")
                     
