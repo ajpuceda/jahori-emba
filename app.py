@@ -125,7 +125,7 @@ JOHARI_ADJECTIVES = [
 ]
 
 # ===================================================================================================
-#    [JAHORI WINDOW EMBA SAAS - BLINDADO V8] - FLUJO PÚBLICO Y ACCESOS (PART 2)
+#    [JAHORI WINDOW EMBA SAAS - ECO COPY] - FLUJO PÚBLICO Y ACCESOS (PART 2)
 # ===================================================================================================
 
 query_params = st.query_params
@@ -139,8 +139,7 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        # 💡 FIX SANO: Extrae el entero de la tupla de forma limpia con la posición [0]
-        target_user_id = int(user_data[0])
+        target_user_id = int(user_data)[0] if isinstance(user_data, tuple) else int(user_data)
         st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Friend</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO compliant.</p>", unsafe_allow_html=True)
         st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No tracking.</div>", unsafe_allow_html=True)
@@ -152,8 +151,9 @@ if "token" in query_params:
             with cols[i % 2]:
                 if st.checkbox(adj, key=f"friend_{adj}"): selected_friend_words.append(adj)
                     
+        # 💡 ECO COPY OPTIMIZADO: "Submit" corto e impecable
         st.markdown("<div class='long-text-button'>", unsafe_allow_html=True)
-        btn_submit_friend = st.button("Submit Anonymous Feedback")
+        btn_submit_friend = st.button("Submit")
         st.markdown("</div>", unsafe_allow_html=True)
         
         if btn_submit_friend:
@@ -208,8 +208,7 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        # 💡 FIX SANO: Extrae la posición [0] de la tupla para romper el TypeError en el registro
-                        st.session_state.user = int(user_data[0]) if user_data else None
+                        st.session_state.user = int(user_data)[0] if user_data else None
                         st.session_state.page = "Dashboard"; st.rerun()
                     except sqlite3.IntegrityError: st.error("This username is already taken.")
                         
@@ -224,22 +223,18 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    # 💡 FIX SANO: Extrae la posición [0] de la tupla para romper el TypeError en el login
-                    st.session_state.user = int(result[0])
+                    st.session_state.user = int(result)[0]
                     st.session_state.page = "Dashboard"; st.rerun()
                 else: st.error("Incorrect username or password.")
                     
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
 # ===================================================================================================
-#    [JAHORI WINDOW EMBA SAAS - DEFINITIVE HTML MATRIX GRID] - WIZARD PANEL & MATRIX (PART 3)
+#    [JAHORI WINDOW EMBA SAAS - ECO COPY] - WIZARD PANEL Y MATRIX GRID (PART 3)
 # ===================================================================================================
     else:
         st.sidebar.markdown(f"### 🔒 Session Secure")
-        if st.sidebar.button("🚪 Log Out"): 
-            st.session_state.user = None
-            st.session_state.page = "Home"
-            st.rerun()
+        if st.sidebar.button("🚪 Log Out"): st.session_state.user = None; st.session_state.page = "Home"; st.rerun()
             
         current_user_id = int(st.session_state.user)
         cursor = conn.cursor()
@@ -249,14 +244,13 @@ else:
         
         cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = ?", (current_user_id,))
         f_count_data = cursor.fetchone()
-        f_count = int(f_count_data[0]) if f_count_data else 0
+        f_count = int(f_count_data)[0] if f_count_data else 0
         
         cursor.execute("SELECT report_text FROM ai_report WHERE user_id = ?", (current_user_id,))
         saved_report = cursor.fetchone()
         
         st.markdown("<h1 style='font-size:28px; font-weight:700;'>Your Johari Control Panel</h1>", unsafe_allow_html=True)
         
-        # Enrutamiento forzado por pasos secuenciales (Wizard)
         if not has_self:
             current_step = "Step 1: Self Assessment"
         elif f_count < 3 and not saved_report:
@@ -273,8 +267,9 @@ else:
                 with cols[i % 2]:
                     if st.checkbox(adj, key=f"my_{adj}"): selected_my_words.append(adj)
                         
+            # 💡 ECO COPY OPTIMIZADO: "Next ➡️" corto, limpio y súper intuitivo
             st.markdown("<div class='long-text-button'>", unsafe_allow_html=True)
-            btn_save_self = st.button("Save & Proceed to Next Step ➡️")
+            btn_save_self = st.button("Next ➡️")
             st.markdown("</div>", unsafe_allow_html=True)
             
             if btn_save_self:
@@ -300,20 +295,18 @@ else:
                 current_host = ctx.headers.get("Host", "localhost:8501")
                 protocol = "https" if "streamlit.app" in current_host else "http"
                 generated_url = f"{protocol}://{current_host}/?token={user_token}"
-            except Exception: 
-                generated_url = f"http://localhost:8501/?token={user_token}"
+            except Exception: generated_url = f"http://localhost:8501/?token={user_token}"
             
             st.code(generated_url)
             st.info("💡 Once you receive at least 3 anonymous evaluations from your colleagues, this window will automatically unlock the AI coaching report button.")
-            if st.button("🔄 Refresh Progress"): 
-                st.rerun()
+            if st.button("🔄 Refresh Progress"): st.rerun()
                 
         elif current_step == "Step 3: Executive AI Matrix":
             st.subheader("📊 Step 3: Your Personality Matrix & Leadership Plan")
             
             cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
             user_res = cursor.fetchone()
-            user_set = set(user_res[0].split(",")) if user_res and user_res[0] else set()
+            user_set = set(user_res[0].split(",")) if user_res and user_res else set()
             
             cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (current_user_id,))
             feedbacks = cursor.fetchall()
@@ -330,34 +323,28 @@ else:
             hidden_area = user_set.difference(friends_set)
             unknown_area = ["Undiscovered qualities left to explore."]
             
-            # Convertimos las listas de adjetivos en saltos de línea HTML (<br>) para la tabla
             open_html = "<br>".join(open_area) if open_area else "None"
             blind_html = "<br>".join(blind_area) if blind_area else "None"
             hidden_html = "<br>".join(hidden_area) if hidden_area else "None"
             unknown_html = "<br>".join(unknown_area)
             
-            # 💡 MATRIZ EN HTML PURO ENCAPSULADO: Fija la visual simétrica sin depender del CSS de Streamlit
             st.markdown(f"""
                 <table style="width:100%; border-collapse: separate; border-spacing: 15px; font-family: -apple-system, sans-serif; table-layout: fixed;">
                     <tr>
-                        <!-- 👐 1. OPEN AREA (Azul) -->
                         <td style="width:50%; background-color: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 16px; vertical-align: top;">
                             <div style="color: #1E40AF; font-weight: 700; margin-bottom: 12px; font-size: 16px;">👐 1. Open Area:</div>
                             <div style="color: #1E3A8A; font-weight: 500; font-size: 15px; line-height: 1.6;">{open_html}</div>
                         </td>
-                        <!-- 👁️ 2. BLIND AREA (Amarillo) -->
                         <td style="width:50%; background-color: #FEFCE8; border: 1px solid #FEF08A; border-radius: 8px; padding: 16px; vertical-align: top;">
                             <div style="color: #854D0E; font-weight: 700; margin-bottom: 12px; font-size: 16px;">👁️ 2. Blind Area:</div>
                             <div style="color: #713F12; font-weight: 500; font-size: 15px; line-height: 1.6;">{blind_html}</div>
                         </td>
                     </tr>
                     <tr>
-                        <!-- 🔒 3. HIDDEN AREA (Rojo) -->
                         <td style="width:50%; background-color: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; padding: 16px; vertical-align: top;">
                             <div style="color: #991B1B; font-weight: 700; margin-bottom: 12px; font-size: 16px;">🔒 3. Hidden Area:</div>
                             <div style="color: #7F1D1D; font-weight: 500; font-size: 15px; line-height: 1.6;">{hidden_html}</div>
                         </td>
-                        <!-- 🔮 4. UNKNOWN AREA (Verde) -->
                         <td style="width:50%; background-color: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; padding: 16px; vertical-align: top;">
                             <div style="color: #166534; font-weight: 700; margin-bottom: 12px; font-size: 16px;">🔮 4. Unknown Area:</div>
                             <div style="color: #14532D; font-weight: 500; font-size: 15px; line-height: 1.6;">{unknown_html}</div>
@@ -372,14 +359,14 @@ else:
                 st.write(saved_report[0])
                 st.caption("🔒 *Your personalized Executive Report has been successfully recorded and saved in your secure profile.*")
             else:
+                # 💡 ECO COPY OPTIMIZADO: "Generate Report" para un look corporativo e impecable
                 st.markdown("<div class='long-text-button'>", unsafe_allow_html=True)
-                btn_generate_ai = st.button("🚀 Generate Executive Coaching Plan via Gemini AI")
+                btn_generate_ai = st.button("Generate Report")
                 st.markdown("</div>", unsafe_allow_html=True)
                 
                 if btn_generate_ai:
                     api_key = os.environ.get("GEMINI_API_KEY")
-                    if not api_key: 
-                        st.error("API Secret Key missing.")
+                    if not api_key: st.error("API Secret Key missing.")
                     else:
                         with st.spinner("Gemini is analyzing your psychological vectors..."):
                             try:
@@ -393,5 +380,4 @@ else:
                                 st.write(raw_text)
                                 st.success("Report successfully generated and locked!")
                                 st.rerun()
-                            except Exception as e: 
-                                st.error(f"Google GenAI Connection temporary suspended: {e}")
+                            except Exception as e: st.error(f"Google GenAI Connection temporary suspended: {e}")
