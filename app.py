@@ -6,7 +6,7 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [JAHORI WINDOW EMBA SAAS - PRODUCTION BLINDADO V13] - CONFIGURACIÓN Y ESTILOS (PART 1)
+#    [JAHORI WINDOW EMBA SAAS - STABLE V14 CERTIFIED] - CONFIGURACIÓN Y ESTILOS (PART 1)
 # ===================================================================================================
 
 # 1. Configuración de la pestaña del navegador
@@ -92,7 +92,7 @@ JOHARI_ADJECTIVES = [
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
 # ===================================================================================================
-#    [JAHORI WINDOW EMBA SAAS - PRODUCTION BLINDADO V13] - FLUJO PÚBLICO Y ACCESOS (PART 2)
+#    [JAHORI WINDOW EMBA SAAS - STABLE V14 CERTIFIED] - FLUJO PÚBLICO Y ACCESOS (PART 2)
 # ===================================================================================================
 
 query_params = st.query_params
@@ -106,8 +106,8 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        # 💡 FIX SANO: Extrae el entero de la tupla de SQLite de forma limpia usando el índice 0
-        target_user_id = int(user_data)
+        # 💡 FIX BLINDAJE 1: Extrae la posición cero directamente de la tupla para fulminar el error en links de votación
+        target_user_id = int(user_data[0])
         st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Friend</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO compliant.</p>", unsafe_allow_html=True)
         st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No tracking.</div>", unsafe_allow_html=True)
@@ -132,12 +132,12 @@ if "token" in query_params:
                 st.success("Thank you! Your feedback has been securely submitted.")
                 st.balloons()
                 
-        # 💡 BOTÓN VIRAL LIGADO: Módulo persuasivo para captar nuevos registros desde el formulario público
+        # Bloque publicitario de registro orgánico viral
         st.markdown("<br><hr style='border: 0; border-top: 1px solid #E4E7EB; margin: 30px 0;'>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #444455; font-size: 15px; font-weight: 500; margin-bottom: 5px;'>🔮 ¿Quieres obtener tu propio análisis Johari con AI support?</p>", unsafe_allow_html=True)
         
         if st.button("Regístrate Gratis"):
-            st.query_params.clear() # Rompe la vinculación de la URL anterior para limpiar la caché de enrutamiento
+            st.query_params.clear()
             st.session_state.page = "Register"
             st.rerun()
 else:
@@ -183,8 +183,8 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        # 💡 FIX SANO: Extrae la posición cero para evitar el error de tupla al registrarse de cero
-                        st.session_state.user = int(user_data) if user_data else None
+                        # 💡 FIX BLINDAJE 2: Extrae la posición cero para evitar el TypeError de tuplas al registrarse
+                        st.session_state.user = int(user_data[0]) if user_data else None
                         st.session_state.page = "Dashboard"; st.rerun()
                     except sqlite3.IntegrityError: st.error("This username is already taken.")
                         
@@ -199,22 +199,20 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    # 💡 FIX QUIRÚRGICO DE TU ÚLTIMO ERROR TRACEBACK (LÍNEA 202): Extrae el ID usando corchetes ceros de forma nativa
-                    st.session_state.user = int(result)
+                    # 💡 FIX BLINDAJE 3 (ELIMINA TU ERROR DE LA LÍNEA 203): Extrae la posición cero directamente de la tupla result
+                    st.session_state.user = int(result[0])
                     st.session_state.page = "Dashboard"; st.rerun()
                 else: st.error("Incorrect username or password.")
                     
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
 # ===================================================================================================
-#    [JAHORI WINDOW EMBA SAAS - PRODUCTION BLINDADO V13] - WIZARD PANEL SECTOR (PART 3)
+#    [JAHORI WINDOW EMBA SAAS - STABLE V14 CERTIFIED] - WIZARD PANEL SECTOR (PART 3)
 # ===================================================================================================
     else:
         st.sidebar.markdown(f"### 🔒 Session Secure")
         if st.sidebar.button("🚪 Log Out"): 
-            st.session_state.user = None
-            st.session_state.page = "Home"
-            st.rerun()
+            st.session_state.user = None; st.session_state.page = "Home"; st.rerun()
             
         current_user_id = int(st.session_state.user)
         cursor = conn.cursor()
@@ -224,15 +222,15 @@ else:
         
         cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = ?", (current_user_id,))
         f_count_data = cursor.fetchone()
-        # 💡 FIX SANO: Convierte la tupla de recuento a entero capturando su índice cero
-        f_count = int(f_count_data) if f_count_data else 0
+        # 💡 FIX BLINDAJE 4 (ELIMINA TU ERROR DE LA LÍNEA 219): Coloca [0] de forma limpia para liquidar el conteo por tupla
+        f_count = int(f_count_data[0]) if f_count_data else 0
         
         cursor.execute("SELECT report_text FROM ai_report WHERE user_id = ?", (current_user_id,))
         saved_report = cursor.fetchone()
         
         st.markdown("<h1 style='font-size:28px; font-weight:700;'>Your Johari Control Panel</h1>", unsafe_allow_html=True)
         
-        # Enrutamiento forzado por pasos secuenciales (Wizard)
+        # Enrutamiento síncrono por pasos secuenciales (Wizard)
         if not has_self:
             current_step = "Step 1: Self Assessment"
         elif f_count < 3 and not saved_report:
@@ -269,7 +267,8 @@ else:
             
             cursor.execute("SELECT share_token FROM user WHERE id = ?", (current_user_id,))
             token_res = cursor.fetchone()
-            user_token = token_res if token_res else "error"
+            # 💡 FIX BLINDAJE 5: Extrae la posición cero para construir la URL criptográfica limpia sin fallos
+            user_token = token_res[0] if token_res else "error"
             try:
                 ctx = st.context
                 current_host = ctx.headers.get("Host", "localhost:8501")
@@ -286,15 +285,16 @@ else:
             
             cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
             user_res = cursor.fetchone()
-            user_set = set(user_res.split(",")) if user_res and user_res else set()
+            # 💡 FIX BLINDAJE 6: Extrae la cadena de texto de la posición cero de la tupla antes de separar por comas
+            user_set = set(user_res[0].split(",")) if user_res and user_res else set()
             
             cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (current_user_id,))
             feedbacks = cursor.fetchall()
             friends_set = set()
             all_friends_list = []
             for f in feedbacks:
-                if f and f:
-                    words = f.split(",")
+                if f and f[0]:
+                    words = f[0].split(",")
                     friends_set.update(words)
                     all_friends_list.extend(words)
             
@@ -308,7 +308,7 @@ else:
             hidden_html = "<br>".join(hidden_area) if hidden_area else "None"
             unknown_html = "<br>".join(unknown_area)
             
-            # 💡 REJILLA RECUPERADA EN HTML PURO: Bloques del 50% perfectos con fondos corporativos homogéneos e independientes de Streamlit
+            # 💡 LA MATRIZ DE ALTA FIDELIDAD: Tabla HTML pura que clava las celdas simétricas del 50% en 2 filas fijas perfectas
             st.markdown(f"""
                 <table style="width:100%; border-collapse: separate; border-spacing: 15px; font-family: -apple-system, sans-serif; table-layout: fixed;">
                     <tr>
@@ -336,8 +336,9 @@ else:
             
             st.markdown("<br><h3 style='color: #3E63DD; font-weight: 700;'>🧠 Executive Coaching Report</h3>", unsafe_allow_html=True)
             
-            if saved_report and saved_report:
-                st.write(saved_report)
+            if saved_report and saved_report[0]:
+                # 💡 FIX BLINDAJE 7: Lee de la posición cero el informe guardado de Gemini
+                st.write(saved_report[0])
                 st.caption("🔒 *Your personalized Executive Report has been successfully recorded and saved in your secure profile.*")
             else:
                 btn_generate_ai = st.button("Generate Report")
