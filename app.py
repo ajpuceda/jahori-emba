@@ -6,7 +6,7 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [JAHORI WINDOW SAAS - RIGID PROTECTION V19] - CONFIGURACIÓN Y ESTILOS (PART 1)
+#    [JAHORI WINDOW SAAS - DARK MODE SHIELD V20] - CONFIGURACIÓN Y ESTILOS (PART 1)
 # ===================================================================================================
 
 # 1. Browser tab title configuration
@@ -15,12 +15,24 @@ st.set_page_config(page_title="JAHORI - Discover Your Blind Spots", page_icon="�
 # 2. Premium Corporate CSS Injection (With strict layout separation)
 st.markdown("""
     <style>
-    /* Clean white background style Google */
-    .stApp { background-color: #FFFFFF; }
+    /* Fondo blanco limpio estilo Google */
+    .stApp { background-color: #FFFFFF !important; }
     
-    /* Hide native Streamlit layout headers and footers */
+    /* 💡 BLINDAJE CONTRA MODO OSCURO MÓVIL: Fuerza a todas las fuentes a mantenerse oscuras sobre el fondo blanco */
+    .stApp, .stApp h1, .stApp h2, .stApp h3, .stApp p, .stApp li, .stApp span, .stApp label, .stApp div {
+        color: #111111 !important;
+    }
+    
+    /* Mantiene los textos dentro de los inputs legibles */
+    .stApp input {
+        color: #111111 !important;
+        background-color: #FAFAFA !important;
+    }
+    
+    /* Ocultar elementos nativos de Streamlit */
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
     .compliance-box { background-color: #F1F3F9; border-left: 4px solid #3E63DD; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
+    .compliance-box div, .compliance-box strong { color: #111111 !important; }
     
     /* REGLA DE COLUMNAS PÚBLICAS: Solo actúa en la Home o Votación (Cuando NO hay barra lateral) */
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] {
@@ -30,7 +42,7 @@ st.markdown("""
         align-items: center !important; 
         gap: 15px !important; 
         width: 100% !important; 
-        max-width: 420px !important; /* Ensanchado sutilmente para acomodar los dos botones holgadamente */
+        max-width: 420px !important; 
         margin: 25px auto 0 auto !important;
     }
     
@@ -55,7 +67,7 @@ st.markdown("""
     .stApp:not(:has(div[data-testid="stSidebar"])) .stButton>button { 
         width: 160px !important; 
         background-color: #3E63DD !important; 
-        color: white !important; 
+        color: white !important; /* Fuerza el texto blanco exclusivamente en el interior del botón azul */
         border-radius: 20px !important; 
         border: 1px solid #3E63DD !important; 
         padding: 10px 20px !important; 
@@ -125,9 +137,8 @@ JOHARI_ADJECTIVES = [
     "Confident", "Dependable", "Dignified", "Empathetic", "Energetic", "Friendly", "Giving", "Happy", "Helpful", "Idealistic", 
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
-
 # ===================================================================================================
-#    [JAHORI WINDOW SAAS - EXECUTIVE EDUCATIONAL UPGRADE] - PUBLIC PANEL & ACCESS (PART 2)
+#    [JAHORI WINDOW SAAS - DARK MODE SHIELD V20] - PUBLIC PANEL & ACCESS (PART 2)
 # ===================================================================================================
 
 query_params = st.query_params
@@ -142,7 +153,7 @@ if "token" in query_params:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
         # DB INDEX FIX: Pure extraction to block error loops
-        target_user_id = int(user_data[0]) if user_data else 0
+        target_user_id = int(user_data)
         st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Colleague</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO/GDPR compliant.</p>", unsafe_allow_html=True)
         st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No names tracked.</div>", unsafe_allow_html=True)
@@ -155,7 +166,7 @@ if "token" in query_params:
                 if st.checkbox(adj, key=f"friend_{adj}"):
                     selected_friend_words.append(adj)
                     
-        # Sequential micro-copy instruction for mobile parallax alignment
+        # Instrucción secuencial en inglés para guiar el flujo móvil perfectamente emparejado
         st.markdown("<p style='text-align: center; color: #444455; font-size: 15px; font-weight: 500; margin-top: 25px; margin-bottom: 0px;'>🔮 Want to get your own Johari analysis with AI support?<br><span style='font-size:13.5px; color:#666677; font-weight:400;'>Submit first, and then sign up with us!</span></p>", unsafe_allow_html=True)
         
         col_left, col_right = st.columns(2)
@@ -197,11 +208,10 @@ else:
             if btn_log: st.session_state.page = "Login"; st.rerun()
             
             st.markdown("<br><br>", unsafe_allow_html=True)
-            # 💡 UPGRADE TEÓRICO: Explicación de alta densidad de cada cuadrante en formato ejecutivo
             with st.expander("ℹ️ Learn more about the Johari Window framework", expanded=True):
                 st.markdown("""
                     ### What is the Johari Window?
-                    Developed by Joseph Luft and Harrington Ingham, this cognitive model maps human behavioral traits into a 2x2 grid based on self-awareness and external perception. It is widely used in executive coaching to build trust and high-performing teams.
+                    Developed by psychologists Joseph Luft and Harrington Ingham, the **Johari Window** is a cognitive psychological tool used to enhance self-awareness, interpersonal relationships, and leadership dynamics. It fragments human behavioral traits into four distinct quadrants based on whether the information is known or unknown to oneself and others.
                     
                     ### Understanding the 4 Core Quadrants
                     * 👐 **1. Open Area (Known to Self & Known to Others):** This represents your public persona. It includes the skills, behaviors, and traits that you openly display and that your network easily recognizes. High-performing leaders aim to expand this area through clear communication and authenticity.
@@ -213,7 +223,7 @@ else:
                     1. **Self-Assessment:** You select a baseline of adjectives that you believe define your professional identity.
                     2. **Network Feedback:** You distribute a secure link to your network to collect objective, anonymous external perception data.
                     3. **Vector Mapping:** The system cross-references both datasets to calculate your exact 4 quadrants with precision.
-                    4. **Coaching Report:** Google Gemini AI analyzes your behavioral matrix to deliver an immediate, actionable leadership execution strategy.
+                    4. **Coaching Report:** Google Gemini AI analyzes your behavioral matrix to deliver an immediate, tailored leadership execution strategy.
                 """)
                     
         elif st.session_state.page == "Register":
@@ -234,7 +244,7 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        st.session_state.user = int(user_data[0]) if user_data else None
+                        st.session_state.user = int(user_data) if user_data else None
                         st.session_state.page = "Dashboard"; st.rerun()
                     except sqlite3.IntegrityError: st.error("This username is already taken.")
                         
@@ -249,16 +259,14 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    st.session_state.user = int(result[0])
+                    st.session_state.user = int(result)
                     st.session_state.page = "Dashboard"; st.rerun()
                 else: st.error("Incorrect username or password.")
                     
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
-
-
 # ===================================================================================================
-#    [JAHORI WINDOW SAAS - FINAL PRODUCTION FIXED] - WIZARD PANEL (PART 3)
+#    [JAHORI WINDOW SAAS - DARK MODE SHIELD V20] - WIZARD PANEL (PART 3)
 # ===================================================================================================
     else:
         st.sidebar.markdown(f"### 🔒 Session Secure")
@@ -273,8 +281,7 @@ else:
         
         cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = ?", (current_user_id,))
         f_count_data = cursor.fetchone()
-        # 💡 EXTRAE EL ENTERO DE LA TUPLA EN POSICIÓN [0]
-        f_count = int(f_count_data[0]) if f_count_data else 0
+        f_count = int(f_count_data) if f_count_data else 0
         
         cursor.execute("SELECT report_text FROM ai_report WHERE user_id = ?", (current_user_id,))
         saved_report = cursor.fetchone()
@@ -318,8 +325,7 @@ else:
             
             cursor.execute("SELECT share_token FROM user WHERE id = ?", (current_user_id,))
             token_res = cursor.fetchone()
-            # 💡 EXTRAE EL ENTERO DE LA TUPLA EN POSICIÓN [0]
-            user_token = token_res[0] if token_res else "error"
+            user_token = token_res if token_res else "error"
             try:
                 ctx = st.context
                 current_host = ctx.headers.get("Host", "localhost:8501")
@@ -336,16 +342,15 @@ else:
             
             cursor.execute("SELECT adjectives FROM self_assessment WHERE user_id = ?", (current_user_id,))
             user_res = cursor.fetchone()
-            # 💡 EXTRAE EL STRING DE LA TUPLA EN POSICIÓN [0]
-            user_set = set(user_res[0].split(",")) if user_res and user_res[0] else set()
+            user_set = set(user_res.split(",")) if user_res and user_res else set()
             
             cursor.execute("SELECT anonymous_adjectives FROM feedback WHERE user_id = ?", (current_user_id,))
             feedbacks = cursor.fetchall()
             friends_set = set()
             all_friends_list = []
             for f in feedbacks:
-                if f and f[0]:
-                    words = f[0].split(",")
+                if f and f:
+                    words = f.split(",")
                     friends_set.update(words)
                     all_friends_list.extend(words)
             
@@ -359,27 +364,27 @@ else:
             hidden_html = "<br>".join(hidden_area) if hidden_area else "None"
             unknown_html = "<br>".join(unknown_area)
             
-            # THE ABSOLUTE SYMMETRIC GRID: Pure inline HTML layout forcing 50% parallel blocks
+            # 💡 BLINDAJE INTERNO DE MATRIZ: Fuerza color negro fijo (#111111) en cada texto e hijo de la tabla
             st.markdown(f"""
                 <table style="width:100%; border-collapse: separate; border-spacing: 15px; font-family: -apple-system, sans-serif; table-layout: fixed;">
                     <tr>
                         <td style="width:50%; background-color: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 16px; vertical-align: top;">
-                            <div style="color: #1E40AF; font-weight: 700; margin-bottom: 12px; font-size: 16px;">👐 1. Open Area:</div>
-                            <div style="color: #1E3A8A; font-weight: 500; font-size: 15px; line-height: 1.6;">{open_html}</div>
+                            <div style="color: #1E40AF !important; font-weight: 700; margin-bottom: 12px; font-size: 16px;">👐 1. Open Area:</div>
+                            <div style="color: #111111 !important; font-weight: 500; font-size: 15px; line-height: 1.6;">{open_html}</div>
                         </td>
                         <td style="width:50%; background-color: #FEFCE8; border: 1px solid #FEF08A; border-radius: 8px; padding: 16px; vertical-align: top;">
-                            <div style="color: #854D0E; font-weight: 700; margin-bottom: 12px; font-size: 16px;">👁️ 2. Blind Area:</div>
-                            <div style="color: #713F12; font-weight: 500; font-size: 15px; line-height: 1.6;">{blind_html}</div>
+                            <div style="color: #854D0E !important; font-weight: 700; margin-bottom: 12px; font-size: 16px;">👁️ 2. Blind Area:</div>
+                            <div style="color: #111111 !important; font-weight: 500; font-size: 15px; line-height: 1.6;">{blind_html}</div>
                         </td>
                     </tr>
                     <tr>
                         <td style="width:50%; background-color: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; padding: 16px; vertical-align: top;">
-                            <div style="color: #991B1B; font-weight: 700; margin-bottom: 12px; font-size: 16px;">🔒 3. Hidden Area:</div>
-                            <div style="color: #7F1D1D; font-weight: 500; font-size: 15px; line-height: 1.6;">{hidden_html}</div>
+                            <div style="color: #991B1B !important; font-weight: 700; margin-bottom: 12px; font-size: 16px;">🔒 3. Hidden Area:</div>
+                            <div style="color: #111111 !important; font-weight: 500; font-size: 15px; line-height: 1.6;">{hidden_html}</div>
                         </td>
                         <td style="width:50%; background-color: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; padding: 16px; vertical-align: top;">
-                            <div style="color: #166534; font-weight: 700; margin-bottom: 12px; font-size: 16px;">🔮 4. Unknown Area:</div>
-                            <div style="color: #14532D; font-weight: 500; font-size: 15px; line-height: 1.6;">{unknown_html}</div>
+                            <div style="color: #166534 !important; font-weight: 700; margin-bottom: 12px; font-size: 16px;">🔮 4. Unknown Area:</div>
+                            <div style="color: #111111 !important; font-weight: 500; font-size: 15px; line-height: 1.6;">{unknown_html}</div>
                         </td>
                     </tr>
                 </table>
@@ -387,8 +392,8 @@ else:
             
             st.markdown("<br><h3 style='color: #3E63DD; font-weight: 700;'>🧠 Executive Coaching Report</h3>", unsafe_allow_html=True)
             
-            if saved_report and saved_report[0]:
-                st.write(saved_report[0])
+            if saved_report and saved_report:
+                st.write(saved_report)
                 st.caption("🔒 *Your personalized Executive Report has been successfully recorded and saved in your secure profile.*")
             else:
                 btn_generate_ai = st.button("Generate Report")
