@@ -199,22 +199,33 @@ else:
             st.markdown("<br><br>", unsafe_allow_html=True)
             # 💡 UPGRADE TEÓRICO: Explicación de alta densidad de cada cuadrante en formato ejecutivo
             with st.expander("ℹ️ Learn more about the Johari Window framework", expanded=True):
+                # 💡 INTENSE COLOR REVOLUTION: Envolvemos todo en un div pizarra oscuro con textos e identidades de color de alta visibilidad
                 st.markdown("""
-                    ### What is the Johari Window?
-                    Developed by Joseph Luft and Harrington Ingham, this cognitive model maps human behavioral traits into a 2x2 grid based on self-awareness and external perception. It is widely used in executive coaching to build trust and high-performing teams.
-                    
-                    ### Understanding the 4 Core Quadrants
-                    * 👐 **1. Open Area (Known to Self & Known to Others):** This represents your public persona. It includes the skills, behaviors, and traits that you openly display and that your network easily recognizes. High-performing leaders aim to expand this area through clear communication and authenticity.
-                    * 👁️ **2. Blind Area (Unknown to Self & Known to Others):** This is your **Blind Spot**. It encompasses behaviors, habits, or defensive mechanics that your colleagues notice in daily operations, but you are completely unaware of. Unlocking this quadrant is critical to preventing leadership failure.
-                    * 🔒 **3. Hidden Area (Known to Self & Unknown to Others):** This is your **Hidden Spot** or "facade". It contains personal strengths, vulnerabilities, or ambitions that you intentionally keep private due to fear, corporate culture, or strategic choice. Minimizing this area selectively builds deep psychological safety with your team.
-                    * 🔮 **4. Unknown Area (Unknown to Self & Unknown to Others):** This represents undiscovered potential. It includes latent talents, suppressed capabilities, or behavioral vectors that neither you nor your colleagues have observed yet. This is where our AI processing pipeline maps opportunities for long-term career growth.
-                    
-                    ### How the AI Pipeline Works
-                    1. **Self-Assessment:** You select a baseline of adjectives that you believe define your professional identity.
-                    2. **Network Feedback:** You distribute a secure link to your network to collect objective, anonymous external perception data.
-                    3. **Vector Mapping:** The system cross-references both datasets to calculate your exact 4 quadrants with precision.
-                    4. **Coaching Report:** Google Gemini AI analyzes your behavioral matrix to deliver an immediate, actionable leadership execution strategy.
-                """)
+                    <div style="background-color: #0F172A !important; border: 1px solid #1E293B !important; border-radius: 8px; padding: 20px; color: #FFFFFF !important; font-family: -apple-system, sans-serif;">
+                        
+                        <h3 style="color: #FFFFFF !important; font-weight: 700; margin-top: 0;">What is the Johari Window?</h3>
+                        <p style="color: #E2E8F0 !important; font-size: 15px; line-height: 1.6;">
+                            Developed by Joseph Luft and Harrington Ingham, this cognitive model maps human behavioral traits into a 2x2 grid based on self-awareness and external perception. It is widely used in executive coaching to build trust and high-performing teams.
+                        </p>
+                        
+                        <h3 style="color: #FFFFFF !important; font-weight: 700; margin-top: 20px;">Understanding the 4 Core Quadrants</h3>
+                        <ul style="list-style-type: none; padding-left: 0; font-size: 15px; line-height: 1.6;">
+                            <li style="margin-bottom: 12px; color: #F8FAFC !important;"><span style="color: #38BDF8 !important; font-weight: 700;">👐 1. Open Area (Known to Self & Known to Others):</span> This represents your public persona. It includes the skills, behaviors, and traits that you openly display and that your network easily recognizes. High-performing leaders aim to expand this area through clear communication and authenticity.</li>
+                            <li style="margin-bottom: 12px; color: #F8FAFC !important;"><span style="color: #FBBF24 !important; font-weight: 700;">👁️ 2. Blind Area (Unknown to Self & Known to Others):</span> This is your <b>Blind Spot</b>. It encompasses behaviors, habits, or defensive mechanics that your colleagues notice in daily operations, but you are completely unaware of. Unlocking this quadrant is critical to preventing leadership failure.</li>
+                            <li style="margin-bottom: 12px; color: #F8FAFC !important;"><span style="color: #F87171 !important; font-weight: 700;">🔒 3. Hidden Area (Known to Self & Unknown to Others):</span> This is your <b>Hidden Spot</b> or "facade". It contains personal strengths, vulnerabilities, or ambitions that you intentionally keep private due to fear, corporate culture, or strategic choice. Minimizing this area selectively builds deep psychological safety with your team.</li>
+                            <li style="margin-bottom: 12px; color: #F8FAFC !important;"><span style="color: #4ADE80 !important; font-weight: 700;">🔮 4. Unknown Area (Unknown to Self & Unknown to Others):</span> This represents undiscovered potential. It includes latent talents, suppressed capabilities, or behavioral vectors that neither you nor your colleagues have observed yet. This is where our AI processing pipeline maps opportunities for long-term career growth.</li>
+                        </ul>
+                        
+                        <h3 style="color: #FFFFFF !important; font-weight: 700; margin-top: 20px;">How the AI Pipeline Works</h3>
+                        <ol style="padding-left: 20px; font-size: 15px; line-height: 1.6; color: #E2E8F0 !important;">
+                            <li style="margin-bottom: 6px; color: #E2E8F0 !important;"><b style="color: #FFFFFF !important;">Self-Assessment:</b> You select a baseline of adjectives that you believe define your professional identity.</li>
+                            <li style="margin-bottom: 6px; color: #E2E8F0 !important;"><b style="color: #FFFFFF !important;">Network Feedback:</b> You distribute a secure link to your network to collect objective, anonymous external perception data.</li>
+                            <li style="margin-bottom: 6px; color: #E2E8F0 !important;"><b style="color: #FFFFFF !important;">Vector Mapping:</b> The system automatically cross-references both datasets to calculate your exact 4 quadrants with precision.</li>
+                            <li style="margin-bottom: 0; color: #E2E8F0 !important;"><b style="color: #FFFFFF !important;">Coaching Report:</b> Google Gemini AI analyzes your behavioral matrix to deliver an immediate, tailored leadership execution strategy.</li>
+                        </ol>
+                        
+                    </div>
+                """, unsafe_allow_html=True)
                     
         elif st.session_state.page == "Register":
             st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 36px;'><span style='color: #3E63DD;'>Create Your</span> Account</h1>", unsafe_allow_html=True)
@@ -255,7 +266,6 @@ else:
                     
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
-
 
 # ===================================================================================================
 #    [JAHORI WINDOW SAAS - FINAL PRODUCTION FIXED] - WIZARD PANEL (PART 3)
@@ -359,27 +369,31 @@ else:
             hidden_html = "<br>".join(hidden_area) if hidden_area else "None"
             unknown_html = "<br>".join(unknown_area)
             
-            # THE ABSOLUTE SYMMETRIC GRID: Pure inline HTML layout forcing 50% parallel blocks
+                        # THE ABSOLUTE SYMMETRIC GRID: Pure inline HTML layout forcing 50% parallel blocks
             st.markdown(f"""
                 <table style="width:100%; border-collapse: separate; border-spacing: 15px; font-family: -apple-system, sans-serif; table-layout: fixed;">
                     <tr>
-                        <td style="width:50%; background-color: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 16px; vertical-align: top;">
-                            <div style="color: #1E40AF; font-weight: 700; margin-bottom: 12px; font-size: 16px;">👐 1. Open Area:</div>
-                            <div style="color: #1E3A8A; font-weight: 500; font-size: 15px; line-height: 1.6;">{open_html}</div>
+                        <!-- 👐 1. OPEN AREA (Azul Royal Profundo) -->
+                        <td style="width:50%; background-color: #1E3A8A !important; border: 1px solid #172554 !important; border-radius: 8px; padding: 16px; vertical-align: top;">
+                            <div style="color: #FFFFFF !important; font-weight: 700; margin-bottom: 12px; font-size: 16px;">👐 1. Open Area:</div>
+                            <div style="color: #F8FAFC !important; font-weight: 500; font-size: 15px; line-height: 1.6;">{open_html}</div>
                         </td>
-                        <td style="width:50%; background-color: #FEFCE8; border: 1px solid #FEF08A; border-radius: 8px; padding: 16px; vertical-align: top;">
-                            <div style="color: #854D0E; font-weight: 700; margin-bottom: 12px; font-size: 16px;">👁️ 2. Blind Area:</div>
-                            <div style="color: #713F12; font-weight: 500; font-size: 15px; line-height: 1.6;">{blind_html}</div>
+                        <!-- 👁️ 2. BLIND AREA (Marrón Chocolate / Oro Oscuro) -->
+                        <td style="width:50%; background-color: #713F12 !important; border: 1px solid #451A03 !important; border-radius: 8px; padding: 16px; vertical-align: top;">
+                            <div style="color: #FFFFFF !important; font-weight: 700; margin-bottom: 12px; font-size: 16px;">👁️ 2. Blind Area:</div>
+                            <div style="color: #FDFAEC !important; font-weight: 500; font-size: 15px; line-height: 1.6;">{blind_html}</div>
                         </td>
                     </tr>
                     <tr>
-                        <td style="width:50%; background-color: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; padding: 16px; vertical-align: top;">
-                            <div style="color: #991B1B; font-weight: 700; margin-bottom: 12px; font-size: 16px;">🔒 3. Hidden Area:</div>
-                            <div style="color: #7F1D1D; font-weight: 500; font-size: 15px; line-height: 1.6;">{hidden_html}</div>
+                        <!-- 🔒 3. HIDDEN AREA (Granate / Rojo Vino) -->
+                        <td style="width:50%; background-color: #7F1D1D !important; border: 1px solid #450A0A !important; border-radius: 8px; padding: 16px; vertical-align: top;">
+                            <div style="color: #FFFFFF !important; font-weight: 700; margin-bottom: 12px; font-size: 16px;">🔒 3. Hidden Area:</div>
+                            <div style="color: #FEF2F2 !important; font-weight: 500; font-size: 15px; line-height: 1.6;">{hidden_html}</div>
                         </td>
-                        <td style="width:50%; background-color: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; padding: 16px; vertical-align: top;">
-                            <div style="color: #166534; font-weight: 700; margin-bottom: 12px; font-size: 16px;">🔮 4. Unknown Area:</div>
-                            <div style="color: #14532D; font-weight: 500; font-size: 15px; line-height: 1.6;">{unknown_html}</div>
+                        <!-- 🔮 4. UNKNOWN AREA (Verde Bosque Oscuro) -->
+                        <td style="width:50%; background-color: #14532D !important; border: 1px solid #052E16 !important; border-radius: 8px; padding: 16px; vertical-align: top;">
+                            <div style="color: #FFFFFF !important; font-weight: 700; margin-bottom: 12px; font-size: 16px;">🔮 4. Unknown Area:</div>
+                            <div style="color: #F0FDF4 !important; font-weight: 500; font-size: 15px; line-height: 1.6;">{unknown_html}</div>
                         </td>
                     </tr>
                 </table>
