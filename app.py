@@ -6,7 +6,7 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [JAHORI WINDOW SAAS - COLOR PRESERVATION V21] - CONFIGURACIÓN Y ESTILOS (PART 1)
+#    [JAHORI WINDOW SAAS - COLOR PRESERVATION V22 FIXED] - CONFIGURACIÓN Y ESTILOS (PART 1)
 # ===================================================================================================
 
 st.set_page_config(page_title="JAHORI - Discover Your Blind Spots", page_icon="🔮", layout="centered")
@@ -54,12 +54,13 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# 💡 CORRECCIÓN DE OPERATIONALERROR: Comando SQL saneado a "CREATE TABLE IF NOT EXISTS"
 def init_db():
     conn = sqlite3.connect("reflex.db", check_same_thread=False)
     cursor = conn.cursor()
     cursor.execute("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password_hash TEXT, share_token TEXT UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS self_assessment (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, adjectives TEXT)")
-    cursor.execute("CREATE TABLE Extists feedback (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, anonymous_adjectives TEXT)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS feedback (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, anonymous_adjectives TEXT)")
     cursor.execute("CREATE TABLE IF NOT EXISTS ai_report (user_id INTEGER PRIMARY KEY, report_text TEXT)")
     conn.commit()
     return conn
@@ -71,6 +72,7 @@ JOHARI_ADJECTIVES = [
     "Confident", "Dependable", "Dignified", "Empathetic", "Energetic", "Friendly", "Giving", "Happy", "Helpful", "Idealistic", 
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
+
 # ===================================================================================================
 #    [JAHORI WINDOW SAAS - DARK MODE SHIELD V20] - PUBLIC PANEL & ACCESS (PART 2)
 # ===================================================================================================
