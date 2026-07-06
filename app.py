@@ -6,126 +6,60 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [JAHORI WINDOW SAAS - DARK MODE SHIELD V20] - CONFIGURACIÓN Y ESTILOS (PART 1)
+#    [JAHORI WINDOW SAAS - COLOR PRESERVATION V21] - CONFIGURACIÓN Y ESTILOS (PART 1)
 # ===================================================================================================
 
-# 1. Browser tab title configuration
 st.set_page_config(page_title="JAHORI - Discover Your Blind Spots", page_icon="🔮", layout="centered")
 
-# 2. Premium Corporate CSS Injection (With strict layout separation)
 st.markdown("""
     <style>
-    /* Fondo blanco limpio estilo Google */
+    /* 💡 EL SECRETO: Forzamos el fondo de la app SIEMPRE en blanco rígido, protegiendo tus textos */
     .stApp { background-color: #FFFFFF !important; }
     
-    /* 💡 BLINDAJE CONTRA MODO OSCURO MÓVIL: Fuerza a todas las fuentes a mantenerse oscuras sobre el fondo blanco */
-    .stApp, .stApp h1, .stApp h2, .stApp h3, .stApp p, .stApp li, .stApp span, .stApp label, .stApp div {
+    /* Mantiene los textos generales estables */
+    .stApp h1, .stApp h2, .stApp h3, .stApp p, .stApp li, .stApp span, .stApp label {
         color: #111111 !important;
     }
     
-    /* Mantiene los textos dentro de los inputs legibles */
-    .stApp input {
-        color: #111111 !important;
-        background-color: #FAFAFA !important;
-    }
+    /* Mantiene los cuadros de entrada legibles */
+    .stApp input { color: #111111 !important; background-color: #FAFAFA !important; }
     
-    /* Ocultar elementos nativos de Streamlit */
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
     .compliance-box { background-color: #F1F3F9; border-left: 4px solid #3E63DD; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
-    .compliance-box div, .compliance-box strong { color: #111111 !important; }
     
-    /* REGLA DE COLUMNAS PÚBLICAS: Solo actúa en la Home o Votación (Cuando NO hay barra lateral) */
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] {
-        display: flex !important; 
-        flex-direction: row !important; /* Fuerza a mantener la fila horizontal en móviles para evitar el efecto escalera */
-        justify-content: center !important; 
-        align-items: center !important; 
-        gap: 15px !important; 
-        width: 100% !important; 
-        max-width: 420px !important; 
-        margin: 25px auto 0 auto !important;
+        display: flex !important; flex-direction: row !important; justify-content: center !important; align-items: center !important; gap: 15px !important; width: 100% !important; max-width: 420px !important; margin: 25px auto 0 auto !important;
     }
-    
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="column"] {
-        width: 50% !important; 
-        flex: 1 !important; 
-        display: flex !important; 
-        justify-content: center !important; 
-        align-items: center !important; 
-        padding: 0 !important; 
-        margin: 0 !important;
+        width: 50% !important; flex: 1 !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 0 !important; margin: 0 !important;
     }
+    .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stElementContainer"] { display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important; }
     
-    .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stElementContainer"] {
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        width: 100% !important;
-    }
-    
-    /* Diseño estándar para botones pequeños (Se centra de forma independiente sin tocar las pantallas internas) */
     .stApp:not(:has(div[data-testid="stSidebar"])) .stButton>button { 
-        width: 160px !important; 
-        background-color: #3E63DD !important; 
-        color: white !important; /* Fuerza el texto blanco exclusivamente en el interior del botón azul */
-        border-radius: 20px !important; 
-        border: 1px solid #3E63DD !important; 
-        padding: 10px 20px !important; 
-        font-weight: 500 !important; 
-        font-size: 14.5px !important; 
-        cursor: pointer !important; 
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important; 
-        margin-left: auto !important; 
-        margin-right: auto !important; 
-        display: block !important; 
-        white-space: nowrap !important;
-    }
-    .stApp:not(:has(div[data-testid="stSidebar"])) .stButton>button:hover { 
-        background-color: #2E4cbd !important; 
-        border-color: #2E4cbd !important; 
+        width: 160px !important; background-color: #3E63DD !important; color: white !important; border-radius: 20px !important; border: 1px solid #3E63DD !important; padding: 10px 20px !important; font-weight: 500 !important; font-size: 14.5px !important; cursor: pointer !important; box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important; margin-left: auto !important; margin-right: auto !important; display: block !important; white-space: nowrap !important;
     }
     
-    /* REGLA MULTIMEDIA EXTRICTA: Asegura el centrado y comportamiento horizontal intocable en cualquier Smartphone */
     @media (max-width: 576px) {
-        .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] {
-            display: flex !important;
-            flex-direction: row !important; 
-            justify-content: center !important;
-            align-items: center !important;
-            gap: 12px !important;
-            width: 100% !important;
-            margin: 20px auto !important;
-        }
-        .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="column"] {
-            width: auto !important;
-            flex: none !important;
-        }
+        .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] { display: flex !important; flex-direction: row !important; justify-content: center !important; align-items: center !important; gap: 12px !important; width: 100% !important; margin: 20px auto !important; }
+        .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="column"] { width: auto !important; flex: none !important; }
     }
     
-    /* REJILLA DE ADJETIVOS INTERNA DE 2 COLUMNAS (Totalmente aislada por el selector de barra lateral) */
-    .stApp:has(div[data-testid="stSidebar"]) div[data-testid="stHorizontalBlock"] { 
-        max-width: 100% !important; width: 100% !important; display: flex !important; flex-direction: row !important; gap: 15px !important; 
-    }
-    .stApp:has(div[data-testid="stSidebar"]) div[data-testid="stHorizontalBlock"] div[data-testid="column"] { 
-        width: 50% !important; max-width: 50% !important; flex: 1 1 50% !important; 
-    }
+    .stApp:has(div[data-testid="stSidebar"]) div[data-testid="stHorizontalBlock"] { max-width: 100% !important; width: 100% !important; display: flex !important; flex-direction: row !important; gap: 15px !important; }
+    .stApp:has(div[data-testid="stSidebar"]) div[data-testid="stHorizontalBlock"] div[data-testid="column"] { width: 50% !important; max-width: 50% !important; flex: 1 1 50% !important; }
     
     div[data-testid="stCheckbox"] {
         background-color: #F8F9FA !important; padding: 10px 16px !important; border-radius: 10px !important; border: 1px solid #E4E7EB !important; margin-bottom: 10px !important; width: 100% !important; height: 50px !important; display: flex !important; align-items: center !important; transition: all 0.2s ease-in-out !important; box-sizing: border-box !important;
     }
-    div[data-testid="stCheckbox"]:hover { background-color: #F1F3F9 !important; border-color: #3E63DD !important; }
-    div[data-testid="stCheckbox"] label { display: flex !important; align-items: center !important; height: 100% !important; width: 100% !important; }
-    div[data-testid="stCheckbox"] label p { color: #333333 !important; font-weight: 500 !important; font-size: 15px !important; white-space: nowrap !important; margin: 0 !important; }
+    div[data-testid="stCheckbox"] label p { color: #333333 !important; font-weight: 500 !important; font-size: 15px !important; }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. Database Initialization
 def init_db():
     conn = sqlite3.connect("reflex.db", check_same_thread=False)
     cursor = conn.cursor()
     cursor.execute("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password_hash TEXT, share_token TEXT UNIQUE)")
     cursor.execute("CREATE TABLE IF NOT EXISTS self_assessment (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, adjectives TEXT)")
-    cursor.execute("CREATE TABLE IF NOT EXISTS feedback (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, anonymous_adjectives TEXT)")
+    cursor.execute("CREATE TABLE Extists feedback (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, anonymous_adjectives TEXT)")
     cursor.execute("CREATE TABLE IF NOT EXISTS ai_report (user_id INTEGER PRIMARY KEY, report_text TEXT)")
     conn.commit()
     return conn
@@ -364,27 +298,31 @@ else:
             hidden_html = "<br>".join(hidden_area) if hidden_area else "None"
             unknown_html = "<br>".join(unknown_area)
             
-            # 💡 BLINDAJE INTERNO DE MATRIZ: Fuerza color negro fijo (#111111) en cada texto e hijo de la tabla
+            # 💡 IDENTIDAD PRESERVADA Y BLINDADA: Forzamos tu paleta de colores original directamente en el texto interno
             st.markdown(f"""
                 <table style="width:100%; border-collapse: separate; border-spacing: 15px; font-family: -apple-system, sans-serif; table-layout: fixed;">
                     <tr>
-                        <td style="width:50%; background-color: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 16px; vertical-align: top;">
+                        <!-- 👐 1. OPEN AREA: Fondo azul pastel, texto azul corporativo profundo obligado -->
+                        <td style="width:50%; background-color: #EFF6FF !important; border: 1px solid #BFDBFE !important; border-radius: 8px; padding: 16px; vertical-align: top;">
                             <div style="color: #1E40AF !important; font-weight: 700; margin-bottom: 12px; font-size: 16px;">👐 1. Open Area:</div>
-                            <div style="color: #111111 !important; font-weight: 500; font-size: 15px; line-height: 1.6;">{open_html}</div>
+                            <div style="color: #1E3A8A !important; font-weight: 600; font-size: 15px; line-height: 1.6;">{open_html}</div>
                         </td>
-                        <td style="width:50%; background-color: #FEFCE8; border: 1px solid #FEF08A; border-radius: 8px; padding: 16px; vertical-align: top;">
+                        <!-- 👁️ 2. BLIND AREA: Fondo amarillo pastel, texto marrón corporativo obligado -->
+                        <td style="width:50%; background-color: #FEFCE8 !important; border: 1px solid #FEF08A !important; border-radius: 8px; padding: 16px; vertical-align: top;">
                             <div style="color: #854D0E !important; font-weight: 700; margin-bottom: 12px; font-size: 16px;">👁️ 2. Blind Area:</div>
-                            <div style="color: #111111 !important; font-weight: 500; font-size: 15px; line-height: 1.6;">{blind_html}</div>
+                            <div style="color: #713F12 !important; font-weight: 600; font-size: 15px; line-height: 1.6;">{blind_html}</div>
                         </td>
                     </tr>
                     <tr>
-                        <td style="width:50%; background-color: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; padding: 16px; vertical-align: top;">
+                        <!-- 🔒 3. HIDDEN AREA: Fondo rojo pastel, texto rojo corporativo obligado -->
+                        <td style="width:50%; background-color: #FEF2F2 !important; border: 1px solid #FECACA !important; border-radius: 8px; padding: 16px; vertical-align: top;">
                             <div style="color: #991B1B !important; font-weight: 700; margin-bottom: 12px; font-size: 16px;">🔒 3. Hidden Area:</div>
-                            <div style="color: #111111 !important; font-weight: 500; font-size: 15px; line-height: 1.6;">{hidden_html}</div>
+                            <div style="color: #7F1D1D !important; font-weight: 600; font-size: 15px; line-height: 1.6;">{hidden_html}</div>
                         </td>
-                        <td style="width:50%; background-color: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; padding: 16px; vertical-align: top;">
+                        <!-- 🔮 4. UNKNOWN AREA: Fondo verde pastel, texto verde corporativo obligado -->
+                        <td style="width:50%; background-color: #F0FDF4 !important; border: 1px solid #BBF7D0 !important; border-radius: 8px; padding: 16px; vertical-align: top;">
                             <div style="color: #166534 !important; font-weight: 700; margin-bottom: 12px; font-size: 16px;">🔮 4. Unknown Area:</div>
-                            <div style="color: #111111 !important; font-weight: 500; font-size: 15px; line-height: 1.6;">{unknown_html}</div>
+                            <div style="color: #14532D !important; font-weight: 600; font-size: 15px; line-height: 1.6;">{unknown_html}</div>
                         </td>
                     </tr>
                 </table>
