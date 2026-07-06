@@ -6,7 +6,7 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [JAHORI WINDOW SAAS - RIGID PROTECTION V19] - CONFIGURACIÓN Y ESTILOS (PART 1)
+#    [JAHORI WINDOW SAAS - BLUE EXPANDER SHIELD V25] - CONFIGURACIÓN Y ESTILOS (PART 1)
 # ===================================================================================================
 
 # 1. Browser tab title configuration
@@ -15,88 +15,84 @@ st.set_page_config(page_title="JAHORI - Discover Your Blind Spots", page_icon="�
 # 2. Premium Corporate CSS Injection (With strict layout separation)
 st.markdown("""
     <style>
-    /* Clean white background style Google */
-    .stApp { background-color: #FFFFFF; }
+    /* Fondo blanco limpio estilo Google para el lienzo principal */
+    .stApp { background-color: #FFFFFF !important; }
     
-    /* Hide native Streamlit layout headers and footers */
+    /* BLINDAJE CONTRA MODO OSCURO MÓVIL: Mantiene las fuentes base estables y oscuras en la landing */
+    .stApp, .stApp h1, .stApp h2, .stApp h3, .stApp p, .stApp li, .stApp span, .stApp label, .stApp div {
+        color: #111111;
+    }
+    
+    /* Obliga al navegador a respetar el color azul corporativo dentro de los títulos h1 de bienvenida */
+    .stApp h1 span {
+        color: #3E63DD !important;
+    }
+    
+    /* Mantiene los cuadros de entrada legibles */
+    .stApp input { color: #111111 !important; background-color: #FAFAFA !important; }
+    
+    /* Ocultar elementos nativos de Streamlit */
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
     .compliance-box { background-color: #F1F3F9; border-left: 4px solid #3E63DD; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
+    .compliance-box div, .compliance-box strong { color: #111111 !important; }
+    
+    /* 💡 REGLA DE INGENIERÍA: Forzamos al acordeón nativo a ser azul medio claro con bordes limpios */
+    div[data-testid="stExpander"] {
+        background-color: #3E63DD !important; /* El color de tu marca como fondo del bloque */
+        border: 1px solid #2A4CBD !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+    }
+    /* Estiliza el título del expander cuando está cerrado/abierto */
+    div[data-testid="stExpander"] summary p {
+        color: #FFFFFF !important;
+        font-weight: 600 !important;
+        font-size: 16px !important;
+    }
+    /* Fuerza a que el icono de la flecha de Streamlit también se pinte de blanco */
+    div[data-testid="stExpander"] summary svg {
+        fill: #FFFFFF !important;
+    }
+    /* Estiliza los textos, subtítulos e hijos dentro del expander abierto en blanco radiante */
+    div[data-testid="stExpander"] div[data-testid="stMarkdownContainer"] p,
+    div[data-testid="stExpander"] div[data-testid="stMarkdownContainer"] h3,
+    div[data-testid="stExpander"] div[data-testid="stMarkdownContainer"] li,
+    div[data-testid="stExpander"] div[data-testid="stMarkdownContainer"] strong,
+    div[data-testid="stExpander"] div[data-testid="stMarkdownContainer"] b {
+        color: #FFFFFF !important;
+    }
     
     /* REGLA DE COLUMNAS PÚBLICAS: Solo actúa en la Home o Votación (Cuando NO hay barra lateral) */
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] {
         display: flex !important; 
-        flex-direction: row !important; /* Fuerza a mantener la fila horizontal en móviles para evitar el efecto escalera */
+        flex-direction: row !important; 
         justify-content: center !important; 
         align-items: center !important; 
         gap: 15px !important; 
         width: 100% !important; 
-        max-width: 420px !important; /* Ensanchado sutilmente para acomodar los dos botones holgadamente */
+        max-width: 420px !important; 
         margin: 25px auto 0 auto !important;
     }
     
     .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="column"] {
-        width: 50% !important; 
-        flex: 1 !important; 
-        display: flex !important; 
-        justify-content: center !important; 
-        align-items: center !important; 
-        padding: 0 !important; 
-        margin: 0 !important;
+        width: 50% !important; flex: 1 !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 0 !important; margin: 0 !important;
     }
+    .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stElementContainer"] { display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important; }
     
-    .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stElementContainer"] {
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        width: 100% !important;
-    }
-    
-    /* Diseño estándar para botones pequeños (Se centra de forma independiente sin tocar las pantallas internas) */
+    /* Diseño estándar para botones pequeños */
     .stApp:not(:has(div[data-testid="stSidebar"])) .stButton>button { 
-        width: 160px !important; 
-        background-color: #3E63DD !important; 
-        color: white !important; 
-        border-radius: 20px !important; 
-        border: 1px solid #3E63DD !important; 
-        padding: 10px 20px !important; 
-        font-weight: 500 !important; 
-        font-size: 14.5px !important; 
-        cursor: pointer !important; 
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important; 
-        margin-left: auto !important; 
-        margin-right: auto !important; 
-        display: block !important; 
-        white-space: nowrap !important;
+        width: 160px !important; background-color: #3E63DD !important; color: white !important; border-radius: 20px !important; border: 1px solid #3E63DD !important; padding: 10px 20px !important; font-weight: 500 !important; font-size: 14.5px !important; cursor: pointer !important; box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important; margin-left: auto !important; margin-right: auto !important; display: block !important; white-space: nowrap !important;
     }
-    .stApp:not(:has(div[data-testid="stSidebar"])) .stButton>button:hover { 
-        background-color: #2E4cbd !important; 
-        border-color: #2E4cbd !important; 
-    }
+    .stApp:not(:has(div[data-testid="stSidebar"])) .stButton>button:hover { background-color: #2E4cbd !important; border-color: #2E4cbd !important; }
     
-    /* REGLA MULTIMEDIA EXTRICTA: Asegura el centrado y comportamiento horizontal intocable en cualquier Smartphone */
     @media (max-width: 576px) {
-        .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] {
-            display: flex !important;
-            flex-direction: row !important; 
-            justify-content: center !important;
-            align-items: center !important;
-            gap: 12px !important;
-            width: 100% !important;
-            margin: 20px auto !important;
-        }
-        .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="column"] {
-            width: auto !important;
-            flex: none !important;
-        }
+        .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="stHorizontalBlock"] { display: flex !important; flex-direction: row !important; justify-content: center !important; align-items: center !important; gap: 12px !important; width: 100% !important; margin: 20px auto !important; }
+        .stApp:not(:has(div[data-testid="stSidebar"])) div[data-testid="column"] { width: auto !important; flex: none !important; }
     }
     
-    /* REJILLA DE ADJETIVOS INTERNA DE 2 COLUMNAS (Totalmente aislada por el selector de barra lateral) */
-    .stApp:has(div[data-testid="stSidebar"]) div[data-testid="stHorizontalBlock"] { 
-        max-width: 100% !important; width: 100% !important; display: flex !important; flex-direction: row !important; gap: 15px !important; 
-    }
-    .stApp:has(div[data-testid="stSidebar"]) div[data-testid="stHorizontalBlock"] div[data-testid="column"] { 
-        width: 50% !important; max-width: 50% !important; flex: 1 1 50% !important; 
-    }
+    /* REJILLA DE ADJETIVOS INTERNA DE 2 COLUMNAS */
+    .stApp:has(div[data-testid="stSidebar"]) div[data-testid="stHorizontalBlock"] { max-width: 100% !important; width: 100% !important; display: flex !important; flex-direction: row !important; gap: 15px !important; }
+    .stApp:has(div[data-testid="stSidebar"]) div[data-testid="stHorizontalBlock"] div[data-testid="column"] { width: 50% !important; max-width: 50% !important; flex: 1 1 50% !important; }
     
     div[data-testid="stCheckbox"] {
         background-color: #F8F9FA !important; padding: 10px 16px !important; border-radius: 10px !important; border: 1px solid #E4E7EB !important; margin-bottom: 10px !important; width: 100% !important; height: 50px !important; display: flex !important; align-items: center !important; transition: all 0.2s ease-in-out !important; box-sizing: border-box !important;
@@ -127,7 +123,7 @@ JOHARI_ADJECTIVES = [
 ]
 
 # ===================================================================================================
-#    [JAHORI WINDOW SAAS - EXECUTIVE EDUCATIONAL UPGRADE] - PUBLIC PANEL & ACCESS (PART 2)
+#    [JAHORI WINDOW SAAS - BLUE EXPANDER SHIELD V25] - PUBLIC PANEL & ACCESS (PART 2)
 # ===================================================================================================
 
 query_params = st.query_params
@@ -141,8 +137,7 @@ if "token" in query_params:
     if not user_data:
         st.error("❌ Invalid Link. This evaluation token does not exist or has expired.")
     else:
-        # DB INDEX FIX: Pure extraction to block error loops
-        target_user_id = int(user_data[0]) if user_data else 0
+        target_user_id = int(user_data) if user_data else 0
         st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 42px;'><span style='color: #3E63DD;'>Evaluate Your</span> Colleague</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666666; font-size: 16px;'>Your anonymous feedback is 100% confidential and RODO/GDPR compliant.</p>", unsafe_allow_html=True)
         st.markdown("<div class='compliance-box'><strong>🔒 RODO Compliance Shield:</strong> Anonymous form. No names tracked.</div>", unsafe_allow_html=True)
@@ -155,7 +150,6 @@ if "token" in query_params:
                 if st.checkbox(adj, key=f"friend_{adj}"):
                     selected_friend_words.append(adj)
                     
-        # Sequential micro-copy instruction for mobile parallax alignment
         st.markdown("<p style='text-align: center; color: #444455; font-size: 15px; font-weight: 500; margin-top: 25px; margin-bottom: 0px;'>🔮 Want to get your own Johari analysis with AI support?<br><span style='font-size:13.5px; color:#666677; font-weight:400;'>Submit first, and then sign up with us!</span></p>", unsafe_allow_html=True)
         
         col_left, col_right = st.columns(2)
@@ -197,24 +191,25 @@ else:
             if btn_log: st.session_state.page = "Login"; st.rerun()
             
             st.markdown("<br><br>", unsafe_allow_html=True)
-            # 💡 UPGRADE TEÓRICO: Explicación de alta densidad de cada cuadrante en formato ejecutivo
+            # 💡 MARQUETACIÓN ORIGINAL RESTAURADA: Markdown nativo limpio, los títulos y viñetas se tiñen de blanco por el CSS de la Parte 1
+            # Para los números de cuadrantes, usamos variantes claras muy vibrantes para que contrasten sobre el azul de fondo de forma espectacular
             with st.expander("ℹ️ Learn more about the Johari Window framework", expanded=True):
                 st.markdown("""
                     ### What is the Johari Window?
-                    Developed by Joseph Luft and Harrington Ingham, this cognitive model maps human behavioral traits into a 2x2 grid based on self-awareness and external perception. It is widely used in executive coaching to build trust and high-performing teams.
+                    Developed by psychologists Joseph Luft and Harrington Ingham, this cognitive model maps human behavioral traits into a 2x2 grid based on self-awareness and external perception. It is widely used in executive coaching to build trust and high-performing teams.
                     
                     ### Understanding the 4 Core Quadrants
-                    * 👐 **1. Open Area (Known to Self & Known to Others):** This represents your public persona. It includes the skills, behaviors, and traits that you openly display and that your network easily recognizes. High-performing leaders aim to expand this area through clear communication and authenticity.
-                    * 👁️ **2. Blind Area (Unknown to Self & Known to Others):** This is your **Blind Spot**. It encompasses behaviors, habits, or defensive mechanics that your colleagues notice in daily operations, but you are completely unaware of. Unlocking this quadrant is critical to preventing leadership failure.
-                    * 🔒 **3. Hidden Area (Known to Self & Unknown to Others):** This is your **Hidden Spot** or "facade". It contains personal strengths, vulnerabilities, or ambitions that you intentionally keep private due to fear, corporate culture, or strategic choice. Minimizing this area selectively builds deep psychological safety with your team.
-                    * 🔮 **4. Unknown Area (Unknown to Self & Unknown to Others):** This represents undiscovered potential. It includes latent talents, suppressed capabilities, or behavioral vectors that neither you nor your colleagues have observed yet. This is where our AI processing pipeline maps opportunities for long-term career growth.
+                    * <span style="color: #93C5FD !important; font-weight: 700;">👐 1. Open Area (Known to Self & Known to Others):</span> This represents your public persona. It includes the skills, behaviors, and traits that you openly display and that your network easily recognizes. High-performing leaders aim to expand this area through clear communication and authenticity.
+                    * <span style="color: #FDE047 !important; font-weight: 700;">👁️ 2. Blind Area (Unknown to Self & Known to Others):</span> This is your **Blind Spot**. It encompasses behaviors, habits, or defensive mechanics that your colleagues notice in daily operations, but you are completely unaware of. Unlocking this quadrant is critical to preventing leadership failure.
+                    * <span style="color: #FCA5A5 !important; font-weight: 700;">🔒 3. Hidden Area (Known to Self & Unknown to Others):</span> This is your **Hidden Spot** or "facade". It contains personal strengths, vulnerabilities, or ambitions that you intentionally keep private due to fear, corporate culture, or strategic choice. Minimizing this area selectively builds deep psychological safety with your team.
+                    * <span style="color: #86EFAC !important; font-weight: 700;">🔮 4. Unknown Area (Unknown to Self & Unknown to Others):</span> This represents undiscovered potential. It includes latent talents, suppressed capabilities, or behavioral vectors that neither you nor your colleagues have observed yet. This is where our AI processing pipeline maps opportunities for long-term career growth.
                     
                     ### How the AI Pipeline Works
                     1. **Self-Assessment:** You select a baseline of adjectives that you believe define your professional identity.
                     2. **Network Feedback:** You distribute a secure link to your network to collect objective, anonymous external perception data.
-                    3. **Vector Mapping:** The system cross-references both datasets to calculate your exact 4 quadrants with precision.
-                    4. **Coaching Report:** Google Gemini AI analyzes your behavioral matrix to deliver an immediate, actionable leadership execution strategy.
-                """)
+                    3. **Vector Mapping:** The system automatically cross-references both datasets to calculate your exact 4 quadrants with precision.
+                    4. **Coaching Report:** Google Gemini AI analyzes your behavioral matrix to deliver an immediate, tailored leadership execution strategy.
+                """, unsafe_allow_html=True)
                     
         elif st.session_state.page == "Register":
             st.markdown("<h1 style='text-align: center; font-weight: 700; color: #111111; font-size: 36px;'><span style='color: #3E63DD;'>Create Your</span> Account</h1>", unsafe_allow_html=True)
@@ -234,7 +229,7 @@ else:
                         conn.commit()
                         cursor.execute("SELECT id FROM user WHERE username = ?", (new_user,))
                         user_data = cursor.fetchone()
-                        st.session_state.user = int(user_data[0]) if user_data else None
+                        st.session_state.user = int(user_data) if user_data else None
                         st.session_state.page = "Dashboard"; st.rerun()
                     except sqlite3.IntegrityError: st.error("This username is already taken.")
                         
@@ -249,14 +244,12 @@ else:
                 cursor.execute("SELECT id FROM user WHERE username = ? AND password_hash = ?", (log_user, hashed))
                 result = cursor.fetchone()
                 if result:
-                    st.session_state.user = int(result[0])
+                    st.session_state.user = int(result)
                     st.session_state.page = "Dashboard"; st.rerun()
                 else: st.error("Incorrect username or password.")
                     
         if st.session_state.page != "Home":
             if st.button("⬅️ Back to Home"): st.session_state.page = "Home"; st.rerun()
-
-
 # ===================================================================================================
 #    [JAHORI WINDOW SAAS - FINAL PRODUCTION FIXED] - WIZARD PANEL (PART 3)
 # ===================================================================================================
