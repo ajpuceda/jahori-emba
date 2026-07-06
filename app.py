@@ -6,7 +6,7 @@ import os
 from google import genai
 
 # ===================================================================================================
-#    [JAHORI WINDOW SAAS - AI REPORT NAVY OVERRIDE] - CONFIGURACIÓN Y ESTILOS (PART 1)
+#    [JAHORI WINDOW SAAS - RIGID PROTECTION V19] - CONFIGURACIÓN Y ESTILOS (PART 1)
 # ===================================================================================================
 
 # 1. Browser tab title configuration
@@ -17,25 +17,6 @@ st.markdown("""
     <style>
     /* Clean white background style Google */
     .stApp { background-color: #FFFFFF; }
-    
-    /* 💡 REGLA DE CONTRASTE PARA EL REPORTE DE IA: Fondo azul marino medio con letras blancas estables */
-    div.ai-report-card {
-        background-color: #2A4CBD !important; /* Azul marino corporativo intermedio equilibrado */
-        border: 1px solid #1E3A8A !important;
-        border-radius: 12px !important;
-        padding: 22px !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
-        margin-top: 15px !important;
-        margin-bottom: 15px !important;
-    }
-    /* Fuerza al texto de los dos párrafos de Gemini a mantenerse en blanco radiante en cualquier móvil */
-    div.ai-report-card div[data-testid="stMarkdownContainer"] p,
-    div.ai-report-card div[data-testid="stMarkdownContainer"] span {
-        color: #FFFFFF !important;
-        font-size: 15.5px !important;
-        line-height: 1.7 !important;
-        font-weight: 400 !important;
-    }
     
     /* Hide native Streamlit layout headers and footers */
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
@@ -144,7 +125,6 @@ JOHARI_ADJECTIVES = [
     "Confident", "Dependable", "Dignified", "Empathetic", "Energetic", "Friendly", "Giving", "Happy", "Helpful", "Idealistic", 
     "Independent", "Ingenious", "Intelligent", "Introverted", "Kind", "Knowledgeable", "Logical", "Loving", "Mature", "Modest"
 ]
-
 
 # ===================================================================================================
 #    [JAHORI WINDOW SAAS - EXECUTIVE EDUCATIONAL UPGRADE] - PUBLIC PANEL & ACCESS (PART 2)
@@ -338,9 +318,6 @@ else:
             
             cursor.execute("SELECT share_token FROM user WHERE id = ?", (current_user_id,))
             token_res = cursor.fetchone()
-# ===================================================================================================
-#    [JAHORI WINDOW SAAS - AI REPORT NAVY OVERRIDE] - MATRIX & GENERATION (PART 4)
-# ===================================================================================================
             # 💡 EXTRAE EL ENTERO DE LA TUPLA EN POSICIÓN [0]
             user_token = token_res[0] if token_res else "error"
             try:
@@ -410,12 +387,8 @@ else:
             
             st.markdown("<br><h3 style='color: #3E63DD; font-weight: 700;'>🧠 Executive Coaching Report</h3>", unsafe_allow_html=True)
             
-            # 💡 CASO 1: Si el reporte ya existe, lo encapsula dentro de la tarjeta azul marino medio
             if saved_report and saved_report[0]:
-                with st.container():
-                    st.markdown('<div class="ai-report-card">', unsafe_allow_html=True)
-                    st.write(saved_report[0])
-                    st.markdown('</div>', unsafe_allow_html=True)
+                st.write(saved_report[0])
                 st.caption("🔒 *Your personalized Executive Report has been successfully recorded and saved in your secure profile.*")
             else:
                 btn_generate_ai = st.button("Generate Report")
@@ -433,14 +406,7 @@ else:
                                 
                                 cursor.execute("INSERT OR REPLACE INTO ai_report (user_id, report_text) VALUES (?, ?)", (current_user_id, raw_text))
                                 conn.commit()
-                                
-                                # 💡 CASO 2: Al generarse en vivo, también lo inyecta dentro del contenedor blindado
-                                with st.container():
-                                    st.markdown('<div class="ai-report-card">', unsafe_allow_html=True)
-                                    st.write(raw_text)
-                                    st.markdown('</div>', unsafe_allow_html=True)
-                                    
+                                st.write(raw_text)
                                 st.success("Report successfully generated and locked!")
                                 st.rerun()
                             except Exception as e: st.error(f"Google GenAI Connection temporary suspended: {e}")
-
